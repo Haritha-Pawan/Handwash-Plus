@@ -1,0 +1,46 @@
+import { config } from 'dotenv';
+import jwt from 'jsonwebtoken';
+
+
+
+export const generateToken = (payload) =>{
+    const accessToken = jwt.sign(
+        payload,
+        config.jwt.secret,
+        {expiresIn:config.jwt.accessExpiration}
+
+    );
+
+    const refreshToken = jwt.sign(
+        {userId:payload.userId},
+        config.jwt.refreshSecret,
+        {expiresIn:config.jwt.refreshExpiration}
+    )
+    return {accessToken, refreshToken};
+};
+
+export const verifyToken = (token,isRefreshToken=false)=>{
+ try{
+    const secret = isRefreshToken ? config.jwt.refreshSecret : config.jwt.secret;
+   return jwt.verify(token,secret);
+ }catch(error){
+     throw new Error('Invalid token');
+ }
+};
+
+export const generateResetToken = (userId) =>{
+    return jwt.sign(
+        {userId},
+        config.jwt.resetSecret,
+        {expiresIn:'1h'}
+    );
+};
+
+
+
+export const extractTokenFromHeader = (authHeader) => {
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return null;
+  }
+  return authHeader.split(' ')[1];
+};
