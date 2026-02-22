@@ -1,5 +1,4 @@
 import User from "../users/user.model.js";
-import { hashPassword } from "../utils/password.utils.js";
 
 export const registerUser = async (req, res) => {
   try {
