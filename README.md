@@ -1,53 +1,57 @@
-handwash-plus-backend/
-│
-├── src/
-│   ├── @core/
-│   │   ├── constants/
-│   │   │   ├── app.constants.js
-│   │   │   ├── error.constants.js
-│   │   │   ├── roles.constants.js
-│   │   │   └── permissions.constants.js
-│   │   │
-│   │   ├── utils/
-│   │   │   ├── response.util.js
-│   │   │   ├── error.util.js
-│   │   │   ├── logger.util.js
-│   │   │   ├── validator.util.js
-│   │   │   └── helpers.util.js
-│   │   │
-│   │   ├── middleware/
-│   │   │   ├── auth.middleware.js
-│   │   │   ├── validate.middleware.js
-│   │   │   ├── rate-limit.middleware.js
-│   │   │   ├── cache.middleware.js
-│   │   │   └── error-handler.middleware.js
-│   │   │
-│   │   ├── database/
-│   │   │   ├── connections/
-│   │   │   │   ├── mongodb.connection.js
-│   │   │   │   └── redis.connection.js
-│   │   │   ├── models/
-│   │   │   │   ├── base.model.js
-│   │   │   │   └── plugins/
-│   │   │   └── repositories/
-│   │   │       └── base.repository.js
-│   │   │
-│   │   └── lib/
-│   │       ├── queue/
-│   │       │   └── queue.service.js
-│   │       ├── cache/
-│   │       │   └── cache.service.js
-│   │       └── events/
-│   │           └── event-bus.js
-│   │
-│   ├── modules/
-│   │   ├── auth/
-│   │   │   ├── auth.module.js
-│   │   │   ├── auth.controller.js
-│   │   │   ├── auth.service.js
-│   │   │   ├── auth.repository.js
-│   │   │   ├── auth.validation.js
-│   │   │   ├── auth.routes.js
+# Handwash Plus
+
+A comprehensive handwash monitoring system with separate frontend and backend.
+
+## Project Structure
+
+```
+handwash-plus/
+├── backend/                 # Node.js backend API
+│   ├── src/
+│   │   ├── @core/           # Core utilities and constants
+│   │   ├── modules/         # Feature modules (auth, dispensers, etc.)
+│   │   ├── bootstrap/       # Application bootstrap files
+│   │   ├── config/          # Configuration files
+│   │   ├── integrations/    # External integrations
+│   │   ├── jobs/            # Background jobs
+│   │   └── shared/          # Shared utilities
+│   ├── tests/               # Backend tests
+│   ├── package.json
+│   └── ecosystem.config.js
+├── frontend/                # React frontend
+│   ├── src/
+│   ├── public/
+│   └── package.json
+├── docs/                    # Documentation
+├── infrastructure/          # Deployment configurations
+├── package.json             # Root package.json for monorepo
+└── README.md
+```
+
+## Setup
+
+1. Install dependencies for all workspaces:
+   ```
+   npm run install:all
+   ```
+
+2. Start the backend:
+   ```
+   npm run start:backend
+   ```
+
+3. Start the frontend:
+   ```
+   npm run start:frontend
+   ```
+
+## Backend
+
+The backend is built with Node.js, Express, and MongoDB. It provides REST APIs and WebSocket support for real-time monitoring.
+
+## Frontend
+
+The frontend is built with React and provides a user interface for the handwash monitoring system.
 │   │   │   ├── strategies/
 │   │   │   │   ├── jwt.strategy.js
 │   │   │   │   └── local.strategy.js
