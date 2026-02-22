@@ -3,7 +3,9 @@ import http from 'http';
 import app from '../app.js';
 import config from '../config/index.js';
 import { connectDatabase } from './database.js';
+import dotenv from 'dotenv';
 
+dotenv.config();
 
 const server = http.createServer(app);
 

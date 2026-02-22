@@ -1,12 +1,12 @@
 import mongoose from 'mongoose';
-import config from '../config/index.js';
+import databaseConfig from '../config/database.config.js'; // default export
 
 export const connectDatabase = async () => {
   try {
-    await mongoose.connect(config.database.url);
-    console.log(' MongoDB Connected Successfully');
+    await mongoose.connect(databaseConfig.url); // no options needed
+    console.log('MongoDB Connected Successfully');
   } catch (error) {
-    console.error(' Database Connection Failed:', error.message);
+    console.error('[ERROR] Database Connection Failed:', error.message);
     process.exit(1);
   }
 };
