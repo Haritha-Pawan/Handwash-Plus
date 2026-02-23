@@ -54,3 +54,27 @@ export const addStudent = async(req, res) =>{
      }
       return res.status(200).json({ student});
  };
+
+ //update classroom details
+ 
+     export const updateStudent = async(req,res) =>{
+         const id = req.params.id;
+ 
+          const {name} = req.body;
+ 
+          let student;
+ 
+          try{
+             student = await Student.findByIdAndUpdate(id,
+                  { name },
+                  { returnDocument: 'after', runValidators: true }
+             );
+              if (!student) return res.status(404).json({ message: "student not found" });
+         return res.status(200).json({ student});
+          }catch (err) {
+         console.error(err);
+         return res.status(500).json({ message: "Server error" });
+     }
+     };
+ 
+     
