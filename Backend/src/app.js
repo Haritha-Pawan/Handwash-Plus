@@ -3,6 +3,7 @@ import cors from 'cors';
 import morgan from 'morgan';
 import helmet from 'helmet';
 import authRoutes from './modules/auth/auth.routes.js';
+import classroomRoutes from './modules/classrooms/classroom.routes.js';
 const app = express();
 
 app.use(cors());
@@ -17,5 +18,6 @@ app.get('/', (req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
+app.use("/api/classrooms",classroomRoutes);
 
 export default app;
