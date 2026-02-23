@@ -19,12 +19,12 @@ export const getAllStudents = async (req, res) => {
 //student insert
 export const addStudent = async(req, res) =>{
 
-    const {regNo, name, schoolId, classroomId} = req.body;
+    const {regNo, name, classroomId} = req.body;
 
     
 
     try{
-    const student = await Student.create({regNo, name, schoolId, classroomId});
+    const student = await Student.create({regNo, name,classroomId});
     return res.status(200).json({student});  
 
     }catch(err){
@@ -76,5 +76,24 @@ export const addStudent = async(req, res) =>{
          return res.status(500).json({ message: "Server error" });
      }
      };
- 
+
+     //Delete student
+          export const deleteStudent = async(req,res) =>{
+             const id = req.params.id;
      
+             let student;
+             try{
+             student = await Student.findByIdAndDelete(id)
+     
+             if (!student) return res.status(404).json({ message: "student unable to delete" });
+             return res.status(200).json({ student});
+     
+             }catch (err) {
+     
+             console.error(err);
+             return res.status(500).json({ message: "Server error" });
+     
+             } 
+          }
+       
+ 
