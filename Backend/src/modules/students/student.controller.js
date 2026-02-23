@@ -33,3 +33,24 @@ export const addStudent = async(req, res) =>{
     }
 
 };
+
+//get by id
+   
+ export const getById = async(req,res) =>{
+     const id = req.params.id;
+
+     let student;
+
+     try{
+        student = await Student.findById(id);
+     }catch(err){
+        console.log(err);
+     }
+
+     //no available student
+
+     if(!student){
+        return res.status(404).json({ message: "Student not found" });
+     }
+      return res.status(200).json({ student});
+ };
