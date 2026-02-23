@@ -10,11 +10,7 @@ const studentSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-     schoolId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "School",
-        required: true
-     },
+    
      classroomId:{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Classroom",
