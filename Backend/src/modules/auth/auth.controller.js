@@ -11,7 +11,7 @@ export const registerUser = async (req, res) => {
     }
 
     // Hash password
-    const hashedPassword = await hashPassword(password);
+    const hashedPassword = await hashedPassword(password);
 
     // Create user
     const user = await User.create({
