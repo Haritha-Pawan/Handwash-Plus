@@ -42,3 +42,17 @@ export const createQuiz = async (req,res) =>{
         res.status(500).json({ message: error.message });
     }
 };
+
+// get quizzes by classroom
+
+export const getQuizzesByClassroom = async(req, res) => {
+    try{
+        const quizzes = await Quiz.find({
+            classroomId: req.params.classroomId
+        }).sort({createdAt: -1});
+
+        res.status(200).json(quizzes);
+    }catch(error){
+         res.status(500).json({message:error.message});
+    }
+};
