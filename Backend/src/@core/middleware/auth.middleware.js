@@ -1,4 +1,23 @@
-import { verifyToken,extractTokenFromHeader } from "../utils/jwt.utils.js";
-import {ROLES} from "../utils/constants.js";
+import jwt from "jsonwebtoken";
+import { config } from "../../config/environment.config.js";
 
-const 
+const authMiddleware = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  const token = authHeader.split(" ")[1];
+
+  try {
+    const decoded = jwt.verify(token, config.jwt.secret);
+    req.user = decoded; // { id, role }
+    next();
+  } catch (error) {
+    return res.status(401).json({ message: "Invalid token" });
+  }
+};
+
+export default authMiddleware;
+
