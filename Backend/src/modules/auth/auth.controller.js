@@ -1,4 +1,6 @@
+
 import User from "../users/user.model.js";
+import { hashPassword } from "../../@core/utils/jwt.utils.js";
 
 export const registerUser = async (req, res) => {
   try {
@@ -11,7 +13,7 @@ export const registerUser = async (req, res) => {
     }
 
     // Hash password
-    const hashedPassword = await hashedPassword(password);
+    const hashedPassword = await hashPassword(password);
 
     // Create user
     const user = await User.create({

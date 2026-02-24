@@ -1,5 +1,5 @@
 import { UserRepository } from '../users/user.repository.js';
-import { comparePassword, hashPassword } from '../../@core/utils/password.util.js';
+import { comparePassword, hashPassword } from '../../@core/utils/jwt.utils.js';
 import { generateTokens, verifyToken, generateResetToken } from '../../@core/utils/jwt.util.js';
 import { ROLES } from '../../@core/constants/roles.constants.js';
 
