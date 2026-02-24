@@ -56,3 +56,25 @@ export const getQuizzesByClassroom = async(req, res) => {
          res.status(500).json({message:error.message});
     }
 };
+
+// Update quiz
+export const UpdateQuiz = async(req, res) =>{
+    try{
+        const {title, questions,teacherId} = req.body;
+        const quiz = await Quiz.findById(req.params.id);
+        
+        //check teachers authorization
+        //  if (quiz.teacherId.toString() !== teacherId) {
+        //  return res.status(403).json({ message: "Not authorized" });
+        //  }
+
+         quiz.title = title || quiz.title;
+         quiz.questions = questions || quiz.questions;
+
+         await quiz.save();
+         return res.status(200).json({ message: "Quiz updated" ,quiz});
+    }catch(err){
+        return res.status(500).json({ message: err.message });
+    }
+};
+
