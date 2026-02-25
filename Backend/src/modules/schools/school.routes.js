@@ -1,5 +1,5 @@
 import express from 'express';
-import { SchoolService } from './school.controller.js';
+import  SchoolService  from './school.controller.js';
 import authMiddleware from '../../@core/middleware/auth.middleware.js';
 
 const router = express.Router();
