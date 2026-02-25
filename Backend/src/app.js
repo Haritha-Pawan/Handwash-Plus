@@ -6,6 +6,7 @@ import authRoutes from './modules/auth/auth.routes.js';
 import classroomRoutes from './modules/classrooms/classroom.routes.js';
 import studentRoutes from './modules/students/student.routes.js';
 import quizRoutes from './modules/quiz/quiz.routes.js';
+import ClassroomBottles from './modules/classroomBottles/classroomBottles.routes.js';
 const app = express();
 
 app.use(cors());
@@ -21,8 +22,10 @@ app.get('/', (req, res) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/classrooms",classroomRoutes);
+app.use("/api/classroomsBottles",ClassroomBottles);
 app.use("/api/students",studentRoutes);
 app.use("/api/quiz",quizRoutes);
+
 
 
 export default app;
