@@ -1,5 +1,5 @@
 import express from "express";
-import { updateClassroomBottles } from "./classroomBottles.controller.js";
+import { updateClassroomBottles,getClassroomBottlesByClassroomId } from "./classroomBottles.controller.js";
 
 const router = express.Router();
 
@@ -7,5 +7,6 @@ const router = express.Router();
 //router.use(authMiddleware);
 
 router.put("/update",updateClassroomBottles);
+router.get("/:classroomId",getClassroomBottlesByClassroomId);
 
 export default router;
