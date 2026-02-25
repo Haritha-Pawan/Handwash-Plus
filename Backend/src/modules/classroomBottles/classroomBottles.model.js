@@ -26,4 +26,4 @@ const classroomBottleSchema = new Schema({
     }
 });
 
-export default mongoose.model("ClassroomBottles",classroomBottleSchema)
+export default mongoose.model("ClassroomBottles",classroomBottleSchema);
