@@ -1,4 +1,5 @@
 import { Student } from "./student.model.js";
+import { Quiz } from "../quiz/quiz.model.js"
 
 
 //get all students
@@ -75,9 +76,9 @@ export const addStudent = async(req, res) =>{
          console.error(err);
          return res.status(500).json({ message: "Server error" });
      }
-     };
+};
 
-     //Delete student
+//Delete student
           export const deleteStudent = async(req,res) =>{
              const id = req.params.id;
      
@@ -94,6 +95,34 @@ export const addStudent = async(req, res) =>{
              return res.status(500).json({ message: "Server error" });
      
              } 
-          }
+ };
+
+
+ //get active quiz
+
+     export const getActiveQuizForStudent = async(req,res) =>{
+              
+            try{
+                 const classroomId = "699dd1ae870cb401c2741497";
+                 const now = new Date();
+
+                 const quiz = await Quiz.findOne({
+                   classroomId,
+                   isPublished: true,
+                   startTime: { $lte: now },
+                   endTime: { $gte: now }
+                    });
+             if (!quiz){
+                 return res.status(404).json({ message:"No active quiz available"});
+
+             }
+
+                return res.status(200).json({ quiz});
+
+            }catch (error) {
+              res.status(500).json({ message: error.message });
+            }
+};
+
        
  
