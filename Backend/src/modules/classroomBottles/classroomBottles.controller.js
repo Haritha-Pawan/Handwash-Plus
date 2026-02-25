@@ -1,6 +1,6 @@
 import DistributedBottles from "./distributedBottles.model.js";
 import ClassroomBottles from "./classroomBottles.model.js";
-import mongoose from "mongoose";
+
 
 export const updateClassroomBottles = async(req,res) =>{
     const {classroomId,month,bottleUsed} = req.body;
@@ -34,4 +34,27 @@ export const updateClassroomBottles = async(req,res) =>{
         console.error(err);
         return res.status(500).json({ message: "Server error" });
     }
-}
+};
+
+
+//get classroombottlesByclassroomId
+
+export const getClassroomBottlesByClassroomId = async(req,res) =>{
+
+    try{
+        const{classroomId} = req.params;
+
+        //fetch classroom bottles for that classroom
+        const records = await ClassroomBottles.find({classroomId});
+
+        if(!records || records.length === 0){
+             return res.status(404).json({message:"No classroom bottles found for this  classroom"});
+        }
+
+               return res.status(200).json({ ClassroomBottles: records});
+    }catch(err){
+        console.error(err);
+        return res.status(500).json({ message: "Server error" });
+
+    }
+};
