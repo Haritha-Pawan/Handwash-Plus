@@ -24,6 +24,7 @@ const questionSchema = new mongoose.Schema({
         minRating: { type: Number, default: 1 },   
         maxRating: { type: Number, default: 5 }
      }
+
     
 });
 
@@ -45,7 +46,13 @@ const quizSchema = new mongoose.Schema({
      questions:{
         type: [questionSchema],
         validate: [arrayLimit,"Quiz must contain at least one quection"]
-     }
+     },
+     isPublished:{
+        type: Boolean,
+        default: false
+     }, 
+     startTime: Date,
+     endTime: Date
 },{timestamps: true});
 
 function arrayLimit(val){
