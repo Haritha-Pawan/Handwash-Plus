@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const {Schema} = mongoose;
+const { Schema } = mongoose;
 
 const gradeSchema = new Schema(
     {
@@ -23,75 +23,75 @@ const gradeSchema = new Schema(
             ref: "User",
             default: null,
         },
-        
+
         studentCount: {
-      type:    Number,
-      default: 0,
-      min:     [0, "Student count cannot be negative"],
-    },
-
-    sanitizer: {
-
-        currentQuantity: {
             type: Number,
             default: 0,
-            min: [0, "Current quantity cannot be negative"],
+            min: [0, "Student count cannot be negative"],
         },
 
-        unit: {
-            type: String,
-            enum: ["liters", "milliliters"],
-            default: "ml",
-        },
+        sanitizer: {
 
-        lowThreshold: {
-            type: Number,
-            default: 100,
-        },
+            currentQuantity: {
+                type: Number,
+                default: 0,
+                min: [0, "Current quantity cannot be negative"],
+            },
 
-        lastUpdatedBy: {
-            type: Schema.Types.ObjectId,
-            ref: "User",
-            default: null,
-        },
+            unit: {
+                type: String,
+                enum: ["liters", "ml"],
+                default: "ml",
+            },
 
-        lastUpdatedAt: {
-            type: Date,
-            default: null,
-        },    
-    },
+            lowThreshold: {
+                type: Number,
+                default: 100,
+            },
+
+            lastUpdatedBy: {
+                type: Schema.Types.ObjectId,
+                ref: "User",
+                default: null,
+            },
+
+            lastUpdatedAt: {
+                type: Date,
+                default: null,
+            },
+        },
 
         isActive: {
-            type:    Boolean,
+            type: Boolean,
             default: true,
         },
     },
-        {
+    {
         timestamps: true,
-            toJSON:     { virtuals: true },
-            toObject:   { virtuals: true },
+        toJSON: { virtuals: true },
+        toObject: { virtuals: true },
     }
-    );
+);
 
-        gradeSchema.virtual("gradeName").get(function () {
-            return `Grade ${this.gradeNumber}`;
-        });
+gradeSchema.virtual("gradeName").get(function () {
+    return `Grade ${this.gradeNumber}`;
+});
 
-        gradeSchema.virtual("sanitizer.status").get(function () {
-            const quantity  = this.sanitizer?.currentQuantity ?? 0;
-            const threshold = this.sanitizer?.lowThreshold    ?? 100;
+gradeSchema.virtual("sanitizer.status").get(function () {
+    const quantity = this.sanitizer?.currentQuantity ?? 0;
+    const threshold = this.sanitizer?.lowThreshold ?? 100;
 
-            if (quantity <= 0)               return "empty";
-            if (quantity <= threshold * 0.5) return "critical";
-            if (quantity <= threshold)       return "low";
-            return "adequate";
-            });
+    if (quantity <= 0) return "empty";
+    if (quantity <= threshold * 0.5) return "critical";
+    if (quantity <= threshold) return "low";
+    return "adequate";
+});
 
-        gradeSchema.index({ school: 1, gradeNumber: 1 }, { unique: true });
+gradeSchema.index({ school: 1, gradeNumber: 1 }, { unique: true });
 
-        gradeSchema.index({ school: 1, isActive: 1 });
+gradeSchema.index({ school: 1, isActive: 1 });
 
-        const Grade = mongoose.model("Grade", gradeSchema);
+const Grade = mongoose.model("Grade", gradeSchema);
 
-        export default Grade;
+export default Grade;
 
