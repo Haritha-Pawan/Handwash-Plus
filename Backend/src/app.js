@@ -14,7 +14,6 @@ import userRoutes from './modules/users/user.routes.js';
 
 import gradeRouter from './modules/grades/grade.routes.js';
 import schoolRouter from './modules/schools/school.routes.js';
-import mongoose from 'mongoose';
 
 
 
@@ -50,11 +49,11 @@ app.use("/api/posts", postRoutes);
 // user Routes
 app.use("/api/users", userRoutes);
 // School Routes
-app.use("/api/schools", schoolRoutes);
+app.use("/api/schools", schoolRouter);
 
 
 app.use("/api/grades", gradeRouter);
-app.use("/api/schools", schoolRouter);
+
 
 app.use((req, res) => {
   res.status(404).json({
