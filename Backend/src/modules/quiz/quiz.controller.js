@@ -6,7 +6,7 @@ import { Classroom} from "../classrooms/classroom.model.js";
 export const createQuiz = async (req,res) =>{
     try{
 
-        const {title, classroomId, teacherId, questions } = req.body;
+        const {title, classroomId, questions } = req.body;
 
         //validation
         if(!title || !classroomId || ! questions || questions.length == 0){
@@ -22,7 +22,7 @@ export const createQuiz = async (req,res) =>{
         }
 
         //check teacher is assign to the classsroom
-         if (classroom.teacherId.toString() !== teacherId) {
+         if (classroom.teacherId.toString() !== req.user.id) {
          return res.status(403).json({ message: "This teacher is not assigned to the classroom" });
          }
         //create quiz
@@ -30,7 +30,7 @@ export const createQuiz = async (req,res) =>{
         const quiz = await Quiz.create({
             title,
             classroomId,
-            teacherId,
+            teacherId: classroom.teacherId,
             questions
         });
 
@@ -60,13 +60,14 @@ export const getQuizzesByClassroom = async(req, res) => {
 // Update quiz
 export const UpdateQuiz = async(req, res) =>{
     try{
-        const {title, questions,teacherId, isPublished, startTime, endTime } = req.body;
-        const quiz = await Quiz.findById(req.params.id);
+        const {title, questions,isPublished, startTime, endTime } = req.body;
+        const quiz = await Quiz.findById(req.params.id).populate('classroomId');
         
-        //check teachers authorization
-        //  if (quiz.teacherId.toString() !== teacherId) {
-        //  return res.status(403).json({ message: "Not authorized" });
-        //  }
+       // check teachers authorization
+         if (!quiz.classroomId|| quiz.classroomId.teacherId.toString() !== req.user.id) {
+         return res.status(403).json({ message: "Not authorized" });
+         }
+       
 
         //validation
          if (isPublished) {
@@ -106,12 +107,18 @@ export const UpdateQuiz = async(req, res) =>{
 
 export const deleteQuiz = async(req, res) =>{
     try{
-        const quiz = await Quiz.findByIdAndDelete({
-            _id: req.params.id
-        });
+        const quiz = await Quiz.findById(req.params.id).populate('classroomId');
         if(!quiz){
             return res.status(404).json({ message: "Quiz not found"});
         }
+        const teacherId = req.user.id;
+
+        if (!quiz.classroomId|| quiz.classroomId.teacherId.toString() !== req.user.id) {
+        return res.status(403).json({ message: "Not authorized to delete this quiz" });
+       } 
+
+        await Quiz.findByIdAndDelete(req.params.id);
+
          res.status(200).json({message:"Quize deleted successfuly"});
    
         }catch(error){

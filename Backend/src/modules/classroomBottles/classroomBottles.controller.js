@@ -1,12 +1,25 @@
 import DistributedBottles from "./distributedBottles.model.js";
 import ClassroomBottles from "./classroomBottles.model.js";
-
+import {Classroom} from "../classrooms/classroom.model.js";
 
 export const updateClassroomBottles = async(req,res) =>{
     const {classroomId,month,bottleUsed} = req.body;
-    //const  teacherId = req.user.id; // auth middleware
+    const  teacherId = req.user.id; // auth middleware
 
     try{
+
+        const classroom = await Classroom.findById(classroomId);
+
+        //fetch classroom to check techer
+        if(!classroom){
+            return res.status(404).json({ message: "Classroom not found" });
+        }
+
+        //check loged teacher is assign teacher
+        if (classroom.teacherId.toString() !== teacherId) {
+            return res.status(403).json({ message: "Not authorized to update this classroom bottles" });
+        }
+
         //fetch distributed bottles from principlas table
         const distributed = await DistributedBottles.findOne({classroomId,month});
 
