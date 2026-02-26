@@ -1,39 +1,39 @@
+
 import { SchoolRepository } from "./school.repository.js";
 import ResponseUtil from "../../@core/utils/response.util.js";
 import CreateSchoolDTO from "./dto/create-school.dto.js";
 import UpdateSchoolDTO from "./dto/update-school.dto.js";
 import SchoolResponseDTO from "./dto/school-response.dto.js";
+import { createSchoolSchema, updateSchoolSchema } from "./school.validation.js";
+
+
+
 
 export const SchoolController = {
 
     createSchool: async (req, res) => {
         try {
             console.log(' Creating school with data:', req.body);
+
             
-            
+            const { error } = createSchoolSchema.validate(req.body);
+            if (error) {
+                return ResponseUtil.badRequest(res, error.details[0].message);
+            }
+
             const createDTO = new CreateSchoolDTO({
                 ...req.body,
                 createdBy: req.user?._id || req.user?.id
             });
-            
-        
-            if (createDTO.validate && !createDTO.validate()) {
-                return ResponseUtil.badRequest(res, 'Invalid school data');
-            }
 
-        
             const school = await SchoolRepository.create(createDTO);
-            
             const responseDTO = new SchoolResponseDTO(school);
-            
             return ResponseUtil.created(res, 'School created successfully', responseDTO);
         } catch (error) {
             console.error(' Create school error:', error);
-            
             if (error.code === 11000) {
                 return ResponseUtil.conflict(res, 'School with this name already exists');
             }
-            
             return ResponseUtil.serverError(res, 'Failed to create school', error);
         }
     },
@@ -82,13 +82,17 @@ export const SchoolController = {
     updateSchool: async (req, res) => {
         try {
             const { id } = req.params;
-            
             if (!id) {
                 return ResponseUtil.badRequest(res, 'School ID is required');
             }
 
+          
+            const { error } = updateSchoolSchema.validate(req.body);
+            if (error) {
+                return ResponseUtil.badRequest(res, error.details[0].message);
+            }
+
             const updateDTO = new UpdateSchoolDTO(req.body);
-            
             if (!updateDTO.hasUpdates || !updateDTO.hasUpdates()) {
                 return ResponseUtil.badRequest(res, 'No valid fields to update');
             }
@@ -98,25 +102,19 @@ export const SchoolController = {
                 : updateDTO;
 
             const updated = await SchoolRepository.update(id, updateData);
-            
             if (!updated) {
                 return ResponseUtil.notFound(res, 'School not found');
             }
-            
             const responseDTO = new SchoolResponseDTO(updated);
-            
             return ResponseUtil.success(res, 200, 'School updated successfully', responseDTO);
         } catch (error) {
             console.error(' Update school error:', error);
-            
             if (error.code === 11000) {
                 return ResponseUtil.conflict(res, 'School with this name already exists');
             }
-            
             if (error.name === 'CastError') {
                 return ResponseUtil.badRequest(res, 'Invalid school ID format');
             }
-            
             return ResponseUtil.serverError(res, 'Failed to update school', error);
         }
     },
@@ -161,7 +159,7 @@ export const SchoolController = {
             
             return ResponseUtil.success(res, 200, `Schools in ${city} retrieved successfully`, responseDTOs);
         } catch (error) {
-            console.error('❌ Get schools by city error:', error);
+            console.error(' Get schools by city error:', error);
             return ResponseUtil.serverError(res, 'Failed to retrieve schools by city', error);
         }
     },
