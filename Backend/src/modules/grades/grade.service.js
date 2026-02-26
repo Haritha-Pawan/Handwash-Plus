@@ -1,57 +1,63 @@
 import Grade from "./grade.model.js";
 
 const notFound = (msg = "Grade not found") => Object.assign(new Error(msg), { status: 404 });
-const badRequest = (msg)                   => Object.assign(new Error(msg), { status: 400 });
-const conflict   = (msg)                   => Object.assign(new Error(msg), { status: 409 });
-
-const ALLOWED_UPDATE_FIELDS = ["studentCount", "sanitizer.lowThreshold"];
+const badRequest = (msg) => Object.assign(new Error(msg), { status: 400 });
+const conflict = (msg) => Object.assign(new Error(msg), { status: 409 });
 
 class GradeService {
-    async createGrade(schoolId, count) {
+    async createGrades(schoolId, count) {
         if (!count || count < 1 || count > 13) {
             throw badRequest("Grade number must be between 1 and 13");
         }
 
-        const existingGrades = await Grade.find({ school: schoolId })
-            .select("gradeNumber");
+        const existingGrades = await Grade.find({ school: schoolId }).select("gradeNumber");
+        const existingNumbers = existingGrades.map(g => g.gradeNumber);
 
-        if (NumbersToCreate.length === 0) {
+        const numbersToCreate = [];
+        for (let i = 1; i <= count; i++) {
+            if (!existingNumbers.includes(i)) {
+                numbersToCreate.push(i);
+            }
+        }
+
+        if (numbersToCreate.length === 0) {
             throw conflict(
-                "All grades from 1 to 13 already exist for this school"
+                `All requested grades (1 to ${count}) already exist for this school`
             );
         }
-            const gradeDocs = numbersToCreate.map((num) => ({
-                gradeNumber: num,
-                school: schoolId,
-            }));
 
-            const createdGrades = await Grade.insertMany(gradeDocs, {ordered: false });
+        const gradeDocs = numbersToCreate.map((num) => ({
+            gradeNumber: num,
+            school: schoolId,
+        }));
 
-            return {
-                created: createdGrades.map((g) => g.gradeNumber),
-                skipped: existingNumbers.filter((num) => num <= count),
-                total: createdGrades.length,
-            };
-            }
+        const createdGrades = await Grade.create(gradeDocs);
 
-            async getGrades(schoolId) {
-                const grades = await Grade.find({school: schoolId, isActive: true})
-                    .populate("classTeacher", "name email")
-                    .sort({gradeNumber: 1});
+        return {
+            created: createdGrades.map((g) => g.gradeNumber),
+            skipped: existingNumbers.filter((num) => num <= count),
+            total: createdGrades.length,
+        };
+    }
 
-                return grades;
-            }
+    async getGrades(schoolId) {
+        const grades = await Grade.find({ school: schoolId, isActive: true })
+            .populate("classTeacher", "name email")
+            .sort({ gradeNumber: 1 });
 
-            async getGradeById(schoolId, gradeId) {
-                const grade = await Grade.findOne({_id: gradeId, school: schoolId })
-                    .populate("classTeacher", "name email")
-                    .populate("sanitizer.lastUpdatedBy", "name");
+        return grades;
+    }
 
-                if (!grade) throw notFound("Grade not found in your school");
+    async getGradeById(schoolId, gradeId) {
+        const grade = await Grade.findOne({ _id: gradeId, school: schoolId })
+            .populate("classTeacher", "name email")
+            .populate("sanitizer.lastUpdatedBy", "name");
 
-                return grade;
-            }
-        
+        if (!grade) throw notFound("Grade not found in your school");
+
+        return grade;
+    }
+
     async updateGrade(schoolId, gradeId, requestBody) {
         const updates = {};
 
@@ -71,29 +77,27 @@ class GradeService {
             { _id: gradeId, school: schoolId },
             { $set: updates },
             { new: true, runValidators: true }
-            );
+        );
 
-    if (!updatedGrade) throw notFound("Grade not found in your school");
+        if (!updatedGrade) throw notFound("Grade not found in your school");
 
-            return updatedGrade;
-        }
+        return updatedGrade;
+    }
 
-        async deactivateGrade(schoolId, gradeId) {
+    async deactivateGrade(schoolId, gradeId) {
+        const grade = await Grade.findOne({ _id: gradeId, school: schoolId });
 
-            const grade = await Grade.findOne({ _id: gradeId, school: schoolId });
+        if (!grade) throw notFound("Grade not found in your school");
 
-            if (!grade) throw notFound("Grade not found in your school");
-
-            if (!grade.isActive) {
+        if (!grade.isActive) {
             throw badRequest("This grade is already deactivated");
-            }
-
-            grade.isActive = false;
-            await grade.save();
-
-            return grade;
         }
 
-        }
+        grade.isActive = false;
+        await grade.save();
 
-        export default new GradeService();
+        return grade;
+    }
+}
+
+export default new GradeService();
