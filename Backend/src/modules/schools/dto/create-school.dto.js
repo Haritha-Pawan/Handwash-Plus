@@ -20,5 +20,4 @@ export class CreateSchoolDTO {
     }
 }
 
-// Add default export
 export default CreateSchoolDTO;

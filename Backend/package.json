@@ -8,7 +8,7 @@
     "test": "tests"
   },
   "scripts": {
-     "create:super-admin": "node infrastructure/scripts/seed.js",
+    "create:super-admin": "node infrastructure/scripts/seed.js",
     "dev": "nodemon src/bootstrap/server.js",
     "start": "node src/bootstrap/server.js"
   },
@@ -29,7 +29,6 @@
     "bcryptjs": "^3.0.3",
     "chalk": "^5.6.2",
     "cors": "^2.8.6",
-    "dns": "^0.2.2",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
     "helmet": "^8.1.0",
