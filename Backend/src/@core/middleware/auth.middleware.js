@@ -1,7 +1,9 @@
 import jwt from "jsonwebtoken";
 import { config } from "../../config/environment.config.js";
 
-export const protect = (req, res, next) => {
+
+const authMiddleware = (req, res, next) => {
+
   try {
     const authHeader = req?.headers?.authorization;
 
@@ -13,7 +15,9 @@ export const protect = (req, res, next) => {
 
     const decoded = jwt.verify(token, config.jwt.secret);
 
-    req.user = decoded; 
+
+    req.user = decoded; // { id, role }
+
 
     next();
   } catch (error) {
@@ -21,15 +25,6 @@ export const protect = (req, res, next) => {
   }
 };
 
-export const restrictTo = (...roles) => {
-  return (req, res, next) => {
-    if (!roles.includes(req.user.role)) {
-      return res.status(403).json({ 
-        message: `Forbidden - required role: ${roles.join(" or ")}` 
-      });
-    }
-    next();
-  };
-};
 
-export default protect;
+export default authMiddleware;
+

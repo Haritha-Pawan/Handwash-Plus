@@ -197,4 +197,6 @@ export const {
     getSchoolsByDistrict
 } = SchoolController;
 
+
 export default SchoolController;
+
