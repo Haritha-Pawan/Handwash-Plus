@@ -72,23 +72,23 @@ const users = new mongoose.Schema({
 );
 
 //password hashing
-userSchema.pre("save", async function (next) {
+users.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   this.password = await bycrypt.hash(this.password, 12);
   next();
 });
 
-Userschema.pre("save", function (next) {
+users.pre("save", function (next) {
   if (!this.isModified("password") || this.isNew) return next();
   this.passwordChangedAt = Date.now() - 1000;
   next();
 });
 
-UserSchema.methods.comparePassword = async function (enteredPassword) {
+users.methods.comparePassword = async function (enteredPassword) {
   return await bycrypt.compare(enteredPassword, this.password);
 };
 
-userSchema.methods.passwordChangedAfter = function (jwtTimestamp) {
+users.methods.passwordChangedAfter = function (jwtTimestamp) {
   if (this.passwordChangedAt) {
     const changedAt = parseInt(this.passwordChangedAt.getTime() / 1000, 10);
     return jwtTimestamp < changedAt;
@@ -96,7 +96,7 @@ userSchema.methods.passwordChangedAfter = function (jwtTimestamp) {
   return false;
 };
 
-userSchema.index({ school: 1, role: 1 });
+users.index({ school: 1, role: 1 });
 
 const User = mongoose.model("User", users);
 
