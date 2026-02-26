@@ -5,6 +5,8 @@ import helmet from 'helmet';
 import authRoutes from './modules/auth/auth.routes.js';
 import postRoutes from './modules/post/post.routes.js';
 import userRoutes from './modules/users/user.routes.js';
+import gradeRouter from './modules/grades/grade.routes.js';
+import schoolRouter from './modules/schools/school.routes.js';
 import mongoose from 'mongoose';
 const app = express();
 
@@ -30,5 +32,31 @@ app.use("/api/posts", postRoutes);
 app.use("/api/users", userRoutes);
 
 
+app.use("/api/grades", gradeRouter);
+app.use("/api/schools", schoolRouter);
+
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: `Route ${req.method} ${req.originalUrl} not found`,
+  });
+});
+
+app.use((err, req, res, next) => {
+  // Log the full error in development so you can debug
+  if (process.env.NODE_ENV === "development") {
+    console.error("[ERROR]", err);
+  }
+
+  const statusCode = err.statusCode || 500;
+  const message    = err.message    || "Internal Server Error";
+
+  res.status(statusCode).json({
+    success: false,
+    message,
+    // Only show stack trace in development — never expose it in production
+    ...(process.env.NODE_ENV === "development" && { stack: err.stack }),
+  });
+});
 
 export default app;
