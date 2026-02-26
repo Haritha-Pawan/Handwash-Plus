@@ -1,54 +1,19 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
-const {Schema} = mongoose;
 
-const schoolSchema = new Schema(
-    {
-        schoolRegNo: {
-            type: String,
-            required: [true, "School registration number is required"],
-            unique: true,
-            trim: true,
-            uppercase: true,
-        },
 
-        name: {
-            required: [true, "School name is required"],
-            trim: true,
-        },
+const Schoolschema = new mongoose.Schema({
+    name:{type:String,required:true,unique:true},
+    address:{type:String,required:true},
+    district:{type:String,required:true},
+    city:{type:String,required:true},
+    lat:{type:Number,required:true},
+    lng:{type:Number,required:true},
+    createdBy:{type:mongoose.Schema.Types.ObjectId,ref:'User'},
+    createdAt:{type:Date,default:Date.now},
+    updatedAt:{type:Date,default:Date.now}
+},{timestamps:true});
 
-        address: {
-            type: String,
-            city: String,
-            province: String,
-            postalCode: String,
-        },
-
-        contactInfo: {
-            phone: String,
-            email: {
-                type: String,
-                lowercase: true,
-                trim: true,
-            },
-        },
-
-        admin: {
-            type: Schema.Types.ObjectId,
-            ref: "User",
-            default: null,
-        },
-
-        isActive: {
-            type: Boolean,
-            default: true,
-        },
-    },
-    {
-        timestamps: true,
-    }
-);
-
-const School = mongoose.model("School", schoolSchema);
+const School = mongoose.model('School',Schoolschema);
 
 export default School;
