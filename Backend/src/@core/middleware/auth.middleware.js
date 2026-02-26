@@ -1,7 +1,9 @@
 import jwt from "jsonwebtoken";
 import { config } from "../../config/environment.config.js";
 
+
 const authMiddleware = (req, res, next) => {
+
   try {
     const authHeader = req?.headers?.authorization;
 
@@ -13,7 +15,9 @@ const authMiddleware = (req, res, next) => {
 
     const decoded = jwt.verify(token, config.jwt.secret);
 
+
     req.user = decoded; // { id, role }
+
 
     next();
   } catch (error) {
@@ -21,4 +25,6 @@ const authMiddleware = (req, res, next) => {
   }
 };
 
+
 export default authMiddleware;
+

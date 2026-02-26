@@ -1,3 +1,4 @@
+
 import { SchoolRepository } from "./school.repository.js";
 import ResponseUtil from "../../@core/utils/response.util.js";
 import CreateSchoolDTO from "./dto/create-school.dto.js";
@@ -196,4 +197,6 @@ export const {
     getSchoolsByDistrict
 } = SchoolController;
 
+
 export default SchoolController;
+
