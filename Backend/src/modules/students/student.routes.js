@@ -8,7 +8,7 @@ import {addStudent, deleteStudent, getAllStudents,getById,updateStudent,getActiv
 
 router.get("/",authMiddleware,roleMiddleware("teacher", "admin"),getAllStudents);
 router.post("/",authMiddleware,roleMiddleware("teacher"),addStudent);
-router.get("/active" ,authMiddleware, roleMiddleware("student"),getActiveQuizForStudent);
+router.get("/active",getActiveQuizForStudent);
 router.get("/:id",authMiddleware,roleMiddleware("teacher"),getById);
 router.put("/:id",authMiddleware,roleMiddleware("teacher"),updateStudent);
 router.delete("/:id",authMiddleware,roleMiddleware("teacher"),deleteStudent);

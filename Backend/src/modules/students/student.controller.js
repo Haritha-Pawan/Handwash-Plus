@@ -143,11 +143,11 @@ export const addStudent = async(req, res) =>{
               
             try{
 
-                const studentId = req.user.id; // from authMiddleware
-                const student = await Student.findById(studentId);
-                if (!student) return res.status(404).json({ message: "Student not found" });
+                //const studentId = req.user.id; // from authMiddleware
+                // const student = await Student.findById(studentId);
+                // if (!student) return res.status(404).json({ message: "Student not found" });
                 
-                const classroomId = student.classroomId;//get the id from populated
+                const { classroomId } = req.body;//get the id from populated
                  const now = new Date();
 
                  const quiz = await Quiz.findOne({
