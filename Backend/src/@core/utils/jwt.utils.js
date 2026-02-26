@@ -1,5 +1,6 @@
-import { config } from 'dotenv';
+
 import jwt from 'jsonwebtoken';
+import { config } from '../../config/environment.config.js';
 
 
 
@@ -22,7 +23,7 @@ export const generateToken = (payload) =>{
 export const verifyToken = (token,isRefreshToken=false)=>{
  try{
     const secret = isRefreshToken ? config.jwt.refreshSecret : config.jwt.secret;
-   return jwt.verify(token,secret);
+    return jwt.verify(token, secret);
  }catch(error){
      throw new Error('Invalid token');
  }

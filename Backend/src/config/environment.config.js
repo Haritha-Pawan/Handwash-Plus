@@ -10,7 +10,7 @@ export const config = {
 
     jwt:{
         secret:process.env.JWT_SECRET,
-        refershSecret:process.env.JWT+_REFERSH_SECRET,
+        refreshSecret:process.env.JWT_REFRESH_SECRET,
         resetSecret:process.env.JWT_RESET_SECRET,
         accessExpiration:process.env.JWT_ACCESS_EXPIRATION_MINUTES|| '15m',
         refreshExpiration:process.env.JWT_REFRESH_EXPIRATION_DAYS || '7d',
