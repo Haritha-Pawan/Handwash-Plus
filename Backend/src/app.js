@@ -18,6 +18,8 @@ import userRoutes from './modules/users/user.routes.js';
 import schoolRoutes from './modules/schools/school.routes.js';
 import worldBankRoutes from './modules/world-bank/world-bank.routes.js';
 import gradeRouter from './modules/grades/grade.routes.js';
+import schoolRouter from './modules/schools/school.routes.js';
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -67,11 +69,13 @@ app.use("/api/posts", postRoutes);
 // user Routes
 app.use("/api/users", userRoutes);
 // School Routes
+
 app.use("/api/schools", schoolRoutes);
 // World Bank Data Routes
 app.use("/api/world-bank", worldBankRoutes);
 // Grade Routes
 app.use("/api/grades", gradeRouter);
+
 
 
 

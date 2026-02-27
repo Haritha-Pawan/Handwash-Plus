@@ -18,7 +18,7 @@ const SUPER_ADMIN_PERMISSIONS = [
 const superAdminData = {
   name: "System Super Administrator",
   email: "superadmin@gmail.com",
-  password: "pawan123", // This should be changed after first login
+  password: "pawan123", // Should be changed after first login
   role: "superAdmin",
   permissions: SUPER_ADMIN_PERMISSIONS,
   isEmailVerified: true,
@@ -31,24 +31,19 @@ const superAdminData = {
     district: "Colombo",
     postalCode: "00100"
   },
-  // Super admin doesn't need school info
   schoolRegNo: null,
   schoolName: null,
   class: null,
-  // Metadata
-  createdBy: null, // Self-created
+  createdBy: null,
   updatedBy: null
 };
 
-
-
 const createSuperAdmin = async () => {
   try {
-    console.log('🔧 Connecting to MongoDB...');
+    console.log('Connecting to MongoDB...');
     await mongoose.connect(databaseConfig.uri);
-    console.log('✅ Connected to MongoDB');
+    console.log('Connected to MongoDB');
 
-    // Check if super admin already exists
     const existingSuperAdmin = await User.findOne({ 
       $or: [
         { email: superAdminData.email },
@@ -57,75 +52,69 @@ const createSuperAdmin = async () => {
     });
 
     if (existingSuperAdmin) {
-      console.log('⚠️  Super admin already exists:');
-      console.log(`   Name: ${existingSuperAdmin.name}`);
-      console.log(`   Email: ${existingSuperAdmin.email}`);
-      console.log(`   Role: ${existingSuperAdmin.role}`);
+      console.log('A super admin already exists:');
+      console.log(`Name: ${existingSuperAdmin.name}`);
+      console.log(`Email: ${existingSuperAdmin.email}`);
+      console.log(`Role: ${existingSuperAdmin.role}`);
       
-      // Update existing super admin if needed
       const shouldUpdate = process.env.UPDATE_SUPER_ADMIN === 'true';
       
       if (shouldUpdate) {
-        // Update permissions and status
         existingSuperAdmin.permissions = SUPER_ADMIN_PERMISSIONS;
         existingSuperAdmin.status = 'ACTIVE';
         existingSuperAdmin.updatedAt = new Date();
         
         await existingSuperAdmin.save();
-        console.log('✅ Super admin updated successfully');
+        console.log('Super admin updated successfully');
       }
       
       await mongoose.disconnect();
       return existingSuperAdmin;
     }
 
-    // Create new super admin
-    console.log('👤 Creating new super admin...');
-    
+    console.log('Creating new super admin...');
+
     const superAdmin = new User(superAdminData);
     await superAdmin.save();
     
-    console.log('\n✅ Super admin created successfully!');
-    console.log('\n📋 Super Admin Details:');
-    console.log(`   Name: ${superAdmin.name}`);
-    console.log(`   Email: ${superAdmin.email}`);
-    console.log(`   Role: ${superAdmin.role}`);
-    console.log(`   Permissions: ${superAdmin.permissions.length} permissions granted`);
-    console.log(`   Status: ${superAdmin.status}`);
-    console.log(`   ID: ${superAdmin._id}`);
+    console.log('\nSuper admin created successfully.');
+    console.log('\nSuper Admin Details:');
+    console.log(`Name: ${superAdmin.name}`);
+    console.log(`Email: ${superAdmin.email}`);
+    console.log(`Role: ${superAdmin.role}`);
+    console.log(`Permissions: ${superAdmin.permissions.length} granted`);
+    console.log(`Status: ${superAdmin.status}`);
+    console.log(`ID: ${superAdmin._id}`);
     
-    console.log('\n🔐 Login Credentials:');
-    console.log(`   Email: ${superAdmin.email}`);
-    console.log(`   Password: ${superAdminData.password}`);
-    console.log('\n⚠️  IMPORTANT: Change the password after first login!');
+    console.log('\nLogin Credentials:');
+    console.log(`Email: ${superAdmin.email}`);
+    console.log(`Password: ${superAdminData.password}`);
+    console.log('\nImportant: Change the password after first login.');
 
     await mongoose.disconnect();
     return superAdmin;
 
   } catch (error) {
-    console.error('❌ Error creating super admin:', error);
+    console.error('Error creating super admin:', error);
     await mongoose.disconnect();
     process.exit(1);
   }
 };
 
-// Create super admin with custom data
 const createCustomSuperAdmin = async (customData) => {
   try {
-    console.log('🔧 Connecting to MongoDB...');
+    console.log('Connecting to MongoDB...');
     await mongoose.connect(databaseConfig.uri);
-    console.log('✅ Connected to MongoDB');
+    console.log('Connected to MongoDB');
 
-    // Check if email already exists
     const existingUser = await User.findOne({ email: customData.email });
     
     if (existingUser) {
-      console.log(`⚠️  User with email ${customData.email} already exists`);
+      console.log(`User with email ${customData.email} already exists`);
       await mongoose.disconnect();
       return null;
     }
 
-    // Ensure super admin permissions
     const userData = {
       ...customData,
       role: 'superAdmin',
@@ -137,20 +126,19 @@ const createCustomSuperAdmin = async (customData) => {
     const superAdmin = new User(userData);
     await superAdmin.save();
 
-    console.log('✅ Custom super admin created successfully!');
-    console.log(`   Email: ${superAdmin.email}`);
+    console.log('Custom super admin created successfully');
+    console.log(`Email: ${superAdmin.email}`);
     
     await mongoose.disconnect();
     return superAdmin;
 
   } catch (error) {
-    console.error('❌ Error creating custom super admin:', error);
+    console.error('Error creating custom super admin:', error);
     await mongoose.disconnect();
     process.exit(1);
   }
 };
 
-// List all super admins
 const listSuperAdmins = async () => {
   try {
     await mongoose.connect(databaseConfig.uri);
@@ -159,16 +147,16 @@ const listSuperAdmins = async () => {
       .select('name email status createdAt lastLogin')
       .sort('-createdAt');
 
-    console.log('\n📋 Super Admin List:');
+    console.log('\nSuper Admin List:');
     if (superAdmins.length === 0) {
-      console.log('   No super admins found');
+      console.log('No super admins found');
     } else {
       superAdmins.forEach((admin, index) => {
-        console.log(`\n   ${index + 1}. ${admin.name}`);
-        console.log(`      Email: ${admin.email}`);
-        console.log(`      Status: ${admin.status}`);
-        console.log(`      Created: ${admin.createdAt.toLocaleDateString()}`);
-        console.log(`      Last Login: ${admin.lastLogin ? admin.lastLogin.toLocaleDateString() : 'Never'}`);
+        console.log(`\n${index + 1}. ${admin.name}`);
+        console.log(`Email: ${admin.email}`);
+        console.log(`Status: ${admin.status}`);
+        console.log(`Created: ${admin.createdAt.toLocaleDateString()}`);
+        console.log(`Last Login: ${admin.lastLogin ? admin.lastLogin.toLocaleDateString() : 'Never'}`);
       });
     }
 
@@ -176,13 +164,12 @@ const listSuperAdmins = async () => {
     return superAdmins;
 
   } catch (error) {
-    console.error('❌ Error listing super admins:', error);
+    console.error('Error listing super admins:', error);
     await mongoose.disconnect();
     process.exit(1);
   }
 };
 
-// Delete super admin (use with caution!)
 const deleteSuperAdmin = async (email) => {
   try {
     await mongoose.connect(databaseConfig.uri);
@@ -193,21 +180,20 @@ const deleteSuperAdmin = async (email) => {
     });
 
     if (result.deletedCount > 0) {
-      console.log(`✅ Super admin ${email} deleted successfully`);
+      console.log(`Super admin ${email} deleted successfully`);
     } else {
-      console.log(`⚠️  Super admin ${email} not found`);
+      console.log(`Super admin ${email} not found`);
     }
 
     await mongoose.disconnect();
 
   } catch (error) {
-    console.error('❌ Error deleting super admin:', error);
+    console.error('Error deleting super admin:', error);
     await mongoose.disconnect();
     process.exit(1);
   }
 };
 
-// Main function to run
 const main = async () => {
   const command = process.argv[2];
   
@@ -223,14 +209,13 @@ const main = async () => {
     case 'delete':
       const email = process.argv[3];
       if (!email) {
-        console.log('Please provide email to delete');
+        console.log('Please provide an email to delete');
         process.exit(1);
       }
       await deleteSuperAdmin(email);
       break;
       
     case 'custom':
-      // Example: node create-super-admin.js custom "John Doe" "john@example.com" "Pass@123"
       const name = process.argv[3];
       const customEmail = process.argv[4];
       const password = process.argv[5];
@@ -249,12 +234,10 @@ const main = async () => {
       break;
       
     default:
-      // Default: create super admin
       await createSuperAdmin();
   }
   
   process.exit(0);
 };
 
-// Run the script
 main();
