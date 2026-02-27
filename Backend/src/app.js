@@ -34,20 +34,28 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Swagger UI - Load from YAML file
-const swaggerYamlPath = path.join(__dirname, '../docs/api/swagger.yaml');
+// Swagger UI - Load from YAML files
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(null, {
+  explorer: true, // Enable the search bar and top bar
   swaggerOptions: {
-    url: '/swagger.yaml',
+    urls: [
+      { url: '/swagger.yaml', name: 'Main API' },
+      { url: '/swagger-grades.yaml', name: 'Grades API' }
+    ],
     persistAuthorization: true,
   },
-  customCss: '.swagger-ui .topbar { display: none }',
 }));
 
-// Serve the Swagger YAML file
+// Serve the Main Swagger YAML file
 app.get('/swagger.yaml', (req, res) => {
   res.setHeader('Content-Type', 'application/yaml');
-  res.sendFile(swaggerYamlPath);
+  res.sendFile(path.join(__dirname, '../docs/api/swagger.yaml'));
+});
+
+// Serve the Grades Swagger YAML file
+app.get('/swagger-grades.yaml', (req, res) => {
+  res.setHeader('Content-Type', 'application/yaml');
+  res.sendFile(path.join(__dirname, '../docs/api/swagger-grades.yaml'));
 });
 
 mongoose.connection.once("open", () => {
@@ -58,12 +66,13 @@ mongoose.connection.once("open", () => {
 app.get('/', (req, res) => {
   res.json({ message: 'Handwash+ Backend Running ', docs: '/api-docs' });
 });
+
 // auth Routes
 app.use("/api/auth", authRoutes);
-app.use("/api/classrooms",classroomRoutes);
-app.use("/api/classroomsBottles",ClassroomBottles);
-app.use("/api/students",studentRoutes);
-app.use("/api/quiz",quizRoutes);
+app.use("/api/classrooms", classroomRoutes);
+app.use("/api/classroomsBottles", ClassroomBottles);
+app.use("/api/students", studentRoutes);
+app.use("/api/quiz", quizRoutes);
 // post Routes
 app.use("/api/posts", postRoutes);
 // user Routes
@@ -87,18 +96,18 @@ app.use((req, res) => {
 });
 
 app.use((err, req, res, next) => {
-  
+
   if (process.env.NODE_ENV === "development") {
     console.error("[ERROR]", err);
   }
 
   const statusCode = err.statusCode || 500;
-  const message    = err.message    || "Internal Server Error";
+  const message = err.message || "Internal Server Error";
 
   res.status(statusCode).json({
     success: false,
     message,
-   
+
     ...(process.env.NODE_ENV === "development" && { stack: err.stack }),
   });
 });
