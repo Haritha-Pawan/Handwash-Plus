@@ -16,4 +16,6 @@ const Schoolschema = new mongoose.Schema({
 
 const School = mongoose.model('School',Schoolschema);
 
+
 export default School;
+
