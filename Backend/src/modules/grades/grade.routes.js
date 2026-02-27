@@ -7,7 +7,6 @@ import authMiddleware from "../../@core/middleware/auth.middleware.js";
 import authorizeRoles from "../../@core/middleware/role.middlewere.js";
 
 const router = Router();
-
 router.use(authMiddleware, authorizeRoles("superAdmin", "admin", "teacher"));
 
 router.post(
