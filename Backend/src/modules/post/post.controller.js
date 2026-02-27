@@ -14,7 +14,6 @@ export const createPost = async (req, res) => {
   }
 };
 
-
 /**
  * @desc Get all posts of logged-in user
  * @route GET /api/posts/my-posts
@@ -32,8 +31,6 @@ export const getMyPosts = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
-
 
 export const getAllPosts = async (req, res) => {
   const posts = await Post.find()
@@ -69,7 +66,6 @@ export const updatePost = async (req, res) => {
     await post.save();
 
     res.json(post);
-
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
