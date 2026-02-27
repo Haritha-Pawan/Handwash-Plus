@@ -1,0 +1,332 @@
+openapi: 3.0.0
+info:
+  title: Handwash+ API - Grades Module
+  description: API documentation for Handwash+ backend services - Grades Module (Maintained by Naveen Khan - naveenkhan)
+  version: 1.0.0
+  contact:
+    name: Naveen Khan
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:5000
+    description: Development Server
+  - url: https://api.handwashplus.com
+    description: Production Server
+
+tags:
+  - name: Grades
+    description: Grade management operations and sanitizer checks (Maintained by Naveen Khan - naveenkhan)
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Enter your JWT token
+
+  schemas:
+    SuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: "Operation successful"
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: "Error occurred"
+
+    Grade:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "65f2a1b3c4d5e6f7a8b9c0d3"
+        gradeNumber:
+          type: integer
+          example: 10
+        school:
+          type: string
+          example: "65f2a1b3c4d5e6f7a8b9c0d1"
+        classTeacher:
+          type: string
+          example: "65f2a1b3c4d5e6f7a8b9c0d4"
+          nullable: true
+        studentCount:
+          type: integer
+          example: 40
+        sanitizer:
+          type: object
+          properties:
+            currentQuantity:
+              type: number
+              example: 500
+            unit:
+              type: string
+              example: "ml"
+            lowThreshold:
+              type: number
+              example: 100
+            status:
+              type: string
+              example: "adequate"
+        isActive:
+          type: boolean
+          example: true
+        gradeName:
+          type: string
+          example: "Grade 10"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CreateGradesRequest:
+      type: object
+      required:
+        - count
+      properties:
+        count:
+          type: integer
+          minimum: 1
+          example: 5
+          description: Number of grades to create starting from Grade 1
+
+    UpdateGradeRequest:
+      type: object
+      properties:
+        classTeacher:
+          type: string
+          description: User ID of the teacher
+        studentCount:
+          type: integer
+          minimum: 0
+        sanitizer:
+          type: object
+          properties:
+            currentQuantity:
+              type: number
+              minimum: 0
+            unit:
+              type: string
+              enum: [ml, liters]
+            lowThreshold:
+              type: number
+        isActive:
+          type: boolean
+
+  responses:
+    UnauthorizedError:
+      description: Unauthorized - Missing or invalid JWT token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            message: "Unauthorized"
+
+    NotFoundError:
+      description: Not Found - Resource doesn't exist
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            message: "Resource not found"
+
+    BadRequestError:
+      description: Bad Request - Validation or format error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            message: "Invalid request data"
+
+security:
+  - bearerAuth: []
+
+paths:
+  /api/grades:
+    post:
+      operationId: createGrades
+      tags:
+        - Grades
+      summary: Create multiple grades
+      description: Create sequential grades for a school (Created by naveenkhan)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateGradesRequest'
+      responses:
+        201:
+          description: Grades created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+
+    get:
+      operationId: getGrades
+      tags:
+        - Grades
+      summary: Get all grades
+      description: Retrieve a list of all grades for a school
+      responses:
+        200:
+          description: Grades retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Grade'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /api/grades/sanitizer-check:
+    get:
+      operationId: checkSanitizerAndAlert
+      tags:
+        - Grades
+      summary: Check sanitizer levels and send alerts
+      description: Check sanitizer levels for all grades in a school and send SMS alerts for critical levels
+      responses:
+        200:
+          description: Sanitizer check completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        500:
+          description: Internal server error
+
+  /api/grades/{gradeId}:
+    get:
+      operationId: getGrade
+      tags:
+        - Grades
+      summary: Get grade by ID
+      description: Retrieve detailed information about a specific grade
+      parameters:
+        - in: path
+          name: gradeId
+          required: true
+          schema:
+            type: string
+          description: MongoDB ObjectId of the grade
+      responses:
+        200:
+          description: Grade retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/Grade'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+
+    patch:
+      operationId: updateGrade
+      tags:
+        - Grades
+      summary: Update grade details
+      description: Update student count, sanitizer details, etc.
+      parameters:
+        - in: path
+          name: gradeId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateGradeRequest'
+      responses:
+        200:
+          description: Grade updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/Grade'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+
+  /api/grades/{gradeId}/deactivate:
+    patch:
+      operationId: deactivateGrade
+      tags:
+        - Grades
+      summary: Deactivate a grade
+      description: Soft delete or mark a grade as inactive
+      parameters:
+        - in: path
+          name: gradeId
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Grade deactivated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/Grade'
+        404:
+          $ref: '#/components/responses/NotFoundError'
