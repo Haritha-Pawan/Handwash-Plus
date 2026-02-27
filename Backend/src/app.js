@@ -14,7 +14,7 @@ import worldBankRoutes from './modules/world-bank/world-bank.routes.js';
 
 import gradeRouter from './modules/grades/grade.routes.js';
 
-import mongoose from 'mongoose';
+
 
 
 
@@ -53,7 +53,7 @@ app.use("/api/world-bank", worldBankRoutes);
 
 
 app.use("/api/grades", gradeRouter);
-app.use("/api/schools", schoolRouter);
+app.use("/api/schools", schoolRoutes);
 
 app.use((req, res) => {
   res.status(404).json({
