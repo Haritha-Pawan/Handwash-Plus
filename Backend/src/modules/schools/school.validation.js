@@ -1,28 +1,21 @@
-
 import Joi from 'joi';
 
-
 export const createSchoolSchema = Joi.object({
-	name: Joi.string().min(2).max(100).required(),
-	address: Joi.string().min(5).max(255).required(),
-	city: Joi.string().min(2).max(100).required(),
-	district: Joi.string().min(2).max(100).required(),
-	state: Joi.string().min(2).max(100).required(),
-	pincode: Joi.string().min(4).max(10).required(),
-	contactNumber: Joi.string().min(7).max(15).optional(),
-	email: Joi.string().email().optional(),
-	
+    name: Joi.string().min(2).max(100).required(),
+    address: Joi.string().min(5).max(255).required(),
+    district: Joi.string().min(2).max(100).required(),
+    city: Joi.string().min(2).max(100).required(),
+    lat: Joi.number().min(-90).max(90).required(),
+    lng: Joi.number().min(-180).max(180).required(),
+    createdBy: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).optional() 
 });
 
-
 export const updateSchoolSchema = Joi.object({
-	name: Joi.string().min(2).max(100),
-	address: Joi.string().min(5).max(255),
-	city: Joi.string().min(2).max(100),
-	district: Joi.string().min(2).max(100),
-	state: Joi.string().min(2).max(100),
-	pincode: Joi.string().min(4).max(10),
-	contactNumber: Joi.string().min(7).max(15),
-	email: Joi.string().email(),
-
+    name: Joi.string().min(2).max(100),
+    address: Joi.string().min(5).max(255),
+    district: Joi.string().min(2).max(100),
+    city: Joi.string().min(2).max(100),
+    lat: Joi.number().min(-90).max(90),
+    lng: Joi.number().min(-180).max(180),
+    createdBy: Joi.string().pattern(/^[0-9a-fA-F]{24}$/)
 }).min(1);

@@ -9,6 +9,10 @@ import authorizeRoles from "../../@core/middleware/role.middlewere.js";
 const router = Router();
 router.use(authMiddleware, authorizeRoles("superAdmin", "admin", "teacher"));
 
+import { validate } from "../../@core/middleware/validate.middleware.js";
+
+
+
 router.post(
   "/",
   validate(createGradesSchema),

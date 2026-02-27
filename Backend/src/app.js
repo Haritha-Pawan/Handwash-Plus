@@ -3,6 +3,10 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import morgan from 'morgan';
 import helmet from 'helmet';
+import swaggerUi from 'swagger-ui-express';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 import authRoutes from './modules/auth/auth.routes.js';
 import classroomRoutes from './modules/classrooms/classroom.routes.js';
@@ -11,18 +15,18 @@ import quizRoutes from './modules/quiz/quiz.routes.js';
 import ClassroomBottles from './modules/classroomBottles/classroomBottles.routes.js';
 import postRoutes from './modules/post/post.routes.js';
 import userRoutes from './modules/users/user.routes.js';
-
+import schoolRoutes from './modules/schools/school.routes.js';
+import worldBankRoutes from './modules/world-bank/world-bank.routes.js';
 import gradeRouter from './modules/grades/grade.routes.js';
 import schoolRouter from './modules/schools/school.routes.js';
 
 
-
-
-
-
-
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
+
+
 
 app.use(cors());
 app.use(helmet());
@@ -30,13 +34,29 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Swagger UI - Load from YAML file
+const swaggerYamlPath = path.join(__dirname, '../docs/api/swagger.yaml');
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(null, {
+  swaggerOptions: {
+    url: '/swagger.yaml',
+    persistAuthorization: true,
+  },
+  customCss: '.swagger-ui .topbar { display: none }',
+}));
+
+// Serve the Swagger YAML file
+app.get('/swagger.yaml', (req, res) => {
+  res.setHeader('Content-Type', 'application/yaml');
+  res.sendFile(swaggerYamlPath);
+});
+
 mongoose.connection.once("open", () => {
   console.log("Connected to DB:", mongoose.connection.name);
 });
 
 
 app.get('/', (req, res) => {
-  res.json({ message: 'Handwash+ Backend Running ' });
+  res.json({ message: 'Handwash+ Backend Running ', docs: '/api-docs' });
 });
 // auth Routes
 app.use("/api/auth", authRoutes);
@@ -49,10 +69,14 @@ app.use("/api/posts", postRoutes);
 // user Routes
 app.use("/api/users", userRoutes);
 // School Routes
-app.use("/api/schools", schoolRouter);
 
-
+app.use("/api/schools", schoolRoutes);
+// World Bank Data Routes
+app.use("/api/world-bank", worldBankRoutes);
+// Grade Routes
 app.use("/api/grades", gradeRouter);
+
+
 
 
 app.use((req, res) => {
@@ -63,7 +87,7 @@ app.use((req, res) => {
 });
 
 app.use((err, req, res, next) => {
-  // Log the full error in development so you can debug
+  
   if (process.env.NODE_ENV === "development") {
     console.error("[ERROR]", err);
   }
@@ -74,7 +98,7 @@ app.use((err, req, res, next) => {
   res.status(statusCode).json({
     success: false,
     message,
-    // Only show stack trace in development — never expose it in production
+   
     ...(process.env.NODE_ENV === "development" && { stack: err.stack }),
   });
 });
