@@ -1,6 +1,6 @@
 import Grade from "./grade.model.js";
 import School from "../schools/school.model.js";
-import { sendSanitizerAlertSMS } from "../../@core/lib/sms/sms.service.js";
+import { sendSanitizerAlertWhatsApp } from "../../@core/lib/sms/sms.service.js";
 
 const notFound = (msg = "Grade not found") => Object.assign(new Error(msg), { status: 404 });
 const badRequest = (msg) => Object.assign(new Error(msg), { status: 400 });
@@ -129,15 +129,14 @@ class GradeService {
             }
         });
 
-        // 4. Send SMS if needed
         if (criticalGrades.length > 0) {
             const adminPhone = process.env.ADMIN_PHONE_NUMBER;
             if (adminPhone) {
                 try {
-                    await sendSanitizerAlertSMS(adminPhone, school.name, criticalGrades);
+                    await sendSanitizerAlertWhatsApp(adminPhone, school.name, criticalGrades);
                     summary.alertSentViaSMS = true;
                 } catch (error) {
-                    console.error("[SMS Service Error]", error);
+                    console.error("[WhatsApp Service Error]", error);
                     // We don't throw here to ensure the report is still returned
                 }
             }

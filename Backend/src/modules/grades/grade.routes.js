@@ -15,6 +15,10 @@ router.post(
   validate(createGradesSchema),
   gradeController.createGrades
 );
+router.get(
+  "/sanitizer-check",
+  gradeController.checkSanitizerAndAlert
+);
 
 router.get(
   "/",
