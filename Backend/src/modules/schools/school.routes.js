@@ -4,10 +4,10 @@ import authMiddleware from '../../@core/middleware/auth.middleware.js';
 
 const router = express.Router();
 
-// Apply auth middleware to all routes
+
 router.use(authMiddleware);
 
-// School routes
+
 router.post('/', SchoolService.createSchool);
 router.get('/', SchoolService.getAllSchools);
 router.get('/:id', SchoolService.getSchoolById);

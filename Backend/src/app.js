@@ -70,11 +70,10 @@ app.use("/api/users", userRoutes);
 app.use("/api/schools", schoolRoutes);
 // World Bank Data Routes
 app.use("/api/world-bank", worldBankRoutes);
-
-
-
+// Grade Routes
 app.use("/api/grades", gradeRouter);
-app.use("/api/schools", schoolRoutes);
+
+
 
 app.use((req, res) => {
   res.status(404).json({
@@ -84,7 +83,7 @@ app.use((req, res) => {
 });
 
 app.use((err, req, res, next) => {
-  // Log the full error in development so you can debug
+  
   if (process.env.NODE_ENV === "development") {
     console.error("[ERROR]", err);
   }
@@ -95,7 +94,7 @@ app.use((err, req, res, next) => {
   res.status(statusCode).json({
     success: false,
     message,
-    // Only show stack trace in development — never expose it in production
+   
     ...(process.env.NODE_ENV === "development" && { stack: err.stack }),
   });
 });
