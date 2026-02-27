@@ -56,6 +56,17 @@ class GradeController {
     const grade = await gradeService.deactivateGrade(schoolId, req.params.gradeId);
     ok(res, grade, `Grade ${grade.gradeNumber} deactivated successfully`);
   });
+
+  checkSanitizerAndAlert = catchAsync(async (req, res) => {
+    const report = await gradeService.checkSanitizerAndAlert(req.user.school);
+
+    // Build response message based on whether SMS was sent
+    const message = report.summary.alertSentViaSMS
+      ? `Sanitizer report generated — SMS alert sent for ${report.summary.critical + report.summary.empty} critical grade(s)`
+      : `Sanitizer report generated — all grades adequate`;
+
+    ok(res, report, message);
+  });
 }
 
 export default new GradeController();
