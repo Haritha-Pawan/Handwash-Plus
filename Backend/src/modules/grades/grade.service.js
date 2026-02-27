@@ -1,4 +1,6 @@
 import Grade from "./grade.model.js";
+import School from "../schools/school.model.js";
+import { sendSanitizerAlertSMS } from "../../@core/lib/sms/sms.service.js";
 
 const notFound = (msg = "Grade not found") => Object.assign(new Error(msg), { status: 404 });
 const badRequest = (msg) => Object.assign(new Error(msg), { status: 400 });
@@ -97,6 +99,61 @@ class GradeService {
         await grade.save();
 
         return grade;
+    }
+
+    async checkSanitizerAndAlert(schoolId) {
+        // 1. Fetch school details (for school name)
+        const school = await School.findById(schoolId);
+        if (!school) throw notFound("School not found");
+
+        // 2. Fetch all active grades
+        const grades = await Grade.find({ school: schoolId, isActive: true });
+
+        // 3. Generate summary counts
+        const summary = {
+            empty: 0,
+            critical: 0,
+            low: 0,
+            adequate: 0,
+            alertSentViaSMS: false,
+        };
+
+        const criticalGrades = [];
+
+        grades.forEach((grade) => {
+            const status = grade.sanitizer.status; // Uses virtual getter
+            summary[status]++;
+
+            if (status === "empty" || status === "critical") {
+                criticalGrades.push(grade);
+            }
+        });
+
+        // 4. Send SMS if needed
+        if (criticalGrades.length > 0) {
+            const adminPhone = process.env.ADMIN_PHONE_NUMBER;
+            if (adminPhone) {
+                try {
+                    await sendSanitizerAlertSMS(adminPhone, school.name, criticalGrades);
+                    summary.alertSentViaSMS = true;
+                } catch (error) {
+                    console.error("[SMS Service Error]", error);
+                    // We don't throw here to ensure the report is still returned
+                }
+            }
+        }
+
+        return {
+            schoolName: school.name,
+            timestamp: new Date(),
+            summary,
+            details: grades.map(g => ({
+                gradeNumber: g.gradeNumber,
+                status: g.sanitizer.status,
+                quantity: g.sanitizer.currentQuantity,
+                unit: g.sanitizer.unit
+            }))
+        };
     }
 }
 
