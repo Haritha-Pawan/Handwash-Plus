@@ -4,10 +4,12 @@ import cors from 'cors';
 import morgan from 'morgan';
 import helmet from 'helmet';
 
+
 import authRoutes from './modules/auth/auth.routes.js';
 import postRoutes from './modules/post/post.routes.js';
 import userRoutes from './modules/users/user.routes.js';
 import schoolRoutes from './modules/schools/school.routes.js';
+import worldBankRoutes from './modules/world-bank/world-bank.routes.js';
 
 
 
@@ -37,6 +39,9 @@ app.use("/api/posts", postRoutes);
 app.use("/api/users", userRoutes);
 // School Routes
 app.use("/api/schools", schoolRoutes);
+// World Bank Data Routes
+app.use("/api/world-bank", worldBankRoutes);
+
 
 
 

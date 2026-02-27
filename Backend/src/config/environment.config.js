@@ -31,3 +31,25 @@ export const config = {
     }
 
 };
+
+
+export const washConfig = {
+  worldBank: {
+    baseURL: process.env.WORLD_BANK_API_URL || 'https://api.worldbank.org/v2',
+    format: process.env.WORLD_BANK_FORMAT || 'json',
+    perPage: parseInt(process.env.WORLD_BANK_PER_PAGE) || 100,
+    cacheTTL: parseInt(process.env.WORLD_BANK_CACHE_TTL) || 3600
+  },
+  sriLanka: {
+    countryCode: process.env.SRI_LANKA_COUNTRY_CODE || 'LKA',
+    defaultIndicator: process.env.DEFAULT_WASH_INDICATOR || 'SH.STA.SMSS.ZS'
+  },
+  indicators: {
+    safelyManagedSanitation: 'SH.STA.SMSS.ZS',
+    basicSanitation: 'SH.STA.BASS.ZS',
+    safelyManagedWater: 'SH.H2O.SMDW.ZS',
+    basicWater: 'SH.H2O.BASW.ZS',
+    ruralSanitation: 'SH.STA.SMSS.RU.ZS',
+    urbanSanitation: 'SH.STA.SMSS.UR.ZS'
+  }
+};
