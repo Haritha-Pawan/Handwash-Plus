@@ -1,18 +1,41 @@
 import Post from "./post.model.js";
+import imagekit from "../../config/imagekitConfig.js";
+
 
 export const createPost = async (req, res) => {
   try {
+    const { title, content } = req.body;
+    const author = req.user.id;
+
+    let imageUrl = null;
+
+    // If image file exists (from multer)
+    if (req.file) {
+      const uploadResult = await imagekit.upload({
+        file: req.file.buffer,   // 👈 VERY IMPORTANT
+        fileName: `handwash_${Date.now()}.jpg`,
+      });
+
+      imageUrl = uploadResult.url;
+    }
+
     const post = await Post.create({
-      title: req.body.title,
-      content: req.body.content,
-      author: req.user.id,
+      title,
+      content,
+      author,
+      imageUrl,
+      votes: 0,
     });
 
     res.status(201).json(post);
   } catch (error) {
+    console.error("Create Post Error:", error);
     res.status(500).json({ message: error.message });
   }
 };
+
+
+
 
 /**
  * @desc Get all posts of logged-in user
