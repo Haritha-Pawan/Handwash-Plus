@@ -1,0 +1,561 @@
+openapi: 3.0.0
+info:
+  title: Handwash+  API
+  description: API documentation for Handwash+ backend services
+  version: 1.0.0
+  contact:
+    name: Handwash+ Team
+    email: harithapawan12@gmail.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:5000
+    description: Development Server
+  - url: https://api.handwashplus.com
+    description: Production Server
+
+tags:
+  - name: Schools
+    description: School management operations (CRUD and filtering)
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Enter your JWT token
+
+  schemas:
+    School:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "65f2a1b3c4d5e6f7a8b9c0d1"
+          description: MongoDB ObjectId
+        name:
+          type: string
+          example: "Royal College"
+          description: School name
+        address:
+          type: string
+          example: "123 Main Street, Colombo 01"
+          description: Full postal address
+        district:
+          type: string
+          example: "Colombo"
+          description: District name
+        city:
+          type: string
+          example: "Colombo 07"
+          description: City or area
+        location:
+          type: object
+          properties:
+            lat:
+              type: number
+              example: 6.9271
+            lng:
+              type: number
+              example: 79.8612
+        createdBy:
+          type: object
+          properties:
+            id:
+              type: string
+              example: "65f2a1b3c4d5e6f7a8b9c0d2"
+            name:
+              type: string
+              example: "Admin User"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2024-03-15T10:30:00.000Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2024-03-15T14:45:00.000Z"
+
+    CreateSchoolRequest:
+      type: object
+      required:
+        - name
+        - address
+        - district
+        - city
+        - lat
+        - lng
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 100
+          example: "Royal College"
+        address:
+          type: string
+          minLength: 5
+          maxLength: 255
+          example: "123 Main Street, Colombo 01"
+        district:
+          type: string
+          minLength: 2
+          maxLength: 100
+          example: "Colombo"
+        city:
+          type: string
+          minLength: 2
+          maxLength: 100
+          example: "Colombo 07"
+        lat:
+          type: number
+          minimum: -90
+          maximum: 90
+          example: 6.9271
+        lng:
+          type: number
+          minimum: -180
+          maximum: 180
+          example: 79.8612
+
+    UpdateSchoolRequest:
+      type: object
+      minProperties: 1
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 100
+          example: "Royal College Updated"
+        address:
+          type: string
+          minLength: 5
+          maxLength: 255
+          example: "456 New Street, Colombo 03"
+        district:
+          type: string
+          minLength: 2
+          maxLength: 100
+          example: "Gampaha"
+        city:
+          type: string
+          minLength: 2
+          maxLength: 100
+          example: "Colombo 03"
+        lat:
+          type: number
+          minimum: -90
+          maximum: 90
+          example: 6.9876
+        lng:
+          type: number
+          minimum: -180
+          maximum: 180
+          example: 79.8765
+
+    SuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: "Operation successful"
+        data:
+          oneOf:
+            - $ref: '#/components/schemas/School'
+            - type: array
+              items:
+                $ref: '#/components/schemas/School'
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: "Error occurred"
+
+  responses:
+    UnauthorizedError:
+      description: Unauthorized - Missing or invalid JWT token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            message: "Unauthorized"
+
+    NotFoundError:
+      description: Not Found - Resource doesn't exist
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            message: "School not found"
+
+    BadRequestError:
+      description: Bad Request - Validation or format error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            message: "Invalid request data"
+
+    ConflictError:
+      description: Conflict - Resource already exists
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            message: "School with this name already exists"
+
+security:
+  - bearerAuth: []
+
+paths:
+  /api/schools:
+    post:
+      operationId: createSchool
+      tags:
+        - Schools
+      summary: Create a new school
+      description: Add a new school to the system. All fields are required.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSchoolRequest'
+            example:
+              name: "Royal College"
+              address: "123 Main Street, Colombo 01"
+              district: "Colombo"
+              city: "Colombo 07"
+              lat: 6.9271
+              lng: 79.8612
+      responses:
+        201:
+          description: School created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+              example:
+                success: true
+                message: "School created successfully"
+                data:
+                  id: "65f2a1b3c4d5e6f7a8b9c0d1"
+                  name: "Royal College"
+                  address: "123 Main Street, Colombo 01"
+                  district: "Colombo"
+                  city: "Colombo 07"
+                  location:
+                    lat: 6.9271
+                    lng: 79.8612
+                  createdAt: "2024-03-15T10:30:00.000Z"
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        409:
+          $ref: '#/components/responses/ConflictError'
+
+    get:
+      operationId: getAllSchools
+      tags:
+        - Schools
+      summary: Get all schools
+      description: Retrieve a list of all schools in the system
+      responses:
+        200:
+          description: Schools retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/School'
+              example:
+                success: true
+                message: "Schools retrieved successfully"
+                data:
+                  - id: "65f2a1b3c4d5e6f7a8b9c0d1"
+                    name: "Royal College"
+                    address: "123 Main Street, Colombo 01"
+                    district: "Colombo"
+                    city: "Colombo 07"
+                    location:
+                      lat: 6.9271
+                      lng: 79.8612
+                    createdAt: "2024-03-15T10:30:00.000Z"
+                  - id: "65f2a1b3c4d5e6f7a8b9c0d2"
+                    name: "St. Thomas College"
+                    address: "456 Church Road, Colombo 03"
+                    district: "Colombo"
+                    city: "Colombo 03"
+                    location:
+                      lat: 6.9200
+                      lng: 79.8500
+                    createdAt: "2024-03-14T15:20:00.000Z"
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /api/schools/{id}:
+    get:
+      operationId: getSchoolById
+      tags:
+        - Schools
+      summary: Get school by ID
+      description: Retrieve detailed information about a specific school
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            pattern: '^[0-9a-fA-F]{24}$'
+          description: MongoDB ObjectId of the school
+          example: "65f2a1b3c4d5e6f7a8b9c0d1"
+      responses:
+        200:
+          description: School retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+              example:
+                success: true
+                message: "School retrieved successfully"
+                data:
+                  id: "65f2a1b3c4d5e6f7a8b9c0d1"
+                  name: "Royal College"
+                  address: "123 Main Street, Colombo 01"
+                  district: "Colombo"
+                  city: "Colombo 07"
+                  location:
+                    lat: 6.9271
+                    lng: 79.8612
+                  createdBy:
+                    id: "65f2a1b3c4d5e6f7a8b9c0d2"
+                    name: "Admin User"
+                  createdAt: "2024-03-15T10:30:00.000Z"
+                  updatedAt: "2024-03-15T10:30:00.000Z"
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+
+    put:
+      operationId: updateSchool
+      tags:
+        - Schools
+      summary: Update school
+      description: Update an existing school's information. At least one field must be provided.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            pattern: '^[0-9a-fA-F]{24}$'
+          description: MongoDB ObjectId of the school
+          example: "65f2a1b3c4d5e6f7a8b9c0d1"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSchoolRequest'
+            example:
+              name: "Royal College Updated"
+              city: "Colombo 03"
+      responses:
+        200:
+          description: School updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+              example:
+                success: true
+                message: "School updated successfully"
+                data:
+                  id: "65f2a1b3c4d5e6f7a8b9c0d1"
+                  name: "Royal College Updated"
+                  address: "123 Main Street, Colombo 01"
+                  district: "Colombo"
+                  city: "Colombo 03"
+                  location:
+                    lat: 6.9271
+                    lng: 79.8612
+                  createdAt: "2024-03-15T10:30:00.000Z"
+                  updatedAt: "2024-03-15T14:45:00.000Z"
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        409:
+          $ref: '#/components/responses/ConflictError'
+
+    delete:
+      operationId: deleteSchool
+      tags:
+        - Schools
+      summary: Delete school
+      description: Remove a school from the system
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            pattern: '^[0-9a-fA-F]{24}$'
+          description: MongoDB ObjectId of the school
+          example: "65f2a1b3c4d5e6f7a8b9c0d1"
+      responses:
+        200:
+          description: School deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+              example:
+                success: true
+                message: "School deleted successfully"
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+
+  /api/schools/city/{city}:
+    get:
+      operationId: getSchoolsByCity
+      tags:
+        - Schools
+      summary: Get schools by city
+      description: Retrieve all schools located in a specific city or area
+      parameters:
+        - in: path
+          name: city
+          required: true
+          schema:
+            type: string
+          description: City or area name
+          example: "Colombo 07"
+      responses:
+        200:
+          description: Schools retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/School'
+              example:
+                success: true
+                message: "Schools in Colombo 07 retrieved successfully"
+                data:
+                  - id: "65f2a1b3c4d5e6f7a8b9c0d1"
+                    name: "Royal College"
+                    address: "123 Main Street, Colombo 01"
+                    district: "Colombo"
+                    city: "Colombo 07"
+                    location:
+                      lat: 6.9271
+                      lng: 79.8612
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /api/schools/district/{district}:
+    get:
+      operationId: getSchoolsByDistrict
+      tags:
+        - Schools
+      summary: Get schools by district
+      description: Retrieve all schools located in a specific Sri Lankan district
+      parameters:
+        - in: path
+          name: district
+          required: true
+          schema:
+            type: string
+          description: District name (e.g., Colombo, Gampaha, Kandy)
+          example: "Colombo"
+      responses:
+        200:
+          description: Schools retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  count:
+                    type: integer
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/School'
+              example:
+                success: true
+                message: "Schools in Colombo district retrieved successfully"
+                count: 2
+                data:
+                  - id: "65f2a1b3c4d5e6f7a8b9c0d1"
+                    name: "Royal College"
+                    address: "123 Main Street, Colombo 01"
+                    district: "Colombo"
+                    city: "Colombo 07"
+                    location:
+                      lat: 6.9271
+                      lng: 79.8612
+                  - id: "65f2a1b3c4d5e6f7a8b9c0d2"
+                    name: "St. Thomas College"
+                    address: "456 Church Road, Colombo 03"
+                    district: "Colombo"
+                    city: "Colombo 03"
+                    location:
+                      lat: 6.9200
+                      lng: 79.8500
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'

@@ -8,6 +8,7 @@
     "test": "tests"
   },
   "scripts": {
+    "create:super-admin": "node infrastructure/scripts/seed.js",
     "dev": "nodemon src/bootstrap/server.js",
     "start": "node src/bootstrap/server.js"
   },
@@ -24,20 +25,32 @@
   },
   "homepage": "https://github.com/Haritha-Pawan/handwash-plus#readme",
   "dependencies": {
+    "axios": "^1.13.5",
     "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.3",
     "chalk": "^5.6.2",
     "cors": "^2.8.6",
-    "dns": "^0.2.2",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
     "helmet": "^8.1.0",
+<<<<<<< HEAD
     "imagekit": "^6.0.0",
+=======
+    "joi": "^18.0.2",
+>>>>>>> 3a2fa397623aef9a6d9ecadb9982c361d923d3bd
     "jsonwebtoken": "^9.0.3",
     "mongodb": "^7.1.0",
     "mongoose": "^9.2.1",
     "morgan": "^1.10.1",
+<<<<<<< HEAD
     "multer": "^2.1.0"
+=======
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui": "^5.32.0",
+    "swagger-ui-express": "^5.0.1",
+    "twilio": "^5.12.2",
+    "yaml": "^2.8.2"
+>>>>>>> 3a2fa397623aef9a6d9ecadb9982c361d923d3bd
   },
   "devDependencies": {
     "nodemon": "^3.1.14"
