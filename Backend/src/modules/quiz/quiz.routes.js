@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.post("/",/*authMiddleware,roleMiddleware("teacher"),*/createQuiz);
 router.get("/classroom/:classroomId",/*authMiddleware,roleMiddleware("teacher","admin"),*/getQuizzesByClassroom);
-router.put('/:id',authMiddleware,roleMiddleware("teacher"),UpdateQuiz);
-router.delete('/:id',authMiddleware,roleMiddleware("teacher"),deleteQuiz);
+router.put('/:id',/*authMiddleware,roleMiddleware("teacher")*/UpdateQuiz);
+router.delete('/:id',/*authMiddleware,roleMiddleware("teacher"),*/deleteQuiz);
 
 export default router;

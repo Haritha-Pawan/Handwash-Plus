@@ -1,5 +1,6 @@
 import { Quiz } from "./quiz.model.js";
 import { Classroom} from "../classrooms/classroom.model.js";
+import mongoose from "mongoose";
 
 //create quiz
 
@@ -55,9 +56,14 @@ export const createQuiz = async (req,res) =>{
 
 export const getQuizzesByClassroom = async(req, res) => {
     try{
-        const quizzes = await Quiz.find({
-            classroomId: req.params.classroomId
-        }).sort({createdAt: -1});
+         const { classroomId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(classroomId)) {
+      return res.status(400).json({ message: "Invalid classroomId" });
+    }
+       const quizzes = await Quiz.find({ classroomId: req.params.classroomId })
+      .populate("classroomId", "name") // populate classroom name
+      .sort({ createdAt: -1 });
 
         res.status(200).json(quizzes);
     }catch(error){
@@ -113,26 +119,43 @@ export const UpdateQuiz = async(req, res) =>{
 
 //delete quiz
 
-export const deleteQuiz = async(req, res) =>{
-    try{
-        const quiz = await Quiz.findById(req.params.id).populate('classroomId');
-        if(!quiz){
-            return res.status(404).json({ message: "Quiz not found"});
-        }
-        const teacherId = req.user.id;
+// export const deleteQuiz = async(req, res) =>{
+//     try{
+//         const quiz = await Quiz.findById(req.params.id).populate('classroomId');
+//         if(!quiz){
+//             return res.status(404).json({ message: "Quiz not found"});
+//         }
+//         const teacherId = req.user.id;
 
-        if (!quiz.classroomId|| quiz.classroomId.teacherId.toString() !== req.user.id) {
-        return res.status(403).json({ message: "Not authorized to delete this quiz" });
-       } 
+//         if (!quiz.classroomId|| quiz.classroomId.teacherId.toString() !== req.user.id) {
+//         return res.status(403).json({ message: "Not authorized to delete this quiz" });
+//        } 
 
-        await Quiz.findByIdAndDelete(req.params.id);
+//         await Quiz.findByIdAndDelete(req.params.id);
 
-         res.status(200).json({message:"Quize deleted successfuly"});
+//          res.status(200).json({message:"Quize deleted successfuly"});
    
-        }catch(error){
-        console.error(error);
-        res.status(500).json({ message: "Server error" });
-    }
+//         }catch(error){
+//         console.error(error);
+//         res.status(500).json({ message: "Server error" });
+//     }
   
 
+// };
+export const deleteQuiz = async (req, res) => {
+  try {
+    const quiz = await Quiz.findById(req.params.id);
+
+    if (!quiz) {
+      return res.status(404).json({ message: "Quiz not found" });
+    }
+
+    await Quiz.findByIdAndDelete(req.params.id);
+
+    res.status(200).json({ message: "Quiz deleted successfully" });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: error.message });
+  }
 };
