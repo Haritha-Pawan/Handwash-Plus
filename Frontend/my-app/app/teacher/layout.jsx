@@ -14,7 +14,7 @@ export default function TeacherLayout({ children }) {
   const navItems = [
     { name: "Quiz", path: "/teacher/quiz" },
     { name: "Students", path: "/teacher/students" },
-    { name: "Distributed Bottles", path: "/teacher/distributed-bottles" },
+    { name: "Distributed Bottles", path: "/teacher/classroom-bottles/view" },
   ];
 
   return (
