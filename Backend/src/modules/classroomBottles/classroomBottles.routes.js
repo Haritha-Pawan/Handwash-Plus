@@ -7,7 +7,7 @@ const router = express.Router();
 
 
 
-router.put("/update",authMiddleware,roleMiddleware("teacher"),updateClassroomBottles);
-router.get("/:classroomId",authMiddleware,roleMiddleware("teacher"),getClassroomBottlesByClassroomId);
+router.put("/update",/*authMiddleware,roleMiddleware("teacher"),*/updateClassroomBottles);
+router.get("/:classroomId",/*authMiddleware,roleMiddleware("teacher"),*/getClassroomBottlesByClassroomId);
 
 export default router;

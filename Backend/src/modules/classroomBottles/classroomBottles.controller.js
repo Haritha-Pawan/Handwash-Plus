@@ -4,8 +4,8 @@ import {Classroom} from "../classrooms/classroom.model.js";
 
 export const updateClassroomBottles = async(req,res) =>{
     const {classroomId,month,bottleUsed} = req.body;
-    const  teacherId = req.user.id; // auth middleware
-
+   // const  teacherId = req.user.id; // auth middleware
+     const teacherId = "699fe963fac309cee0d145a8";
     try{
 
         const classroom = await Classroom.findById(classroomId);
@@ -52,22 +52,70 @@ export const updateClassroomBottles = async(req,res) =>{
 
 //get classroombottlesByclassroomId
 
-export const getClassroomBottlesByClassroomId = async(req,res) =>{
+// export const getClassroomBottlesByClassroomId = async(req,res) =>{
 
-    try{
-        const{classroomId} = req.params;
+//     try{
+//         const{classroomId} = req.params;
 
-        //fetch classroom bottles for that classroom
-        const records = await ClassroomBottles.find({classroomId});
+//         //fetch classroom bottles for that classroom
+//         const records = await ClassroomBottles.find({classroomId});
 
-        if(!records || records.length === 0){
-             return res.status(404).json({message:"No classroom bottles found for this  classroom"});
-        }
+//         if(!records || records.length === 0){
+//              return res.status(404).json({message:"No classroom bottles found for this  classroom"});
+//         }
 
-               return res.status(200).json({ ClassroomBottles: records});
-    }catch(err){
-        console.error(err);
-        return res.status(500).json({ message: "Server error" });
+//                return res.status(200).json({ ClassroomBottles: records});
+//     }catch(err){
+//         console.error(err);
+//         return res.status(500).json({ message: "Server error" });
 
+//     }
+// };
+
+
+export const getClassroomBottlesByClassroomId = async (req, res) => {
+  try {
+    const { classroomId } = req.params;
+
+    // 1. Get ALL distributed bottles (MAIN DATA)
+    const distributedRecords = await DistributedBottles.find({ classroomId });
+
+    if (!distributedRecords || distributedRecords.length === 0) {
+      return res.status(404).json({
+        message: "No distributed bottles found for this classroom",
+      });
     }
+
+    // 2. Get classroom usage records
+    const classroomRecords = await ClassroomBottles.find({ classroomId });
+
+    // 3. Merge data
+    const result = distributedRecords.map((dist) => {
+      const match = classroomRecords.find(
+        (c) => c.month === dist.month
+      );
+
+      if (match) {
+        return {
+          month: dist.month,
+          bottleDistributed: dist.bottleDistributed,
+          bottleUsed: match.bottleUsed,
+          bottleRemaining: match.bottleRemaining,
+        };
+      } else {
+        return {
+          month: dist.month,
+          bottleDistributed: dist.bottleDistributed,
+          bottleUsed: 0,
+          bottleRemaining: dist.bottleDistributed,
+        };
+      }
+    });
+
+    return res.status(200).json({ ClassroomBottles: result });
+
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Server error" });
+  }
 };
