@@ -39,7 +39,7 @@ export default function TeacherQuizPage() {
         <h1 className="text-2xl font-bold">Quizzes</h1>
         <Link href="/teacher/quiz/create">
           <button className="bg-cyan-500 hover:bg-cyan-600 text-white px-4 py-2 rounded font-semibold">
-            ➕ Create Quize
+            ➕ Create Quiz
           </button>
         </Link>
       </div>

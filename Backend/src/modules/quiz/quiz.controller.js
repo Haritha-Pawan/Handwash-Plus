@@ -72,50 +72,99 @@ export const getQuizzesByClassroom = async(req, res) => {
 };
 
 // Update quiz
-export const UpdateQuiz = async(req, res) =>{
-    try{
-        const {title, questions,isPublished, startTime, endTime } = req.body;
-        const quiz = await Quiz.findById(req.params.id).populate('classroomId');
+// export const UpdateQuiz = async(req, res) =>{
+//     try{
+//         const {title, questions,isPublished, startTime, endTime } = req.body;
+//         const quiz = await Quiz.findById(req.params.id).populate('classroomId');
         
-       // check teachers authorization
-         if (!quiz.classroomId|| quiz.classroomId.teacherId.toString() !== req.user.id) {
-         return res.status(403).json({ message: "Not authorized" });
-         }
+//        // check teachers authorization
+//          if (!quiz.classroomId|| quiz.classroomId.teacherId.toString() !== req.user.id) {
+//          return res.status(403).json({ message: "Not authorized" });
+//          }
        
 
-        //validation
-         if (isPublished) {
-            if (!startTime || !endTime) {
-                return res.status(400).json({
-                    message: "Start time and end time are required to publish quiz"
-                });
-            }
+//         //validation
+//          if (isPublished) {
+//             if (!startTime || !endTime) {
+//                 return res.status(400).json({
+//                     message: "Start time and end time are required to publish quiz"
+//                 });
+//             }
 
-            if (new Date(startTime) >= new Date(endTime)) {
-                return res.status(400).json({
-                    message: "End time must be after start time"
-                });
-            }
-        }
+//             if (new Date(startTime) >= new Date(endTime)) {
+//                 return res.status(400).json({
+//                     message: "End time must be after start time"
+//                 });
+//             }
+//         }
 
 
-         quiz.title = title || quiz.title;
-         quiz.questions = questions || quiz.questions;
+//          quiz.title = title || quiz.title;
+//          quiz.questions = questions || quiz.questions;
          
-         if (typeof isPublished !== "undefined") {
-            quiz.isPublished = isPublished;
-        }
+//          if (typeof isPublished !== "undefined") {
+//             quiz.isPublished = isPublished;
+//         }
 
-        if (startTime) quiz.startTime = startTime;
-        if (endTime) quiz.endTime = endTime;
+//         if (startTime) quiz.startTime = startTime;
+//         if (endTime) quiz.endTime = endTime;
 
-         await quiz.save();
-         return res.status(200).json({ message: "Quiz updated" ,quiz});
-    }catch(err){
-        return res.status(500).json({ message: err.message });
+//          await quiz.save();
+//          return res.status(200).json({ message: "Quiz updated" ,quiz});
+//     }catch(err){
+//         return res.status(500).json({ message: err.message });
+//     }
+// };
+
+// update 
+export const UpdateQuiz = async (req, res) => {
+  try {
+    const teacherId = req.user?.id || "699fe963fac309cee0d145a8"; // fallback ID for testing
+    const { title, questions, startTime, endTime, isPublished } = req.body;
+
+    const quiz = await Quiz.findById(req.params.id).populate('classroomId');
+    if (!quiz) return res.status(404).json({ message: "Quiz not found" });
+
+    // Teacher authorization check
+    if (!quiz.classroomId || quiz.classroomId.teacherId.toString() !== teacherId) {
+      return res.status(403).json({ message: "Not authorized" });
     }
-};
 
+    // Validate publishing
+    if (isPublished) {
+      if (!startTime || !endTime) {
+        return res.status(400).json({ message: "Start and End time required to publish" });
+      }
+      if (new Date(startTime) >= new Date(endTime)) {
+        return res.status(400).json({ message: "End time must be after Start time" });
+      }
+    }
+
+    // Update fields
+    quiz.title = title || quiz.title;
+
+    if (questions && Array.isArray(questions)) {
+      quiz.questions = questions.map(q => ({
+        questionText: q.questionText || "",
+        options: Array.isArray(q.options) ? q.options.map(o => ({ text: o.text || "" })) : [{ text: "" }],
+        correctAnswer: q.correctAnswer || "",
+        type: q.type || "multiple-choice"
+      }));
+    }
+
+    if (startTime) quiz.startTime = new Date(startTime);
+    if (endTime) quiz.endTime = new Date(endTime);
+    if (typeof isPublished !== "undefined") quiz.isPublished = isPublished;
+
+    await quiz.save();
+
+    res.status(200).json({ message: "Quiz updated successfully", quiz });
+
+  } catch (err) {
+    console.error("UpdateQuiz Error:", err.message, err);
+    res.status(500).json({ message: err.message });
+  }
+};
 
 //delete quiz
 
