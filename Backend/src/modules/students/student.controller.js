@@ -92,9 +92,9 @@ export const addStudent = async (req, res) => {
                 const classroom = await Classroom.findById(student.classroomId);
                 if (!classroom) return res.status(404).json({ message: "Classroom not found" });
 
-                 if (classroom.teacherId.toString() !== req.user.id) {
-                 return res.status(403).json({ message: "Not authorized to add student to this classroom" });
-                }
+                //  if (classroom.teacherId.toString() !== req.user.id) {
+                //  return res.status(403).json({ message: "Not authorized to add student to this classroom" });
+                // }
 
                 student.name = name || student.name;
                 await student.save();
@@ -119,8 +119,11 @@ export const addStudent = async (req, res) => {
              // check if logged teacher is assigned to this student's classroom
               const classroom = await Classroom.findById(student.classroomId);
               if (!classroom) return res.status(404).json({ message: "Classroom not found" });
+              //hardcoded
+               const teacherId = req.user?.id || "699fe963fac309cee0d145a8";
 
-             if (classroom.teacherId.toString() !== req.user.id) {
+           //  if (classroom.teacherId.toString() !== req.user.id) {
+           if (classroom.teacherId.toString() !== teacherId) {
                 return res.status(403).json({ message: "Not authorized to delete this student" });
                }
 
