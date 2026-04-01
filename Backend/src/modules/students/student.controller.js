@@ -6,9 +6,11 @@ import { Classroom } from "../classrooms/classroom.model.js";
 //get all students
 export const getAllStudents = async (req, res) => {
     try {
+         const teacherId = "699fe963fac309cee0d145a8"; 
 
         //fetch classroom to check teacher
-        const classroom = await Classroom.find({teacherId: req.user.id});
+       // const classroom = await Classroom.find({teacherId: req.user.id});
+       const classroom = await Classroom.find({ teacherId });
         if (!classroom) return res.status(404).json({ message: "Classroom not found" });
 
         //extract  classsroomids
@@ -28,30 +30,27 @@ export const getAllStudents = async (req, res) => {
 
 
 //student insert
-export const addStudent = async(req, res) =>{
+export const addStudent = async (req, res) => {
+  const teacherId = req.user?.id || "699fe963fac309cee0d145a8"; 
+  const { regNo, name } = req.body;
 
-      const {regNo, name, classroomId} = req.body;
-
-    
-
-    try{
-
-        //fetch classroom to check teacher
-        const classroom = await Classroom.findById(classroomId);
-        if (!classroom) return res.status(404).json({ message: "Classroom not found" });
-
-        if (classroom.teacherId.toString() !== req.user.id) {
-            return res.status(403).json({ message: "Not authorized to add student to this classroom" });
-        }
-
-         const student = await Student.create({regNo, name,classroomId});
-         return res.status(200).json({student});  
- 
-    }catch(err){
-        console.log(err);
-        return res.status(500).json({ message: "Unable to add student" });
+  try {
+    const classroom = await Classroom.findOne({ teacherId });
+    if (!classroom) {
+      return res.status(404).json({ message: "Classroom not found for this teacher" });
     }
 
+    const student = await Student.create({
+      regNo,
+      name,
+      classroomId: classroom._id,
+    });
+
+    return res.status(200).json({ student });
+  } catch (err) {
+    console.error("Add student error:", err);
+    return res.status(500).json({ message: "Unable to add student", error: err.message });
+  }
 };
 
 //get by id
