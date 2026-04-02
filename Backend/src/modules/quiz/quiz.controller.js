@@ -51,7 +51,23 @@ export const createQuiz = async (req,res) =>{
         res.status(500).json({ message: error.message });
     }
 };
+//get quiz by id 
 
+export const getQuizById = async (req, res) => {
+  try {
+    const quiz = await Quiz.findById(req.params.id)
+      .populate("classroomId", "name");
+
+    if (!quiz) {
+      return res.status(404).json({ message: "Quiz not found" });
+    }
+
+    res.status(200).json(quiz);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: error.message });
+  }
+};
 // get quizzes by classroom
 
 export const getQuizzesByClassroom = async(req, res) => {
