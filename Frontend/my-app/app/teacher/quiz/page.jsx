@@ -5,7 +5,7 @@ import Link from "next/link";
 import axios from "axios";
 
 export default function TeacherQuizPage() {
-  const classroomId = "699c1b8f7d82290b85e8bdd9"; // your classroom ID
+  const classroomId = "699c1b8f7d82290b85e8bdd9"; //  classroom ID
   const [quizzes, setQuizzes] = useState([]);
 
   const fetchQuizzes = async () => {
@@ -59,6 +59,14 @@ export default function TeacherQuizPage() {
                 </p>
               </div>
               <div className="flex gap-2">
+
+                 {/*  View Button */}
+                <Link href={`/teacher/quiz/view/${quiz._id}`}>
+                   <button className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded">
+                    View
+                   </button>
+                 </Link>
+
                 <Link href={`/teacher/quiz/edit/${quiz._id}`}>
                   <button className="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded">Edit</button>
                 </Link>
