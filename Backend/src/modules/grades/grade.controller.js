@@ -8,7 +8,6 @@ const ok = (res, data, message = "Success") =>
 const created = (res, data, message = "Created") =>
   res.status(201).json({ success: true, message, data });
 
-
 const resolveSchool = (req) => {
   if (req.user.role === "superAdmin") {
     if (!req.query.schoolId) {
@@ -57,10 +56,28 @@ class GradeController {
     ok(res, grade, `Grade ${grade.gradeNumber} deactivated successfully`);
   });
 
+  distributeBottles = catchAsync(async (req, res) => {
+    const schoolId = resolveSchool(req);
+    const { bottlesPerClassroom, month } = req.body;
+
+    const result = await gradeService.distributeToClassrooms(
+      schoolId,
+      req.params.gradeId,
+      bottlesPerClassroom,
+      month,
+      req.user._id
+    );
+
+    ok(
+      res,
+      result,
+      `Distributed ${result.bottlesPerClassroom} bottle(s) to ${result.classroomsUpdated} classroom(s) for Grade ${result.gradeNumber}`
+    );
+  });
+
   checkSanitizerAndAlert = catchAsync(async (req, res) => {
     const report = await gradeService.checkSanitizerAndAlert(req.user.school);
 
-    // Build response message based on whether SMS was sent
     const message = report.summary.alertSentViaSMS
       ? `Sanitizer report generated — SMS alert sent for ${report.summary.critical + report.summary.empty} critical grade(s)`
       : `Sanitizer report generated — all grades adequate`;
