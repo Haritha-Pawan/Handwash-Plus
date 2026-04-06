@@ -75,13 +75,11 @@ export function Hero() {
           {/* Hexagonal container */}
           <div className="relative w-[500px] h-[500px] flex items-center justify-center">
             <div 
-              className="w-full h-full bg-gradient-to-br from-cyan-200 to-blue-300 overflow-hidden relative shadow-2xl"
-              style={{
-                clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
-              }}
+              className="w-full h-full"
+             
             >
               <img
-                src={'images/handwash.jpg'}
+                src={'images/wash1.webp'}
                 alt="Students washing hands"
                 className="w-full h-full object-cover"
               />
