@@ -1,5 +1,5 @@
 import { Droplets } from 'lucide-react';
-import {Button}  from './ui/button';
+import {Button}  from '../ui/button';
 
 
 export function Navbar() {
@@ -15,8 +15,8 @@ export function Navbar() {
           </div>
           
           <div className="hidden md:flex items-center gap-8">
-            <a href="#" className="text-gray-700 hover:text-cyan-600 transition-colors">Home</a>
-            <a href="#" className="text-gray-700 hover:text-cyan-600 transition-colors">Features</a>
+            <a href="/" className="text-gray-700 hover:text-cyan-600 transition-colors">Home</a>
+            <a href="" className="text-gray-700 hover:text-cyan-600 transition-colors">Features</a>
             <a href="#" className="text-gray-700 hover:text-cyan-600 transition-colors">Monitoring</a>
             <a href="" className="text-gray-700 hover:text-cyan-600 transition-colors">community</a>
             <a href="#" className="text-gray-700 hover:text-cyan-600 transition-colors">Dashboard</a>

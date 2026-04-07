@@ -1,8 +1,8 @@
 
-import { Hero } from "./components/Hero";
-import { Features } from "./components/Features";
-import { HandwashSteps } from "./components/HandwashStep";
-import { HowItWorks } from "./components/HowItworks";
+import { Hero } from "./components/common/Hero";
+import { Features } from "./components/common/Features";
+import { HandwashSteps } from "./components/common/HandwashStep";
+import { HowItWorks } from "./components/common/HowItworks";
 
 export default function Home() {
   return (

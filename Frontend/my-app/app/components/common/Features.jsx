@@ -1,5 +1,5 @@
-import { features } from '../constance/costance';
-import { Card } from './ui/card';
+import { features } from '../../constance/costance';
+import { Card } from '../ui/card';
 
 export function Features() {
 

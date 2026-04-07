@@ -33,24 +33,16 @@
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
     "helmet": "^8.1.0",
-<<<<<<< HEAD
     "imagekit": "^6.0.0",
-=======
-    "joi": "^18.0.2",
->>>>>>> 3a2fa397623aef9a6d9ecadb9982c361d923d3bd
+    "joi": "^18.1.2",
     "jsonwebtoken": "^9.0.3",
     "mongodb": "^7.1.0",
     "mongoose": "^9.2.1",
     "morgan": "^1.10.1",
-<<<<<<< HEAD
-    "multer": "^2.1.0"
-=======
+    "multer": "^2.1.0",
     "swagger-jsdoc": "^6.2.8",
-    "swagger-ui": "^5.32.0",
     "swagger-ui-express": "^5.0.1",
-    "twilio": "^5.12.2",
-    "yaml": "^2.8.2"
->>>>>>> 3a2fa397623aef9a6d9ecadb9982c361d923d3bd
+    "twilio": "^5.13.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"

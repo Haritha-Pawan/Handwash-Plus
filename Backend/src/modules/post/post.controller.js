@@ -24,7 +24,7 @@ export const createPost = async (req, res) => {
       content,
       author,
       imageUrl,
-      votes: 0,
+      
     });
 
     res.status(201).json(post);

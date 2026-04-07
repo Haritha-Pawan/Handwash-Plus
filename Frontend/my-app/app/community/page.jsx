@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import CommunitySection from "../components/communitySection";
-import PostCard from "../components/PostCard";
+import CommunitySection from "../components/community/communitySection";
+import PostCard from "../components/community/PostCard";
 import { dummyPosts } from "../constance/costance";
 
 

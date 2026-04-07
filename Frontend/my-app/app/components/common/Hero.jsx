@@ -1,4 +1,4 @@
-import { Button } from './ui/button';
+import { Button } from '../ui/button';
 import { Droplet, Sparkles, Heart, Shield, HandMetal, Waves } from 'lucide-react';
 import Images from 'next/image';
 
