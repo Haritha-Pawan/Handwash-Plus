@@ -1,19 +1,30 @@
 import express from 'express';
-import SchoolService from './school.controller.js';
+import { 
+    getAllSchools, 
+    getSchoolById, 
+    getSchoolsByCity, 
+    getSchoolsByDistrict, 
+    createSchool, 
+    updateSchool, 
+    deleteSchool 
+} from './school.controller.js';
 import authMiddleware from '../../@core/middleware/auth.middleware.js';
+import roleMiddleware from '../../@core/middleware/role.middlewere.js';
 
 const router = express.Router();
 
+// Public Routes (Allows the Dashboard Preview to fetch the map data!)
+router.get('/', getAllSchools);
+router.get('/:id', getSchoolById);
+router.get('/city/:city', getSchoolsByCity);
+router.get('/district/:district', getSchoolsByDistrict);
 
+// Protected Routes (Strictly Super Admin Only)
 router.use(authMiddleware);
+router.use(roleMiddleware('superAdmin'));
 
-
-router.post('/', SchoolService.createSchool);
-router.get('/', SchoolService.getAllSchools);
-router.get('/:id', SchoolService.getSchoolById);
-router.put('/:id', SchoolService.updateSchool);
-router.delete('/:id', SchoolService.deleteSchool);
-router.get('/city/:city', SchoolService.getSchoolsByCity);
-router.get('/district/:district', SchoolService.getSchoolsByDistrict);
+router.post('/', createSchool);
+router.put('/:id', updateSchool);
+router.delete('/:id', deleteSchool);
 
 export default router;
