@@ -10,7 +10,10 @@
   "scripts": {
     "create:super-admin": "node infrastructure/scripts/seed.js",
     "dev": "nodemon src/bootstrap/server.js",
-    "start": "node src/bootstrap/server.js"
+    "start": "node src/bootstrap/server.js",
+     "test": "node --experimental-vm-modules node_modules/.bin/jest",
+  "test:unit": "jest --testPathPatterns=\"_tests_/unit\"",
+ "test:integration": "NODE_OPTIONS=--experimental-vm-modules jest --testPathPatterns=_tests_/integration"
   },
   "repository": {
     "type": "git",
@@ -45,6 +48,15 @@
     "yaml": "^2.8.2"
   },
   "devDependencies": {
-    "nodemon": "^3.1.14"
+    "@babel/core": "^7.29.0",
+    "@babel/preset-env": "^7.29.2",
+    "babel-jest": "^30.3.0",
+    "jest": "^30.3.0",
+    "mongodb-memory-server": "^11.0.1",
+    "nodemon": "^3.1.14",
+    "supertest": "^7.2.2"
+  },
+  "jest": {
+    "testTimeout": 30000
   }
 }
