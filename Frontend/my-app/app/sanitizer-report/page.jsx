@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getSanitizerReport } from "../services/grade.service";
+import { checkSanitizerAndAlert } from "../services/grade.service";
 import Loader from "../components/grades/Loader";
 import EmptyState from "../components/grades/EmptyState";
 import SanitizerStatusBadge from "../components/grades/SanitizerStatusBadge";
@@ -18,7 +18,7 @@ export default function SanitizerReportPage() {
       try {
         setLoading(true);
         setError("");
-        const res = await getSanitizerReport(schoolId);
+        const res = await checkSanitizerAndAlert(schoolId);
         setReport(res.data);
       } catch (err) {
         setError(err?.response?.data?.message || "Failed to load sanitizer report");

@@ -1,9 +1,8 @@
 import jwt from "jsonwebtoken";
 import { config } from "../../config/environment.config.js";
+import User from "../../modules/users/user.model.js";
 
-
-const authMiddleware = (req, res, next) => {
-
+const authMiddleware = async (req, res, next) => {
   try {
     const authHeader = req?.headers?.authorization;
 
@@ -12,12 +11,16 @@ const authMiddleware = (req, res, next) => {
     }
 
     const token = authHeader.split(" ")[1];
-
     const decoded = jwt.verify(token, config.jwt.secret);
 
+    req.user = decoded; // { userId, email, role }
 
-    req.user = decoded; // { id, role }
-
+    if (decoded.role !== "superAdmin") {
+      const user = await User.findById(decoded.userId).select("school");
+      if (user && user.school) {
+        req.user.school = user.school;
+      }
+    }
 
     next();
   } catch (error) {

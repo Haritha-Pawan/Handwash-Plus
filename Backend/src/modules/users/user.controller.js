@@ -111,7 +111,7 @@ export const updateUser = async (req, res) => {
     const updatedUser = await User.findByIdAndUpdate(
       req.params.id,
       req.body,
-      { new: true }
+      { returnDocument: 'after' }
     ).select("-password");
 
     if (!updatedUser) {

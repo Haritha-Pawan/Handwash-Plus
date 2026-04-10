@@ -48,22 +48,22 @@ export default function SchoolMapInner({ schools, onEdit, onDelete }: SchoolMapI
 
   return (
     <div className="w-full h-full rounded-3xl overflow-hidden border border-slate-200 shadow-inner relative z-0">
-      <MapContainer 
-        center={center} 
-        zoom={7} 
+      <MapContainer
+        center={center}
+        zoom={7}
         style={{ height: "100%", width: "100%", zIndex: 0 }}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
         />
-        
+
         <MapUpdater schools={schools} />
 
         {schools.map((school) => {
           const lat = Number(school.lat || school.location?.lat);
           const lng = Number(school.lng || school.location?.lng);
-          
+
           if (!lat || !lng || isNaN(lat) || isNaN(lng)) return null;
 
           return (
@@ -72,15 +72,15 @@ export default function SchoolMapInner({ schools, onEdit, onDelete }: SchoolMapI
                 <div className="p-1 min-w-[200px]">
                   <h3 className="font-bold text-slate-900 text-lg mb-1">{school.name}</h3>
                   <p className="text-slate-600 text-sm mb-3">{school.city}, {school.district}</p>
-                  
+
                   <div className="flex gap-2 mt-4 pt-4 border-t border-slate-100">
-                    <button 
+                    <button
                       onClick={() => onEdit(school)}
                       className="flex-1 bg-cyan-50 text-cyan-700 font-semibold py-1.5 rounded-lg hover:bg-cyan-100 transition-colors text-sm"
                     >
                       Edit
                     </button>
-                    <button 
+                    <button
                       onClick={() => onDelete(school.id || school._id || "")}
                       className="flex-1 bg-red-50 text-red-600 font-semibold py-1.5 rounded-lg hover:bg-red-100 transition-colors text-sm"
                     >

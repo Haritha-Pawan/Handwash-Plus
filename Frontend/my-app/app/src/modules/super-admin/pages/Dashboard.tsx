@@ -2,15 +2,15 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSchools, useDeleteSchool } from "../../../features/school/hooks/useSchool";
-import { 
-  Droplets, 
-  MapPin, 
-  Building, 
-  AlertCircle, 
-  RefreshCcw, 
-  Loader2, 
-  Trash2, 
-  Edit2, 
+import {
+  Droplets,
+  MapPin,
+  Building,
+  AlertCircle,
+  RefreshCcw,
+  Loader2,
+  Trash2,
+  Edit2,
   Map,
   Users,
   School,
@@ -46,7 +46,7 @@ const Dashboard = () => {
   const { data: schools = [], isLoading, isError, error } = schoolsQuery;
   const refetch = schoolsQuery.refetch as any;
   const { mutate: deleteSchool, isPending: isDeleting } = useDeleteSchool();
-  
+
   const [schoolToEdit, setSchoolToEdit] = useState<School | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("All");
@@ -59,21 +59,21 @@ const Dashboard = () => {
   const districts = [...new Set(schools.map(s => s.district))];
   const filteredSchools = schools.filter(school => {
     const matchesSearch = school.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         school.address.toLowerCase().includes(searchTerm.toLowerCase());
+      school.address.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesDistrict = selectedDistrict === "All" || school.district === selectedDistrict;
     return matchesSearch && matchesDistrict;
   });
 
   const totalStudents = filteredSchools.reduce((acc, school) => acc + (school.studentCount || 0), 0);
   const totalTeachers = filteredSchools.reduce((acc, school) => acc + (school.teacherCount || 0), 0);
-  const averagePerformance = filteredSchools.length > 0 
+  const averagePerformance = filteredSchools.length > 0
     ? Math.round(filteredSchools.reduce((acc, s) => acc + (s.performance || 0), 0) / filteredSchools.length)
     : 0;
 
   useEffect(() => {
     const userStr = localStorage.getItem("user");
     const token = localStorage.getItem("token");
-    
+
     if (!token || !userStr) {
       router.push("/login");
       return;
@@ -136,7 +136,7 @@ const Dashboard = () => {
           </div>
           <h2 className="text-2xl font-bold text-white mb-3">Connection Error</h2>
           <p className="text-slate-300 mb-8">{(error as Error)?.message || "Unable to fetch school data from server."}</p>
-          <button 
+          <button
             onClick={() => refetch()}
             className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-cyan-500 to-blue-500 text-white py-3 px-6 rounded-xl hover:from-cyan-600 hover:to-blue-600 transition-all font-medium shadow-lg shadow-cyan-500/20"
           >
@@ -150,6 +150,9 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+      <style>{`
+        nav { display: none !important; }
+      `}</style>
       {/* Animated Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse"></div>
@@ -273,7 +276,7 @@ const Dashboard = () => {
               <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-4 sticky top-24">
                 <div className="flex items-center justify-between mb-4">
                   {!sidebarCollapsed && <h2 className="text-lg font-semibold text-white">Filters & Search</h2>}
-                  <button 
+                  <button
                     onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
                     className="p-2 hover:bg-slate-700/50 rounded-lg transition-colors"
                   >
@@ -318,11 +321,10 @@ const Dashboard = () => {
                           <button
                             key={range}
                             onClick={() => setTimeRange(range)}
-                            className={`flex-1 py-2 text-xs font-medium rounded-lg transition-all ${
-                              timeRange === range 
-                                ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/20' 
+                            className={`flex-1 py-2 text-xs font-medium rounded-lg transition-all ${timeRange === range
+                                ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/20'
                                 : 'bg-slate-900/50 text-slate-400 hover:text-white hover:bg-slate-700/50'
-                            }`}
+                              }`}
                           >
                             {range.charAt(0).toUpperCase() + range.slice(1)}
                           </button>
@@ -373,27 +375,27 @@ const Dashboard = () => {
                       <button className="p-2 hover:bg-slate-700/50 rounded-lg transition-colors">
                         <Layers className="w-5 h-5 text-slate-400" />
                       </button>
-                      <button 
+                      <button
                         onClick={() => setIsMapFullscreen(!isMapFullscreen)}
                         className="p-2 hover:bg-slate-700/50 rounded-lg transition-colors"
                       >
-                        {isMapFullscreen ? 
-                          <Minimize2 className="w-5 h-5 text-slate-400" /> : 
+                        {isMapFullscreen ?
+                          <Minimize2 className="w-5 h-5 text-slate-400" /> :
                           <Maximize2 className="w-5 h-5 text-slate-400" />
                         }
                       </button>
                     </div>
                   </div>
                 </div>
-                
+
                 <div className={`${isMapFullscreen ? 'h-[800px]' : 'h-[500px]'} transition-all duration-300 relative`}>
-                  <SchoolMap 
-                    schools={filteredSchools} 
-                    onEdit={(s) => setSchoolToEdit(s)} 
+                  <SchoolMap
+                    schools={filteredSchools}
+                    onEdit={(s) => setSchoolToEdit(s)}
                     onDelete={(id) => handleDelete(id)}
                     onSelect={(s) => setSelectedSchool(s)}
                   />
-                  
+
                   {/* Selected School Info Overlay */}
                   {selectedSchool && (
                     <div className="absolute bottom-4 left-4 right-4 bg-slate-800/90 backdrop-blur-xl rounded-xl p-4 border border-slate-700/50 shadow-xl">
@@ -412,13 +414,13 @@ const Dashboard = () => {
                           </div>
                         </div>
                         <div className="flex gap-2">
-                          <button 
+                          <button
                             onClick={() => setSchoolToEdit(selectedSchool)}
                             className="px-3 py-1.5 bg-cyan-500/20 text-cyan-400 rounded-lg text-sm hover:bg-cyan-500/30 transition-colors"
                           >
                             View Details
                           </button>
-                          <button 
+                          <button
                             onClick={() => setSelectedSchool(null)}
                             className="p-1.5 hover:bg-slate-700/50 rounded-lg transition-colors"
                           >
@@ -441,7 +443,7 @@ const Dashboard = () => {
                 <span className="text-sm text-slate-400">{filteredSchools.length} schools</span>
               </div>
             </div>
-            
+
             <div className="p-4">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[400px] overflow-y-auto custom-scrollbar">
                 {filteredSchools.length === 0 ? (
@@ -469,7 +471,7 @@ const Dashboard = () => {
                             <School className="w-4 h-4 text-cyan-400" />
                           </div>
                         </div>
-                        
+
                         <div className="space-y-2 mb-4">
                           <div className="flex items-center text-xs text-slate-400">
                             <MapPin className="w-3 h-3 mr-1.5" />
@@ -488,7 +490,7 @@ const Dashboard = () => {
                         </div>
 
                         <div className="flex items-center gap-2 pt-3 border-t border-slate-700/50">
-                          <button 
+                          <button
                             onClick={(e) => {
                               e.stopPropagation();
                               setSchoolToEdit(school);
@@ -498,7 +500,7 @@ const Dashboard = () => {
                             <Edit2 className="w-3 h-3" />
                             Edit
                           </button>
-                          <button 
+                          <button
                             onClick={(e) => {
                               e.stopPropagation();
                               handleDelete(id);
@@ -509,7 +511,7 @@ const Dashboard = () => {
                             <Trash2 className="w-3 h-3" />
                             Delete
                           </button>
-                          <button 
+                          <button
                             onClick={(e) => {
                               e.stopPropagation();
                               setSelectedSchool(school);
@@ -528,12 +530,12 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
-      
+
       {/* Edit Modal */}
       {schoolToEdit && (
-        <EditSchoolModal 
-          school={schoolToEdit} 
-          onClose={() => setSchoolToEdit(null)} 
+        <EditSchoolModal
+          school={schoolToEdit}
+          onClose={() => setSchoolToEdit(null)}
         />
       )}
 

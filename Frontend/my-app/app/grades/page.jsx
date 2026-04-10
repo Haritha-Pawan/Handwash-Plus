@@ -23,6 +23,10 @@ export default function GradesPage() {
     const token = getAuthToken();
     setHasToken(!!token);
     setReady(true);
+    
+    if (!token) {
+      window.location.href = "/login";
+    }
   }, []);
 
   const { grades, loading, error, refetch } = useGrades();
@@ -64,13 +68,7 @@ export default function GradesPage() {
   }
 
   if (!hasToken) {
-    return (
-      <div className="min-h-screen bg-slate-950 p-8 text-white">
-        <div className="mx-auto max-w-3xl rounded-2xl border border-yellow-400/20 bg-yellow-400/10 p-6 text-yellow-200">
-          Please log in first using the temporary login page at <span className="font-semibold">/temp-login</span>.
-        </div>
-      </div>
-    );
+    return <Loader text="Redirecting to login..." />;
   }
 
   return (
@@ -104,7 +102,7 @@ export default function GradesPage() {
           onClick={() => {
             clearAuthToken();
             clearAuthUser();
-            window.location.href = "/temp-login";
+            window.location.href = "/login";
           }}
           className="rounded-xl border border-white/10 px-5 py-3 text-slate-200"
         >

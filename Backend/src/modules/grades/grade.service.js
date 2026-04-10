@@ -124,7 +124,7 @@ class GradeService {
     const updatedGrade = await Grade.findOneAndUpdate(
       { _id: gradeId, school: schoolId },
       { $set: updates },
-      { new: true, runValidators: true }
+      { returnDocument: 'after', runValidators: true }
     );
 
     if (!updatedGrade) throw notFound("Grade not found in your school");
@@ -195,7 +195,7 @@ class GradeService {
           },
         },
         {
-          new: true,
+          returnDocument: 'after',
           upsert: true,
           runValidators: true,
         }

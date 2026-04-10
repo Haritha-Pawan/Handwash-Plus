@@ -30,7 +30,7 @@ export class UserRepository {
     return User.findByIdAndUpdate(
       id,
       updateData,
-      { new: true, runValidators: true }
+      { returnDocument: 'after', runValidators: true }
     ).exec();
   }
 
@@ -38,7 +38,7 @@ export class UserRepository {
     return User.findByIdAndUpdate(
       userId,
       { refreshToken },
-      { new: true }
+      { returnDocument: 'after' }
     ).select('+refreshToken').exec();
   }
 
@@ -53,7 +53,7 @@ export class UserRepository {
     return User.findByIdAndUpdate(
       userId,
       { isBlocked: true },
-      { new: true }
+      { returnDocument: 'after' }
     ).exec();
   }
 
@@ -61,7 +61,7 @@ export class UserRepository {
     return User.findByIdAndUpdate(
       userId,
       { isBlocked: false },
-      { new: true }
+      { returnDocument: 'after' }
     ).exec();
   }
 }
