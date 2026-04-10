@@ -32,6 +32,12 @@ class GradeController {
     created(res, result, message);
   });
 
+  addIndividualGrade = catchAsync(async (req, res) => {
+    const schoolId = resolveSchool(req);
+    const grade = await gradeService.addIndividualGrade(schoolId, req.body);
+    created(res, grade, `Grade ${grade.gradeNumber} created successfully`);
+  });
+
   getGrades = catchAsync(async (req, res) => {
     const schoolId = resolveSchool(req);
     const grades = await gradeService.getGrades(schoolId);

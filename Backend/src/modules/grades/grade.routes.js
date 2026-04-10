@@ -3,6 +3,7 @@ import { Router } from "express";
 import gradeController from "./grade.controller.js";
 import {
   createGradesSchema,
+  createIndividualGradeSchema,
   updateGradeSchema,
   distributeBottlesSchema,
 } from "./grade.validation.js";
@@ -18,6 +19,12 @@ router.post(
   "/",
   validate(createGradesSchema),
   gradeController.createGrades
+);
+
+router.post(
+  "/individual",
+  validate(createIndividualGradeSchema),
+  gradeController.addIndividualGrade
 );
 
 router.post(

@@ -1,0 +1,151 @@
+"use client";
+
+import { useEffect, useState } from "react";
+
+export default function GradeFormModal({
+  isOpen,
+  onClose,
+  onSubmit,
+  initialData = null,
+  mode = "create",
+  loading = false,
+}) {
+  const [form, setForm] = useState({
+    gradeNumber: "",
+    studentCount: "",
+    lowThreshold: "",
+    currentQuantity: "",
+  });
+
+  useEffect(() => {
+    if (initialData && mode === "edit") {
+      setForm({
+        gradeNumber: "",
+        studentCount: initialData.studentCount ?? "",
+        lowThreshold: initialData?.sanitizer?.lowThreshold ?? "",
+        currentQuantity: initialData?.sanitizer?.currentQuantity ?? "",
+      });
+    } else {
+      setForm({
+        gradeNumber: "",
+        studentCount: "",
+        lowThreshold: "",
+        currentQuantity: "",
+      });
+    }
+  }, [initialData, mode]);
+
+  if (!isOpen) return null;
+
+  const handleChange = (e) => {
+    setForm((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (mode === "create") {
+      onSubmit({
+        gradeNumber: Number(form.gradeNumber),
+        studentCount: form.studentCount === "" ? undefined : Number(form.studentCount),
+        lowThreshold: form.lowThreshold === "" ? undefined : Number(form.lowThreshold),
+      });
+      return;
+    }
+
+    onSubmit({
+      studentCount:
+        form.studentCount === "" ? undefined : Number(form.studentCount),
+      lowThreshold:
+        form.lowThreshold === "" ? undefined : Number(form.lowThreshold),
+      currentQuantity:
+        form.currentQuantity === "" ? undefined : Number(form.currentQuantity),
+    });
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+      <div className="w-full max-w-md rounded-2xl border border-white/10 bg-slate-950 p-6">
+        <h2 className="text-xl font-semibold text-white">
+          {mode === "create" ? "Create Grade" : "Edit Grade"}
+        </h2>
+
+        <form onSubmit={handleSubmit} className="mt-4 space-y-4">
+          {mode === "create" && (
+            <div>
+              <label className="mb-2 block text-sm text-slate-300">Grade Number</label>
+              <input
+                type="number"
+                name="gradeNumber"
+                value={form.gradeNumber}
+                onChange={handleChange}
+                min="1"
+                max="13"
+                required
+                className="w-full rounded-xl border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none"
+              />
+            </div>
+          )}
+          
+          <div>
+            <label className="mb-2 block text-sm text-slate-300">Student Count</label>
+            <input
+              type="number"
+              name="studentCount"
+              value={form.studentCount}
+              onChange={handleChange}
+              min="0"
+              className="w-full rounded-xl border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none"
+            />
+          </div>
+
+          <div>
+            <label className="mb-2 block text-sm text-slate-300">Low Threshold</label>
+            <input
+              type="number"
+              name="lowThreshold"
+              value={form.lowThreshold}
+              onChange={handleChange}
+              min="1"
+              className="w-full rounded-xl border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none"
+            />
+          </div>
+
+          {mode === "edit" && (
+            <div>
+              <label className="mb-2 block text-sm text-slate-300">Current Quantity</label>
+              <input
+                type="number"
+                name="currentQuantity"
+                value={form.currentQuantity}
+                onChange={handleChange}
+                min="0"
+                className="w-full rounded-xl border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none"
+              />
+            </div>
+          )}
+
+          <div className="flex justify-end gap-3">
+            <button
+              type="button"
+              onClick={onClose}
+              className="rounded-xl border border-white/10 px-4 py-2 text-slate-300"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="rounded-xl bg-blue-600 px-4 py-2 text-white disabled:opacity-60"
+            >
+              {loading ? "Saving..." : mode === "create" ? "Create" : "Update"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
