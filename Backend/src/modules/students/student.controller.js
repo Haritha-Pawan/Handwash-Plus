@@ -162,8 +162,21 @@ export const addStudent = async (req, res) => {
                  return res.status(404).json({ message:"No active quiz available"});
 
              }
-
-                return res.status(200).json({ quiz});
+               const studentQuiz = {
+                 
+                 title: quiz.title,
+                 startTime: quiz.startTime,
+                 endTime: quiz.endTime,
+                 questions: quiz.questions.map(q => ({
+                _id: q._id,
+                 questionText: q.questionText,
+                 type: q.type,
+                 options: q.options.map(opt => ({
+                  text: opt.text
+        }))
+      }))
+    };
+                return res.status(200).json({ studentQuiz});
 
             }catch (error) {
               res.status(500).json({ message: error.message });
