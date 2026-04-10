@@ -8,21 +8,21 @@ export class UserRepository {
 
   async findByEmail(email, includePassword = false) {
     let query = User.findOne({ email });
-    
+
     if (includePassword) {
       query = query.select('+password +refreshToken');
     }
-    
+
     return query.exec();
   }
 
   async findById(id, includePassword = false) {
     let query = User.findById(id);
-    
+
     if (includePassword) {
       query = query.select('+password +refreshToken');
     }
-    
+
     return query.exec();
   }
 
@@ -45,7 +45,7 @@ export class UserRepository {
   async findBySchool(schoolId, role = null) {
     const query = { schoolId };
     if (role) query.role = role;
-    
+
     return User.find(query).exec();
   }
 

@@ -11,23 +11,26 @@ export default function GradeFormModal({
   loading = false,
 }) {
   const [form, setForm] = useState({
-    count: "",
+    gradeNumber: "",
     studentCount: "",
     lowThreshold: "",
+    currentQuantity: "",
   });
 
   useEffect(() => {
     if (initialData && mode === "edit") {
       setForm({
-        count: "",
+        gradeNumber: "",
         studentCount: initialData.studentCount ?? "",
         lowThreshold: initialData?.sanitizer?.lowThreshold ?? "",
+        currentQuantity: initialData?.sanitizer?.currentQuantity ?? "",
       });
     } else {
       setForm({
-        count: "",
+        gradeNumber: "",
         studentCount: "",
         lowThreshold: "",
+        currentQuantity: "",
       });
     }
   }, [initialData, mode]);
@@ -46,7 +49,9 @@ export default function GradeFormModal({
 
     if (mode === "create") {
       onSubmit({
-        count: Number(form.count),
+        gradeNumber: Number(form.gradeNumber),
+        studentCount: form.studentCount === "" ? undefined : Number(form.studentCount),
+        lowThreshold: form.lowThreshold === "" ? undefined : Number(form.lowThreshold),
       });
       return;
     }
@@ -56,6 +61,8 @@ export default function GradeFormModal({
         form.studentCount === "" ? undefined : Number(form.studentCount),
       lowThreshold:
         form.lowThreshold === "" ? undefined : Number(form.lowThreshold),
+      currentQuantity:
+        form.currentQuantity === "" ? undefined : Number(form.currentQuantity),
     });
   };
 
@@ -63,17 +70,17 @@ export default function GradeFormModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
       <div className="w-full max-w-md rounded-2xl border border-white/10 bg-slate-950 p-6">
         <h2 className="text-xl font-semibold text-white">
-          {mode === "create" ? "Create Grades" : "Edit Grade"}
+          {mode === "create" ? "Create Grade" : "Edit Grade"}
         </h2>
 
         <form onSubmit={handleSubmit} className="mt-4 space-y-4">
-          {mode === "create" ? (
+          {mode === "create" && (
             <div>
-              <label className="mb-2 block text-sm text-slate-300">Count</label>
+              <label className="mb-2 block text-sm text-slate-300">Grade Number</label>
               <input
                 type="number"
-                name="count"
-                value={form.count}
+                name="gradeNumber"
+                value={form.gradeNumber}
                 onChange={handleChange}
                 min="1"
                 max="13"
@@ -81,32 +88,44 @@ export default function GradeFormModal({
                 className="w-full rounded-xl border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none"
               />
             </div>
-          ) : (
-            <>
-              <div>
-                <label className="mb-2 block text-sm text-slate-300">Student Count</label>
-                <input
-                  type="number"
-                  name="studentCount"
-                  value={form.studentCount}
-                  onChange={handleChange}
-                  min="0"
-                  className="w-full rounded-xl border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none"
-                />
-              </div>
+          )}
+          
+          <div>
+            <label className="mb-2 block text-sm text-slate-300">Student Count</label>
+            <input
+              type="number"
+              name="studentCount"
+              value={form.studentCount}
+              onChange={handleChange}
+              min="0"
+              className="w-full rounded-xl border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none"
+            />
+          </div>
 
-              <div>
-                <label className="mb-2 block text-sm text-slate-300">Low Threshold</label>
-                <input
-                  type="number"
-                  name="lowThreshold"
-                  value={form.lowThreshold}
-                  onChange={handleChange}
-                  min="1"
-                  className="w-full rounded-xl border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none"
-                />
-              </div>
-            </>
+          <div>
+            <label className="mb-2 block text-sm text-slate-300">Low Threshold</label>
+            <input
+              type="number"
+              name="lowThreshold"
+              value={form.lowThreshold}
+              onChange={handleChange}
+              min="1"
+              className="w-full rounded-xl border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none"
+            />
+          </div>
+
+          {mode === "edit" && (
+            <div>
+              <label className="mb-2 block text-sm text-slate-300">Current Quantity</label>
+              <input
+                type="number"
+                name="currentQuantity"
+                value={form.currentQuantity}
+                onChange={handleChange}
+                min="0"
+                className="w-full rounded-xl border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none"
+              />
+            </div>
           )}
 
           <div className="flex justify-end gap-3">

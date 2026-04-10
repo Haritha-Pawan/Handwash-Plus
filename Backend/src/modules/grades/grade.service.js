@@ -42,6 +42,48 @@ class GradeService {
     };
   }
 
+  async addIndividualGrade(schoolId, params) {
+    const { gradeNumber, studentCount, lowThreshold } = params;
+    
+    const existingGrade = await Grade.findOne({ school: schoolId, gradeNumber });
+    if (existingGrade) {
+      if (existingGrade.isActive) {
+        throw conflict(`Grade ${gradeNumber} already exists in this school`);
+      } else {
+    
+        existingGrade.isActive = true;
+        if (studentCount !== undefined) {
+          existingGrade.studentCount = studentCount;
+        }
+        if (lowThreshold !== undefined) {
+          if (!existingGrade.sanitizer) {
+            existingGrade.sanitizer = { currentQuantity: 0, status: "empty" };
+          }
+          existingGrade.sanitizer.lowThreshold = lowThreshold;
+        }
+        await existingGrade.save();
+        return existingGrade;
+      }
+    }
+
+    const gradeDoc = {
+      gradeNumber,
+      school: schoolId,
+      ...(studentCount !== undefined && { studentCount }),
+    };
+
+    if (lowThreshold !== undefined) {
+      gradeDoc.sanitizer = {
+        lowThreshold,
+        currentQuantity: 0,
+        status: "empty"
+      };
+    }
+
+    const newGrade = await Grade.create(gradeDoc);
+    return newGrade;
+  }
+
   async getGrades(schoolId) {
     const grades = await Grade.find({ school: schoolId, isActive: true })
       .populate("classTeacher", "name email")
@@ -69,6 +111,10 @@ class GradeService {
 
     if (requestBody.lowThreshold !== undefined) {
       updates["sanitizer.lowThreshold"] = requestBody.lowThreshold;
+    }
+
+    if (requestBody.currentQuantity !== undefined) {
+      updates["sanitizer.currentQuantity"] = requestBody.currentQuantity;
     }
 
     if (Object.keys(updates).length === 0) {

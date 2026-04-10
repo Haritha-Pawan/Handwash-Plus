@@ -19,7 +19,7 @@ export const registerUser = async (req, res) => {
     const user = await User.create({
       name,
       email,
-      password, 
+      password,
       role,
       school,
       class: studentClass,

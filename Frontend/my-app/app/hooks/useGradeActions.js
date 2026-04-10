@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import {
-  createGrades,
+  createIndividualGrade,
   updateGrade,
   deactivateGrade,
+  checkSanitizerAndAlert
 } from "../services/grade.service";
 
 export default function useGradeActions(refetch) {
@@ -18,8 +19,8 @@ export default function useGradeActions(refetch) {
       setActionError("");
       setSuccessMessage("");
 
-      const res = await createGrades(payload);
-      setSuccessMessage(res?.message || "Grades created successfully");
+      const res = await createIndividualGrade(payload);
+      setSuccessMessage(res?.message || "Grade created successfully");
       await refetch();
     } catch (err) {
       setActionError(err?.response?.data?.message || "Failed to create grades");
@@ -64,6 +65,22 @@ export default function useGradeActions(refetch) {
     }
   };
 
+  const handleCheckSanitizer = async () => {
+    try {
+      setActionLoading(true);
+      setActionError("");
+      setSuccessMessage("");
+
+      const res = await checkSanitizerAndAlert();
+      setSuccessMessage(res?.message || "Sanitizer alert sent successfully");
+      await refetch();
+    } catch (err) {
+      setActionError(err?.response?.data?.message || "Failed to check sanitizer");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   return {
     actionLoading,
     actionError,
@@ -73,5 +90,6 @@ export default function useGradeActions(refetch) {
     handleCreate,
     handleUpdate,
     handleDeactivate,
+    handleCheckSanitizer,
   };
 }

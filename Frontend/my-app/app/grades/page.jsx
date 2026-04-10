@@ -36,6 +36,7 @@ export default function GradesPage() {
     handleCreate,
     handleUpdate,
     handleDeactivate,
+    handleCheckSanitizer,
   } = useGradeActions(refetch);
 
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -83,8 +84,20 @@ export default function GradesPage() {
             setIsCreateOpen(true);
           }}
           className="rounded-xl bg-blue-600 px-5 py-3 text-white hover:bg-blue-500"
+          disabled={actionLoading}
         >
-          + Create Grades
+          + Create Grade
+        </button>
+
+        <button
+          onClick={async () => {
+            closeMessages();
+            await handleCheckSanitizer();
+          }}
+          className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-5 py-3 text-emerald-300 hover:bg-emerald-500/20 disabled:opacity-50 flex items-center justify-center"
+          disabled={actionLoading}
+        >
+          {actionLoading ? "Checking..." : "Check Sanitizer & Alert"}
         </button>
 
         <button

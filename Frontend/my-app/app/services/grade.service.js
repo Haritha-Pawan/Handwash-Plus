@@ -35,6 +35,13 @@ export const createGrades = async (payload) => {
   return data;
 };
 
+export const createIndividualGrade = async (payload) => {
+  const { data } = await api.post("/grades/individual", payload, {
+    params: buildSchoolParams(),
+  });
+  return data;
+};
+
 export const updateGrade = async (gradeId, payload) => {
   const { data } = await api.patch(`/grades/${gradeId}`, payload, {
     params: buildSchoolParams(),
@@ -50,5 +57,12 @@ export const deactivateGrade = async (gradeId) => {
       params: buildSchoolParams(),
     }
   );
+  return data;
+};
+
+export const checkSanitizerAndAlert = async () => {
+  const { data } = await api.get("/grades/sanitizer-check", {
+    params: buildSchoolParams(),
+  });
   return data;
 };

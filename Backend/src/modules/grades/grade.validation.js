@@ -15,6 +15,23 @@ export const createGradesSchema = Joi.object({
     }),
 });
 
+export const createIndividualGradeSchema = Joi.object({
+  gradeNumber: Joi.number()
+    .integer()
+    .min(1)
+    .max(13)
+    .required()
+    .messages({
+      "number.base": "Grade number must be a number",
+      "number.integer": "Grade number must be a whole number",
+      "number.min": "Grade number must be at least 1",
+      "number.max": "Grade number cannot exceed 13",
+      "any.required": "Grade number is required",
+    }),
+  studentCount: Joi.number().integer().min(0).optional(),
+  lowThreshold: Joi.number().min(1).optional(),
+});
+
 export const updateGradeSchema = Joi.object({
   studentCount: Joi.number()
     .integer()
@@ -31,10 +48,17 @@ export const updateGradeSchema = Joi.object({
       "number.base": "Low threshold must be a number",
       "number.min": "Low threshold must be at least 1",
     }),
+
+  currentQuantity: Joi.number()
+    .min(0)
+    .messages({
+      "number.base": "Current quantity must be a number",
+      "number.min": "Current quantity cannot be negative",
+    }),
 })
   .min(1)
   .messages({
-    "object.min": "Please provide at least one field to update: studentCount or lowThreshold",
+    "object.min": "Please provide at least one field to update: studentCount, lowThreshold, or currentQuantity",
   });
 
 export const distributeBottlesSchema = Joi.object({
