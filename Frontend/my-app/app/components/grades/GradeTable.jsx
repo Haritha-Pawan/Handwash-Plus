@@ -7,7 +7,6 @@ export default function GradeTable({
   grades,
   onEdit,
   onDeactivate,
-  onDistribute,
 }) {
   return (
     <div className="overflow-hidden rounded-2xl border border-white/10 bg-slate-900/70">
@@ -19,8 +18,8 @@ export default function GradeTable({
               <th className="px-4 py-3">Students</th>
               <th className="px-4 py-3">Current Qty</th>
               <th className="px-4 py-3">Threshold</th>
-              <th className="px-4 py-3">Teacher</th>
               <th className="px-4 py-3">Status</th>
+              <th className="px-4 py-3">Active</th>
               <th className="px-4 py-3">Actions</th>
             </tr>
           </thead>
@@ -33,10 +32,10 @@ export default function GradeTable({
                   {grade?.sanitizer?.currentQuantity ?? 0} {grade?.sanitizer?.unit || "ml"}
                 </td>
                 <td className="px-4 py-3">{grade?.sanitizer?.lowThreshold ?? 0}</td>
-                <td className="px-4 py-3">{grade?.classTeacher?.name || "Not assigned"}</td>
                 <td className="px-4 py-3">
                   <SanitizerStatusBadge status={grade?.sanitizer?.status || "adequate"} />
                 </td>
+                <td className="px-4 py-3">{grade.isActive ? "Yes" : "No"}</td>
                 <td className="px-4 py-3">
                   <div className="flex flex-wrap gap-2">
                     <Link
@@ -50,12 +49,6 @@ export default function GradeTable({
                       className="rounded-lg border border-yellow-400/20 bg-yellow-400/10 px-3 py-1 text-xs text-yellow-300"
                     >
                       Edit
-                    </button>
-                    <button
-                      onClick={() => onDistribute(grade)}
-                      className="rounded-lg border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-xs text-emerald-300"
-                    >
-                      Distribute
                     </button>
                     <button
                       onClick={() => onDeactivate(grade)}

@@ -1,58 +1,54 @@
 import api from "../lib/axios";
+import { getAuthUser } from "../lib/auth";
 
-export const getGrades = async (schoolId) => {
-  const { data } = await api.get("/grades", {
-    params: schoolId ? { schoolId } : {},
+function buildSchoolParams() {
+  const user = getAuthUser();
+
+  if (user?.role === "superAdmin") {
+    const schoolId = user?.schoolId || user?.school || null;
+    if (schoolId) {
+      return { schoolId };
+    }
+  }
+
+  return {};
+}
+
+export const getGrades = async () => {
+  const { data } = await api.get("/grades/", {
+    params: buildSchoolParams(),
   });
   return data;
 };
 
-export const getGradeById = async (gradeId, schoolId) => {
+export const getGradeById = async (gradeId) => {
   const { data } = await api.get(`/grades/${gradeId}`, {
-    params: schoolId ? { schoolId } : {},
+    params: buildSchoolParams(),
   });
   return data;
 };
 
-export const createGrades = async (payload, schoolId) => {
-  const { data } = await api.post("/grades", payload, {
-    params: schoolId ? { schoolId } : {},
+export const createGrades = async (payload) => {
+  const { data } = await api.post("/grades/", payload, {
+    params: buildSchoolParams(),
   });
   return data;
 };
 
-export const updateGrade = async (gradeId, payload, schoolId) => {
+export const updateGrade = async (gradeId, payload) => {
   const { data } = await api.patch(`/grades/${gradeId}`, payload, {
-    params: schoolId ? { schoolId } : {},
+    params: buildSchoolParams(),
   });
   return data;
 };
 
-export const deactivateGrade = async (gradeId, schoolId) => {
+export const deactivateGrade = async (gradeId) => {
   const { data } = await api.patch(
     `/grades/${gradeId}/deactivate`,
     {},
     {
-      params: schoolId ? { schoolId } : {},
+      params: buildSchoolParams(),
     }
   );
-  return data;
-};
-
-export const distributeBottles = async (gradeId, payload, schoolId) => {
-  const { data } = await api.post(
-    `/grades/${gradeId}/distribute-bottles`,
-    payload,
-    {
-      params: schoolId ? { schoolId } : {},
-    }
-  );
-  return data;
-};
-
-export const getSanitizerReport = async (schoolId) => {
-  const { data } = await api.get("/grades/sanitizer-check", {
-    params: schoolId ? { schoolId } : {},
-  });
   return data;
 };

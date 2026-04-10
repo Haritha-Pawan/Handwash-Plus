@@ -1,19 +1,31 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import GradeStats from "../components/grades/GradeStats";
 import GradeTable from "../components/grades/GradeTable";
 import GradeFormModal from "../components/grades/GradeFormModal";
-import DistributeBottlesModal from "../components/grades/DistributeBottlesModal";
-import ConfirmDeactivateModal from "../components/grades/confirmDeactivateModal";
+import ConfirmDeactivateModal from "../components/grades/ConfirmDeactivateModal";
 import Loader from "../components/grades/Loader";
 import EmptyState from "../components/grades/EmptyState";
 import useGrades from "../hooks/useGrades";
-import useGradeActions from "../hooks/userGradeActions";
+import useGradeActions from "../hooks/useGradeActions";
+import {
+  clearAuthToken,
+  clearAuthUser,
+  getAuthToken,
+} from "../lib/auth";
 
 export default function GradesPage() {
-  const schoolId = null; // set schoolId here only if superAdmin frontend needs manual query param
-  const { grades, loading, error, refetch } = useGrades(schoolId);
+  const [ready, setReady] = useState(false);
+  const [hasToken, setHasToken] = useState(false);
+
+  useEffect(() => {
+    const token = getAuthToken();
+    setHasToken(!!token);
+    setReady(true);
+  }, []);
+
+  const { grades, loading, error, refetch } = useGrades();
 
   const {
     actionLoading,
@@ -24,12 +36,10 @@ export default function GradesPage() {
     handleCreate,
     handleUpdate,
     handleDeactivate,
-    handleDistribute,
-  } = useGradeActions(schoolId, refetch);
+  } = useGradeActions(refetch);
 
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [editingGrade, setEditingGrade] = useState(null);
-  const [distributingGrade, setDistributingGrade] = useState(null);
   const [deactivatingGrade, setDeactivatingGrade] = useState(null);
 
   const stats = useMemo(() => {
@@ -48,6 +58,20 @@ export default function GradesPage() {
     setSuccessMessage("");
   };
 
+  if (!ready) {
+    return <Loader text="Checking session..." />;
+  }
+
+  if (!hasToken) {
+    return (
+      <div className="min-h-screen bg-slate-950 p-8 text-white">
+        <div className="mx-auto max-w-3xl rounded-2xl border border-yellow-400/20 bg-yellow-400/10 p-6 text-yellow-200">
+          Please log in first using the temporary login page at <span className="font-semibold">/temp-login</span>.
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <GradeStats stats={stats} />
@@ -63,12 +87,16 @@ export default function GradesPage() {
           + Create Grades
         </button>
 
-        <a
-          href="/sanitizer-report"
+        <button
+          onClick={() => {
+            clearAuthToken();
+            clearAuthUser();
+            window.location.href = "/temp-login";
+          }}
           className="rounded-xl border border-white/10 px-5 py-3 text-slate-200"
         >
-          View Sanitizer Report
-        </a>
+          Logout
+        </button>
       </div>
 
       {successMessage ? (
@@ -94,7 +122,7 @@ export default function GradesPage() {
       ) : grades.length === 0 ? (
         <EmptyState
           title="No grades found"
-          subtitle="Create grades to start managing sanitizer stock."
+          subtitle="Create grades to start managing grade records."
         />
       ) : (
         <GradeTable
@@ -106,10 +134,6 @@ export default function GradesPage() {
           onDeactivate={(grade) => {
             closeMessages();
             setDeactivatingGrade(grade);
-          }}
-          onDistribute={(grade) => {
-            closeMessages();
-            setDistributingGrade(grade);
           }}
         />
       )}
@@ -134,17 +158,6 @@ export default function GradesPage() {
         onSubmit={async (payload) => {
           await handleUpdate(editingGrade._id, payload);
           setEditingGrade(null);
-        }}
-      />
-
-      <DistributeBottlesModal
-        isOpen={!!distributingGrade}
-        onClose={() => setDistributingGrade(null)}
-        grade={distributingGrade}
-        loading={actionLoading}
-        onSubmit={async (payload) => {
-          await handleDistribute(distributingGrade._id, payload);
-          setDistributingGrade(null);
         }}
       />
 

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { getGrades } from "../services/grade.service";
 
-export default function useGrades(schoolId) {
+export default function useGrades() {
   const [grades, setGrades] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -12,14 +12,14 @@ export default function useGrades(schoolId) {
     try {
       setLoading(true);
       setError("");
-      const res = await getGrades(schoolId);
-      setGrades(res.data || []);
+      const res = await getGrades();
+      setGrades(res?.data || []);
     } catch (err) {
       setError(err?.response?.data?.message || "Failed to load grades");
     } finally {
       setLoading(false);
     }
-  }, [schoolId]);
+  }, []);
 
   useEffect(() => {
     fetchGrades();

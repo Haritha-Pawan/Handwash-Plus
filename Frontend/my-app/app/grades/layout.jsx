@@ -5,7 +5,7 @@ export default function GradesLayout({ children }) {
         <div className="mb-8">
           <h1 className="text-3xl font-bold">Grades Management</h1>
           <p className="mt-2 text-slate-400">
-            Manage grades, sanitizer stock, and bottle distribution
+            Manage grades using the backend Grades API
           </p>
         </div>
         {children}

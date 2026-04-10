@@ -1,14 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, use } from "react";
+import Link from "next/link";
 import { getGradeById } from "../../services/grade.service";
 import Loader from "../../components/grades/Loader";
 import SanitizerStatusBadge from "../../components/grades/SanitizerStatusBadge";
-import Link from "next/link";
 
 export default function GradeDetailsPage({ params }) {
-  const { gradeId } = params;
-  const schoolId = null;
+  const { gradeId } = use(params);
 
   const [grade, setGrade] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -19,8 +18,8 @@ export default function GradeDetailsPage({ params }) {
       try {
         setLoading(true);
         setError("");
-        const res = await getGradeById(gradeId, schoolId);
-        setGrade(res.data);
+        const res = await getGradeById(gradeId);
+        setGrade(res?.data || null);
       } catch (err) {
         setError(err?.response?.data?.message || "Failed to load grade details");
       } finally {
@@ -31,7 +30,9 @@ export default function GradeDetailsPage({ params }) {
     fetchGrade();
   }, [gradeId]);
 
-  if (loading) return <Loader text="Loading grade details..." />;
+  if (loading) {
+    return <Loader text="Loading grade details..." />;
+  }
 
   if (error) {
     return (
@@ -61,14 +62,7 @@ export default function GradeDetailsPage({ params }) {
           </div>
 
           <div className="rounded-xl bg-slate-800/60 p-4">
-            <p className="text-sm text-slate-400">Class Teacher</p>
-            <p className="mt-2 text-xl font-semibold text-white">
-              {grade?.classTeacher?.name || "Not assigned"}
-            </p>
-          </div>
-
-          <div className="rounded-xl bg-slate-800/60 p-4">
-            <p className="text-sm text-slate-400">Current Sanitizer Quantity</p>
+            <p className="text-sm text-slate-400">Current Quantity</p>
             <p className="mt-2 text-xl font-semibold text-white">
               {grade?.sanitizer?.currentQuantity ?? 0} {grade?.sanitizer?.unit || "ml"}
             </p>
@@ -92,6 +86,13 @@ export default function GradeDetailsPage({ params }) {
             <p className="text-sm text-slate-400">Active</p>
             <p className="mt-2 text-xl font-semibold text-white">
               {grade.isActive ? "Yes" : "No"}
+            </p>
+          </div>
+
+          <div className="rounded-xl bg-slate-800/60 p-4">
+            <p className="text-sm text-slate-400">Grade ID</p>
+            <p className="mt-2 break-all text-sm font-medium text-white">
+              {grade._id}
             </p>
           </div>
         </div>
