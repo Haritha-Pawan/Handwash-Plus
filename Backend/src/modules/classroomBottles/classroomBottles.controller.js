@@ -4,7 +4,7 @@ import {Classroom} from "../classrooms/classroom.model.js";
 
 export const updateClassroomBottles = async(req,res) =>{
     const {classroomId,month,bottleUsed} = req.body;
-   // const  teacherId = req.user.id; // auth middleware
+   //const  teacherId = req.user.id; // auth middleware
      const teacherId = "699fe963fac309cee0d145a8";
     try{
 
