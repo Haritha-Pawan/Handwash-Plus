@@ -123,11 +123,14 @@ export const SchoolController = {
         try {
             const { id } = req.params;
             
+            console.log(`🗑️ Deleting school with ID: ${id}`);
+            console.log(`👤 Requested by user with role: ${req.user?.role}`);
+
             if (!id) {
                 return ResponseUtil.badRequest(res, 'School ID is required');
             }
 
-            const deleted = await SchoolRepository.delete(id);
+            const deleted = await SchoolRepository.deleteById(id);
             
             if (!deleted) {
                 return ResponseUtil.notFound(res, 'School not found');
@@ -135,7 +138,7 @@ export const SchoolController = {
             
             return ResponseUtil.success(res, 200, 'School deleted successfully');
         } catch (error) {
-            console.error(' Delete school error:', error);
+            console.error('❌ Delete school error:', error);
             
             if (error.name === 'CastError') {
                 return ResponseUtil.badRequest(res, 'Invalid school ID format');

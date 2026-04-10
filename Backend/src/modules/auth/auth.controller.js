@@ -1,6 +1,9 @@
-
 import User from "../users/user.model.js";
 import { hashPassword } from "../../@core/utils/jwt.utils.js";
+import { AuthService } from "./auth.service.js";
+import ResponseUtil from "../../@core/utils/response.util.js";
+
+const authService = new AuthService();
 
 export const registerUser = async (req, res) => {
   try {
@@ -9,7 +12,7 @@ export const registerUser = async (req, res) => {
     // Check if user exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ message: "User already exists" });
+      return ResponseUtil.badRequest(res, "User already exists");
     }
 
     // Hash password
@@ -23,17 +26,39 @@ export const registerUser = async (req, res) => {
       role,
     });
 
-    res.status(201).json({
-      message: "User registered successfully",
+    return ResponseUtil.created(res, "User registered successfully", {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    });
+  } catch (error) {
+    console.error("❌ Registration error:", error);
+    return ResponseUtil.serverError(res, "Server error", error);
+  }
+};
+
+export const loginUser = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return ResponseUtil.badRequest(res, "Email and password are required");
+    }
+
+    const { user, tokens } = await authService.login(email, password);
+
+    return ResponseUtil.success(res, 200, "Login successful", {
       user: {
         id: user._id,
         name: user.name,
         email: user.email,
         role: user.role,
       },
+      tokens
     });
   } catch (error) {
-    console.error("❌ Registration error:", error);
-    res.status(500).json({ message: "Server error" });
+    console.error("❌ Login error:", error);
+    return ResponseUtil.unauthorized(res, error.message);
   }
 };

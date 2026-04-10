@@ -12,7 +12,7 @@ const server = http.createServer(app);
 const startServer = async () => {
   await connectDatabase();
 
-  server.listen(config.port, () => {
+  server.listen(config.port, "0.0.0.0", () => {
     console.success("Server running on port " + config.port);
   });
 };
