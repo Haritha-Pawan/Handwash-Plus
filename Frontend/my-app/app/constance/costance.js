@@ -8,7 +8,7 @@
     id: 1,
     title: "Best handwash for sensitive skin?",
     description: "Looking for a gentle handwash for daily use.",
-    image: "/images/step3.jpg",
+    image: "/images/handwash1.webp",
     votes: 12,
     user: "Lahiru",
   },

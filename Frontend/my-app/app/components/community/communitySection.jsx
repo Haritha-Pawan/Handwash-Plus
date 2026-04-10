@@ -1,6 +1,6 @@
 "use client";
-
 import { useState } from "react";
+import Link from "next/link";
 
 export default function CommunityTopSection({ setFilter }) {
   const [search, setSearch] = useState("");
@@ -41,13 +41,19 @@ export default function CommunityTopSection({ setFilter }) {
           </div>
 
           {/* My Post Button */}
-          <button className="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700">
-            + My Post
-          </button>
+         
+        <Link
+  href="/dashbord"
+  
+><button className="flex items-center gap-2 bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700">
+  + My Post
+</button>
+</Link>
+
         </div>
 
         {/* Row 2: Search + Filter */}
-        <div className="flex gap-3 mt-4 flex-wrap">
+        <div className="flex gap-3 mt-4  max-w-[700px]">
           
           {/* Search */}
           <input

@@ -10,14 +10,11 @@ const postSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    imageUrl: {          // <-- added for ImageKit image URL
+    imageUrl: {          
       type: String,
       default: null,
     },
-    votes: {             // <-- added for community voting
-      type: Number,
-      default: 0,
-    },
+ 
     author: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
