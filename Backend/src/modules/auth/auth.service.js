@@ -1,6 +1,5 @@
 import { UserRepository } from '../users/user.repository.js';
-import { comparePassword, hashPassword } from '../../@core/utils/jwt.utils.js';
-import { generateTokens, verifyToken, generateResetToken } from '../../@core/utils/jwt.util.js';
+import { comparePassword, hashPassword, generateToken, verifyToken, generateResetToken } from '../../@core/utils/jwt.utils.js';
 import { ROLES } from '../../@core/constants/roles.constants.js';
 
 export class AuthService {
@@ -25,7 +24,7 @@ export class AuthService {
     });
 
     // Generate tokens
-    const tokens = generateTokens({
+    const tokens = generateToken({
       userId: user._id,
       email: user.email,
       role: user.role
@@ -59,7 +58,7 @@ export class AuthService {
     await this.userRepository.update(user._id, { lastLogin: new Date() });
 
     // Generate tokens
-    const tokens = generateTokens({
+    const tokens = generateToken({
       userId: user._id,
       email: user.email,
       role: user.role
@@ -87,7 +86,7 @@ export class AuthService {
       }
 
       // Generate new tokens
-      const tokens = generateTokens({
+      const tokens = generateToken({
         userId: user._id,
         email: user.email,
         role: user.role
