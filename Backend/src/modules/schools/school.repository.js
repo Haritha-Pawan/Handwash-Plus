@@ -28,7 +28,7 @@ export const SchoolRepository = {
         ).populate('createdBy', 'name email');
     },
 
-    delete: async (id) => {
+    deleteById: async (id) => {
         return School.findByIdAndDelete(id);
     },
 

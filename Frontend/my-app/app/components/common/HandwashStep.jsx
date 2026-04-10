@@ -109,7 +109,7 @@ export function HandwashSteps() {
       <div className="max-w-7xl mt-12 text-center bg-white rounded-2xl p-6 shadow-lg border-2 border-cyan-300">
         <p className="text-lg text-gray-700">
           <span className="font-bold text-cyan-600">💡 Remember:</span> Wash your hands for at least{' '}
-          <span className="font-bold text-cyan-600">20 seconds</span> - that's about the time it takes to sing "Happy Birthday" twice! 🎵
+          <span className="font-bold text-cyan-600">20 seconds</span> - that&apos;s about the time it takes to sing &quot;Happy Birthday&quot; twice! 🎵
         </p>
       </div>
     </div>
