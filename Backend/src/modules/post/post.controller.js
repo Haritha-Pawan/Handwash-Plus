@@ -5,7 +5,10 @@ import imagekit from "../../config/imagekitConfig.js";
 export const createPost = async (req, res) => {
   try {
     const { title, content } = req.body;
-    const author = req.user.id;
+    const author = req.user?.id;
+    if (!author) {
+      return res.status(401).json({ message: "User not authenticated or ID missing" });
+    }
 
     let imageUrl = null;
 
