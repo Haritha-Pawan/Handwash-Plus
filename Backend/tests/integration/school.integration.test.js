@@ -8,6 +8,10 @@
  *   npm install --save-dev jest @jest/globals supertest mongodb-memory-server cross-env
  */
 
+
+
+/*add test*/
+
 import { jest, describe, it, expect, beforeAll, afterAll, beforeEach } from '@jest/globals';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
@@ -44,7 +48,7 @@ const authHeader = (token) => ({ Authorization: `Bearer ${token}` });
 const validSchoolPayload = {
   name: 'Integration Test School',
   address: '99 Test Avenue',
-  district: 'TestDistrict',
+  district: 'TestDistrict v1',
   city: 'TestCity',
   lat: -1.3,
   lng: 36.8,

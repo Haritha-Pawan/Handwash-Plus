@@ -10,6 +10,9 @@ export default {
     '**/tests/unit/**/*.test.js',
     '**/tests/integration/**/*.test.js',
   ],
+
+
+  
   coverageDirectory: 'coverage',
   collectCoverageFrom: [
     'src/modules/**/*.js',
