@@ -3,36 +3,36 @@ export default function GradeStats({ stats }) {
     {
       label: "Total Grades",
       value: stats.total,
-      color: "border-sky-500/20 bg-sky-500/10",
-      valueColor: "text-sky-300",
-      labelColor: "text-sky-400/70",
+      color: "border-sky-100 bg-white",
+      valueColor: "text-sky-600",
+      labelColor: "text-sky-600/60",
     },
     {
       label: "Active Grades",
       value: stats.active,
-      color: "border-emerald-500/20 bg-emerald-500/10",
-      valueColor: "text-emerald-300",
-      labelColor: "text-emerald-400/70",
+      color: "border-emerald-100 bg-white",
+      valueColor: "text-emerald-600",
+      labelColor: "text-emerald-600/60",
     },
     {
       label: "Low Stock",
       value: stats.low,
       color:
         stats.low > 0
-          ? "border-yellow-500/20 bg-yellow-500/10"
-          : "border-white/10 bg-slate-900/70",
-      valueColor: stats.low > 0 ? "text-yellow-300" : "text-slate-300",
-      labelColor: stats.low > 0 ? "text-yellow-400/70" : "text-slate-400",
+          ? "border-yellow-100 bg-white"
+          : "border-slate-100 bg-white",
+      valueColor: stats.low > 0 ? "text-yellow-600" : "text-slate-400",
+      labelColor: stats.low > 0 ? "text-yellow-600/60" : "text-slate-400/60",
     },
     {
       label: "Critical / Empty",
       value: stats.critical,
       color:
         stats.critical > 0
-          ? "border-rose-500/20 bg-rose-500/10"
-          : "border-white/10 bg-slate-900/70",
-      valueColor: stats.critical > 0 ? "text-rose-300" : "text-slate-300",
-      labelColor: stats.critical > 0 ? "text-rose-400/70" : "text-slate-400",
+          ? "border-rose-100 bg-white"
+          : "border-slate-100 bg-white",
+      valueColor: stats.critical > 0 ? "text-rose-600" : "text-slate-400",
+      labelColor: stats.critical > 0 ? "text-rose-600/60" : "text-slate-400/60",
     },
   ];
 

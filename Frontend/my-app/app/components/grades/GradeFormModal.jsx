@@ -6,8 +6,8 @@ function Field({ label, hint, children }) {
   return (
     <div>
       <div className="mb-1.5 flex items-baseline justify-between">
-        <label className="text-sm font-medium text-slate-200">{label}</label>
-        {hint && <span className="text-xs text-slate-500">{hint}</span>}
+        <label className="text-sm font-semibold text-slate-700">{label}</label>
+        {hint && <span className="text-xs text-slate-500 font-medium">{hint}</span>}
       </div>
       {children}
     </div>
@@ -64,19 +64,18 @@ export default function GradeFormModal({
     });
   };
 
-  const inputClass =
-    "w-full rounded-xl border border-white/10 bg-slate-900 px-4 py-2.5 text-white placeholder:text-slate-600 outline-none focus:border-sky-500/60 transition-colors";
+    "w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-slate-900 placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition-all shadow-sm";
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
-      <div className="w-full max-w-md rounded-2xl border border-white/10 bg-slate-950 shadow-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm">
+      <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white shadow-2xl overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-white/10 px-6 py-4">
+        <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50/50 px-6 py-4">
           <div>
-            <h2 className="text-lg font-semibold text-white">
+            <h2 className="text-lg font-bold text-slate-900">
               {mode === "create" ? "Create Grade" : `Edit Grade ${initialData?.gradeNumber ?? ""}`}
             </h2>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <p className="text-xs text-slate-500 font-medium mt-0.5">
               {mode === "create"
                 ? "Add a new grade to your school"
                 : "Update grade sanitizer or student details"}
@@ -84,7 +83,7 @@ export default function GradeFormModal({
           </div>
           <button
             onClick={onClose}
-            className="rounded-lg p-1.5 text-slate-500 hover:bg-white/10 hover:text-white transition-colors"
+            className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-900 transition-colors"
           >
             ✕
           </button>
@@ -150,7 +149,7 @@ export default function GradeFormModal({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-xl border border-white/10 px-4 py-2 text-sm text-slate-300 hover:bg-white/5 transition-colors"
+              className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors"
             >
               Cancel
             </button>

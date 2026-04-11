@@ -84,15 +84,15 @@ export default function GradesPage() {
         </button>
 
         <button
-          onClick={() => {
-            clearAuthToken();
-            clearAuthUser();
-            window.location.href = "/login";
-          }}
-          className="rounded-xl border border-white/10 px-5 py-3 text-slate-200 hover:bg-white/5 transition-colors"
-        >
-          Logout
-        </button>
+            onClick={() => {
+              clearAuthToken();
+              clearAuthUser();
+              window.location.href = "/login";
+            }}
+            className="rounded-xl border border-white/10 px-5 py-3 text-black hover:bg-white/5 transition-colors"
+          >
+            Logout
+          </button>
       </div>
 
       {successMessage && (
