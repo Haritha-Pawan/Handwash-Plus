@@ -1,4 +1,6 @@
-'use client';
+"use client";
+
+
 
 import { Hero } from "./components/Hero";
 import { Features } from "./components/Features";
@@ -7,6 +9,8 @@ import { HowItWorks } from "./components/HowItworks";
 
 
 export default function Home() {
+
+ 
   return (
    
     <div className="min-h-screen bg-linear-to-br from-blue-50 via-white to-cyan-50">
@@ -16,6 +20,7 @@ export default function Home() {
       <HowItWorks />
  
   
-    </div>
+      </div>
+   
   );
 }

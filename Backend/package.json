@@ -13,7 +13,7 @@
     "start": "node src/bootstrap/server.js",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --testPathPattern=\"__tests__\" --forceExit",
     "test:unit": "node --experimental-vm-modules node_modules/jest/bin/jest.js --testPathPattern=\"src/modules\" --forceExit",
-    "test:integration": "node --experimental-vm-modules node_modules/jest/bin/jest.js --testPathPattern=\"tests/integration\" --forceExit",
+    "test:integration": "node --experimental-vm-modules node_modules/jest/bin/jest.js --testPathPatterns=\"tests/integration\" --forceExit",
     "test:coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage --forceExit",
     "test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch"
   },

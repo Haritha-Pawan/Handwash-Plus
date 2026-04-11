@@ -1,8 +1,11 @@
 import { Button } from './ui/button';
 import { Droplet, Sparkles, Heart, Shield, HandMetal, Waves } from 'lucide-react';
 import Images from 'next/image';
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export function Hero() {
+   const router = useRouter();
   return (
     <div className="max-w-7xl mx-auto px-6 py-16 relative overflow-hidden">
       <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -20,12 +23,16 @@ export function Hero() {
           </p>
 
           <div className="flex flex-wrap gap-4">
+            
             <Button className="bg-cyan-500 hover:bg-cyan-600 text-white px-8 py-6 text-lg rounded-full shadow-lg hover:shadow-xl transition-all">
               Start Monitoring
             </Button>
-            <Button variant="outline" className="px-8 py-6 text-lg rounded-full border-2 border-cyan-500 text-cyan-600 hover:bg-cyan-50">
-              View Dashboard
-            </Button>
+            
+            <Button
+          variant="outline"
+          className="px-8 py-6 text-lg rounded-full border-2 border-cyan-500 text-cyan-600 hover:bg-cyan-50">
+         View Dashboard
+        </Button>
           </div>
 
           {/* Statistics */}

@@ -7,6 +7,8 @@ import swaggerUi from 'swagger-ui-express';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
 
 import authRoutes from './modules/auth/auth.routes.js';
 import classroomRoutes from './modules/classrooms/classroom.routes.js';
@@ -19,6 +21,8 @@ import schoolRoutes from './modules/schools/school.routes.js';
 import worldBankRoutes from './modules/world-bank/world-bank.routes.js';
 import gradeRouter from './modules/grades/grade.routes.js';
 import schoolRouter from './modules/schools/school.routes.js';
+import { mockAuth } from "./mocks/mockAuth.js";
+
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -28,11 +32,19 @@ const app = express();
 
 
 
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:3000', // Next.js frontend
+  credentials: true,
+}));
 app.use(helmet());
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+//only for test
+if (process.env.NODE_ENV === "test") {
+  app.use(mockAuth);
+}
 
 // Swagger UI - Load from YAML files
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(null, {
