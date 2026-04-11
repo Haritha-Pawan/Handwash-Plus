@@ -1,16 +1,14 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useSchools, useDeleteSchool } from "../../../features/school/hooks/useSchool";
-import { 
-  Droplets, 
-  MapPin, 
-  Building, 
-  AlertCircle, 
-  RefreshCcw, 
-  Loader2, 
-  Trash2, 
-  Edit2, 
+import {
+  Building,
+  MapPin,
+  AlertCircle,
+  RefreshCcw,
+  Loader2,
+  Trash2,
+  Edit2,
   Map,
   Users,
   School,
@@ -18,58 +16,140 @@ import {
   Filter,
   Search,
   ChevronDown,
-  ChevronRight,
   Calendar,
-  Clock,
-  MoreVertical,
   Download,
-  BarChart3,
   Activity,
   Globe,
   Phone,
   Mail,
-  Shield,
-  Award,
+  Plus,
+  X,
+  CheckCircle,
+  Clock,
+  GraduationCap,
+  BookOpen,
+  BarChart3,
   Eye,
-  Layers,
-  Maximize2,
-  Minimize2
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 import { SchoolMap } from "../../../../components/SchoolMap";
 import { EditSchoolModal } from "../../../../components/EditSchoolModal";
 import type { School } from "../../../features/school/types/school.types";
 
+// API Base URL
+const API_BASE_URL = "http://localhost:5000/api";
+
 const Dashboard = () => {
   const router = useRouter();
   const [isAuthorized, setIsAuthorized] = useState(false);
-  const schoolsQuery = useSchools();
-  const { data: schools = [], isLoading, isError, error } = schoolsQuery;
-  const refetch = schoolsQuery.refetch as any;
-  const { mutate: deleteSchool, isPending: isDeleting } = useDeleteSchool();
   
+  // State for schools data
+  const [schools, setSchools] = useState<School[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  
+  // UI State
   const [schoolToEdit, setSchoolToEdit] = useState<School | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("All");
-  const [isMapFullscreen, setIsMapFullscreen] = useState(false);
   const [selectedSchool, setSelectedSchool] = useState<School | null>(null);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [timeRange, setTimeRange] = useState("week");
-
-  // Statistics
-  const districts = [...new Set(schools.map(s => s.district))];
+  const [activeTab, setActiveTab] = useState<"map" | "list">("list");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
+  
+  // Fetch schools from API
+  const fetchSchools = async () => {
+    setIsLoading(true);
+    setIsError(false);
+    setError(null);
+    
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${API_BASE_URL}/schools`, {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      // Handle different response structures
+      const schoolsData = data.data || data.schools || data;
+      setSchools(Array.isArray(schoolsData) ? schoolsData : []);
+    } catch (err) {
+      console.error("Error fetching schools:", err);
+      setIsError(true);
+      setError(err instanceof Error ? err.message : "Failed to fetch schools");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  // Delete school
+  const handleDelete = async (id: string) => {
+    if (!window.confirm("Are you sure you want to delete this school? This action cannot be undone.")) {
+      return;
+    }
+    
+    setIsDeleting(true);
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${API_BASE_URL}/schools/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok && data.success) {
+        await fetchSchools(); // Refresh the list
+      } else {
+        alert(`Failed to delete: ${data.message || "Unknown error"}`);
+      }
+    } catch (err) {
+      console.error("Delete failed:", err);
+      alert(`Error deleting school: ${err instanceof Error ? err.message : "Server error"}`);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+  
+  // Get unique districts
+  const districts = ["All", ...new Set(schools.map(s => s.district).filter(Boolean))];
+  
+  // Filter schools
   const filteredSchools = schools.filter(school => {
-    const matchesSearch = school.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         school.address.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = school.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      school.address?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      school.city?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesDistrict = selectedDistrict === "All" || school.district === selectedDistrict;
     return matchesSearch && matchesDistrict;
   });
-
-  const totalStudents = filteredSchools.reduce((acc, school) => acc + (school.studentCount || 0), 0);
-  const totalTeachers = filteredSchools.reduce((acc, school) => acc + (school.teacherCount || 0), 0);
-  const averagePerformance = filteredSchools.length > 0 
-    ? Math.round(filteredSchools.reduce((acc, s) => acc + (s.performance || 0), 0) / filteredSchools.length)
+  
+  // Pagination
+  const totalPages = Math.ceil(filteredSchools.length / itemsPerPage);
+  const paginatedSchools = filteredSchools.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+  
+  // Statistics
+  const totalStudents = schools.reduce((acc, school) => acc + (school.studentCount || 0), 0);
+  const totalTeachers = schools.reduce((acc, school) => acc + (school.teacherCount || 0), 0);
+  const averagePerformance = schools.length > 0
+    ? Math.round(schools.reduce((acc, s) => acc + (s.performance || 0), 0) / schools.length)
     : 0;
-
+  
   useEffect(() => {
     const userStr = localStorage.getItem("user");
     const token = localStorage.getItem("token");
@@ -78,7 +158,7 @@ const Dashboard = () => {
       router.push("/login");
       return;
     }
-
+    
     try {
       const user = JSON.parse(userStr);
       if (user.role !== "superAdmin") {
@@ -86,473 +166,415 @@ const Dashboard = () => {
         return;
       }
       setIsAuthorized(true);
+      fetchSchools();
     } catch (e) {
       router.push("/login");
     }
   }, [router]);
-
+  
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, selectedDistrict]);
+  
   if (!isAuthorized) {
     return null;
   }
-
-  const handleDelete = (id: string) => {
-    if (window.confirm("Are you sure you want to delete this school? This action cannot be undone.")) {
-      deleteSchool(id, {
-        onSuccess: (response) => {
-          if (response.success) {
-            console.log("✅ School deleted successfully");
-          } else {
-            alert(`Failed: ${response.message || "Unknown error"}`);
-          }
-        },
-        onError: (err: any) => {
-          console.error("❌ Delete failed:", err);
-          const errMsg = err?.response?.data?.message || err.message || "Server error";
-          alert(`Error deleting school: ${errMsg}`);
-        }
-      });
-    }
-  };
-
+  
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col items-center justify-center">
-        <div className="relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full blur-2xl opacity-20 animate-pulse"></div>
-          <Loader2 className="w-16 h-16 text-cyan-400 animate-spin relative" />
-        </div>
-        <h2 className="text-2xl font-semibold text-white/90 mt-6 animate-pulse">Loading Dashboard...</h2>
-        <p className="text-slate-400 mt-2">Fetching school data from Sri Lanka</p>
+      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center">
+        <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />
+        <h2 className="text-xl font-semibold text-gray-700 mt-4">Loading Dashboard...</h2>
+        <p className="text-gray-500 mt-2">Fetching school data...</p>
       </div>
     );
   }
-
+  
   if (isError) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-6">
-        <div className="bg-slate-800/50 backdrop-blur-xl p-8 rounded-3xl shadow-2xl border border-red-500/20 max-w-lg text-center">
-          <div className="w-20 h-20 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-red-500/20">
-            <AlertCircle className="w-10 h-10 text-red-400" />
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
+        <div className="bg-white rounded-xl shadow-lg p-8 max-w-lg text-center border border-gray-200">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <AlertCircle className="w-8 h-8 text-red-600" />
           </div>
-          <h2 className="text-2xl font-bold text-white mb-3">Connection Error</h2>
-          <p className="text-slate-300 mb-8">{(error as Error)?.message || "Unable to fetch school data from server."}</p>
-          <button 
-            onClick={() => refetch()}
-            className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-cyan-500 to-blue-500 text-white py-3 px-6 rounded-xl hover:from-cyan-600 hover:to-blue-600 transition-all font-medium shadow-lg shadow-cyan-500/20"
+          <h2 className="text-xl font-bold text-gray-800 mb-2">Connection Error</h2>
+          <p className="text-gray-600 mb-6">{error || "Unable to fetch school data from server."}</p>
+          <button
+            onClick={fetchSchools}
+            className="flex items-center justify-center gap-2 w-full bg-blue-600 text-white py-2.5 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium"
           >
-            <RefreshCcw className="w-5 h-5" />
+            <RefreshCcw className="w-4 h-4" />
             Retry Connection
           </button>
         </div>
       </div>
     );
   }
-
+  
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-      {/* Animated Background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-      </div>
-
-      <div className="relative">
-        {/* Top Navigation Bar */}
-        <nav className="bg-slate-800/50 backdrop-blur-xl border-b border-slate-700/50 sticky top-0 z-40">
-          <div className="px-6 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-xl flex items-center justify-center shadow-lg shadow-cyan-500/20">
-                    <School className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h1 className="text-xl font-bold text-white">EduManage SL</h1>
-                    <p className="text-xs text-slate-400">Super Admin Console</p>
-                  </div>
-                </div>
-                <div className="h-8 w-px bg-slate-700"></div>
-                <div className="flex items-center gap-2">
-                  <Globe className="w-4 h-4 text-cyan-400" />
-                  <span className="text-sm text-slate-300">Sri Lanka</span>
-                </div>
+    <div className="min-h-screen bg-gray-50">
+      
+      
+      <div className="p-6 space-y-6">
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-gray-500 text-sm mb-1">Total Schools</p>
+                <h3 className="text-3xl font-bold text-gray-800">{schools.length}</h3>
+                <p className="text-xs text-green-600 mt-2 flex items-center gap-1">
+                  <TrendingUp className="w-3 h-3" />
+                  Active institutions
+                </p>
               </div>
-
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2 px-4 py-2 bg-slate-700/50 rounded-xl border border-slate-600/50">
-                  <Calendar className="w-4 h-4 text-slate-400" />
-                  <span className="text-sm text-slate-300">
-                    {new Date().toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <button className="p-2 hover:bg-slate-700/50 rounded-xl transition-colors">
-                    <Download className="w-5 h-5 text-slate-400" />
-                  </button>
-                  <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center shadow-lg">
-                    <Shield className="w-5 h-5 text-white" />
-                  </div>
-                </div>
+              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                <Building className="w-6 h-6 text-blue-600" />
               </div>
             </div>
           </div>
-        </nav>
-
-        <div className="p-6 space-y-6">
-          {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl p-6 border border-slate-700/50 hover:border-cyan-500/30 transition-all group">
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-slate-400 text-sm mb-1">Total Schools</p>
-                  <h3 className="text-3xl font-bold text-white">{schools.length}</h3>
-                  <p className="text-xs text-green-400 mt-2 flex items-center gap-1">
-                    <TrendingUp className="w-3 h-3" />
-                    +12% from last month
-                  </p>
-                </div>
-                <div className="w-12 h-12 bg-cyan-500/10 rounded-xl flex items-center justify-center group-hover:bg-cyan-500/20 transition-all">
-                  <Building className="w-6 h-6 text-cyan-400" />
-                </div>
+          
+          <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-gray-500 text-sm mb-1">Total Students</p>
+                <h3 className="text-3xl font-bold text-gray-800">{totalStudents.toLocaleString()}</h3>
+                <p className="text-xs text-gray-500 mt-2">Across all schools</p>
               </div>
-            </div>
-
-            <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl p-6 border border-slate-700/50 hover:border-blue-500/30 transition-all group">
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-slate-400 text-sm mb-1">Total Students</p>
-                  <h3 className="text-3xl font-bold text-white">{totalStudents.toLocaleString()}</h3>
-                  <p className="text-xs text-green-400 mt-2 flex items-center gap-1">
-                    <TrendingUp className="w-3 h-3" />
-                    +8% from last month
-                  </p>
-                </div>
-                <div className="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center group-hover:bg-blue-500/20 transition-all">
-                  <Users className="w-6 h-6 text-blue-400" />
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl p-6 border border-slate-700/50 hover:border-purple-500/30 transition-all group">
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-slate-400 text-sm mb-1">Total Teachers</p>
-                  <h3 className="text-3xl font-bold text-white">{totalTeachers.toLocaleString()}</h3>
-                  <p className="text-xs text-green-400 mt-2 flex items-center gap-1">
-                    <TrendingUp className="w-3 h-3" />
-                    +5% from last month
-                  </p>
-                </div>
-                <div className="w-12 h-12 bg-purple-500/10 rounded-xl flex items-center justify-center group-hover:bg-purple-500/20 transition-all">
-                  <Award className="w-6 h-6 text-purple-400" />
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl p-6 border border-slate-700/50 hover:border-green-500/30 transition-all group">
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-slate-400 text-sm mb-1">Avg Performance</p>
-                  <h3 className="text-3xl font-bold text-white">{averagePerformance}%</h3>
-                  <p className="text-xs text-green-400 mt-2 flex items-center gap-1">
-                    <Activity className="w-3 h-3" />
-                    Above target
-                  </p>
-                </div>
-                <div className="w-12 h-12 bg-green-500/10 rounded-xl flex items-center justify-center group-hover:bg-green-500/20 transition-all">
-                  <BarChart3 className="w-6 h-6 text-green-400" />
-                </div>
+              <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                <Users className="w-6 h-6 text-green-600" />
               </div>
             </div>
           </div>
-
-          {/* Main Content Area */}
-          <div className="flex gap-6">
-            {/* Sidebar - Search & Filters */}
-            <div className={`${sidebarCollapsed ? 'w-20' : 'w-80'} transition-all duration-300`}>
-              <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-4 sticky top-24">
-                <div className="flex items-center justify-between mb-4">
-                  {!sidebarCollapsed && <h2 className="text-lg font-semibold text-white">Filters & Search</h2>}
-                  <button 
-                    onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-                    className="p-2 hover:bg-slate-700/50 rounded-lg transition-colors"
-                  >
-                    {sidebarCollapsed ? <ChevronRight className="w-5 h-5 text-slate-400" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}
-                  </button>
-                </div>
-
-                {!sidebarCollapsed && (
-                  <>
-                    {/* Search */}
-                    <div className="relative mb-4">
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-                      <input
-                        type="text"
-                        placeholder="Search schools..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full bg-slate-900/50 border border-slate-700 rounded-xl py-2.5 pl-10 pr-4 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 transition-colors"
-                      />
-                    </div>
-
-                    {/* District Filter */}
-                    <div className="mb-4">
-                      <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 block">District</label>
-                      <select
-                        value={selectedDistrict}
-                        onChange={(e) => setSelectedDistrict(e.target.value)}
-                        className="w-full bg-slate-900/50 border border-slate-700 rounded-xl py-2.5 px-4 text-sm text-white focus:outline-none focus:border-cyan-500/50 transition-colors cursor-pointer"
-                      >
-                        <option value="All">All Districts</option>
-                        {districts.map(district => (
-                          <option key={district} value={district}>{district}</option>
-                        ))}
-                      </select>
-                    </div>
-
-                    {/* Time Range Filter */}
-                    <div className="mb-4">
-                      <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 block">Time Range</label>
-                      <div className="flex gap-2">
-                        {['day', 'week', 'month', 'year'].map((range) => (
-                          <button
-                            key={range}
-                            onClick={() => setTimeRange(range)}
-                            className={`flex-1 py-2 text-xs font-medium rounded-lg transition-all ${
-                              timeRange === range 
-                                ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/20' 
-                                : 'bg-slate-900/50 text-slate-400 hover:text-white hover:bg-slate-700/50'
-                            }`}
-                          >
-                            {range.charAt(0).toUpperCase() + range.slice(1)}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Quick Stats */}
-                    <div className="pt-4 border-t border-slate-700/50">
-                      <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Quick Stats</h3>
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span className="text-slate-400">Schools Shown</span>
-                          <span className="text-white font-semibold">{filteredSchools.length}</span>
-                        </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-slate-400">Districts</span>
-                          <span className="text-white font-semibold">{districts.length}</span>
-                        </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-slate-400">Avg Students/School</span>
-                          <span className="text-white font-semibold">
-                            {filteredSchools.length > 0 ? Math.round(totalStudents / filteredSchools.length) : 0}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </>
-                )}
+          
+          <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-gray-500 text-sm mb-1">Total Teachers</p>
+                <h3 className="text-3xl font-bold text-gray-800">{totalTeachers.toLocaleString()}</h3>
+                <p className="text-xs text-gray-500 mt-2">Dedicated educators</p>
               </div>
-            </div>
-
-            {/* Map Section */}
-            <div className="flex-1">
-              <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 overflow-hidden">
-                <div className="p-4 border-b border-slate-700/50">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-lg flex items-center justify-center">
-                        <Map className="w-4 h-4 text-white" />
-                      </div>
-                      <div>
-                        <h2 className="text-lg font-semibold text-white">Sri Lanka School Network</h2>
-                        <p className="text-xs text-slate-400">{filteredSchools.length} schools mapped</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <button className="p-2 hover:bg-slate-700/50 rounded-lg transition-colors">
-                        <Layers className="w-5 h-5 text-slate-400" />
-                      </button>
-                      <button 
-                        onClick={() => setIsMapFullscreen(!isMapFullscreen)}
-                        className="p-2 hover:bg-slate-700/50 rounded-lg transition-colors"
-                      >
-                        {isMapFullscreen ? 
-                          <Minimize2 className="w-5 h-5 text-slate-400" /> : 
-                          <Maximize2 className="w-5 h-5 text-slate-400" />
-                        }
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className={`${isMapFullscreen ? 'h-[800px]' : 'h-[500px]'} transition-all duration-300 relative`}>
-                  <SchoolMap 
-                    schools={filteredSchools} 
-                    onEdit={(s) => setSchoolToEdit(s)} 
-                    onDelete={(id) => handleDelete(id)}
-                    onSelect={(s) => setSelectedSchool(s)}
-                  />
-                  
-                  {/* Selected School Info Overlay */}
-                  {selectedSchool && (
-                    <div className="absolute bottom-4 left-4 right-4 bg-slate-800/90 backdrop-blur-xl rounded-xl p-4 border border-slate-700/50 shadow-xl">
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <h3 className="text-white font-semibold mb-1">{selectedSchool.name}</h3>
-                          <div className="flex items-center gap-4 text-sm text-slate-400">
-                            <span className="flex items-center gap-1">
-                              <MapPin className="w-3 h-3" />
-                              {selectedSchool.city}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <Users className="w-3 h-3" />
-                              {selectedSchool.studentCount || 0} students
-                            </span>
-                          </div>
-                        </div>
-                        <div className="flex gap-2">
-                          <button 
-                            onClick={() => setSchoolToEdit(selectedSchool)}
-                            className="px-3 py-1.5 bg-cyan-500/20 text-cyan-400 rounded-lg text-sm hover:bg-cyan-500/30 transition-colors"
-                          >
-                            View Details
-                          </button>
-                          <button 
-                            onClick={() => setSelectedSchool(null)}
-                            className="p-1.5 hover:bg-slate-700/50 rounded-lg transition-colors"
-                          >
-                            <ChevronDown className="w-4 h-4 text-slate-400" />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
+              <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                <GraduationCap className="w-6 h-6 text-purple-600" />
               </div>
             </div>
           </div>
-
-          {/* School List Grid */}
-          <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50">
-            <div className="p-4 border-b border-slate-700/50">
-              <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-white">School Directory</h2>
-                <span className="text-sm text-slate-400">{filteredSchools.length} schools</span>
+          
+          <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-gray-500 text-sm mb-1">Avg Performance</p>
+                <h3 className="text-3xl font-bold text-gray-800">{averagePerformance}%</h3>
+                <p className="text-xs text-green-600 mt-2 flex items-center gap-1">
+                  <Activity className="w-3 h-3" />
+                  Above target
+                </p>
               </div>
-            </div>
-            
-            <div className="p-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[400px] overflow-y-auto custom-scrollbar">
-                {filteredSchools.length === 0 ? (
-                  <div className="col-span-full py-12 text-center">
-                    <Building className="w-12 h-12 text-slate-600 mx-auto mb-3" />
-                    <p className="text-slate-400">No schools found matching your filters</p>
-                  </div>
-                ) : (
-                  filteredSchools.map((school) => {
-                    const id = school.id || school._id || "";
-                    return (
-                      <div
-                        key={id}
-                        className="bg-slate-900/50 rounded-xl p-4 border border-slate-700/50 hover:border-cyan-500/30 hover:shadow-lg hover:shadow-cyan-500/5 transition-all group cursor-pointer"
-                        onClick={() => setSelectedSchool(school)}
-                      >
-                        <div className="flex items-start justify-between mb-3">
-                          <div>
-                            <h3 className="text-white font-semibold group-hover:text-cyan-400 transition-colors">
-                              {school.name}
-                            </h3>
-                            <p className="text-xs text-slate-500 mt-0.5">{school.district}</p>
-                          </div>
-                          <div className="w-8 h-8 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-lg flex items-center justify-center">
-                            <School className="w-4 h-4 text-cyan-400" />
-                          </div>
-                        </div>
-                        
-                        <div className="space-y-2 mb-4">
-                          <div className="flex items-center text-xs text-slate-400">
-                            <MapPin className="w-3 h-3 mr-1.5" />
-                            {school.address}, {school.city}
-                          </div>
-                          <div className="flex items-center gap-4">
-                            <div className="flex items-center text-xs text-slate-400">
-                              <Users className="w-3 h-3 mr-1.5" />
-                              {school.studentCount || 0} students
-                            </div>
-                            <div className="flex items-center text-xs text-slate-400">
-                              <Award className="w-3 h-3 mr-1.5" />
-                              {school.teacherCount || 0} teachers
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-2 pt-3 border-t border-slate-700/50">
-                          <button 
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSchoolToEdit(school);
-                            }}
-                            className="flex-1 flex items-center justify-center gap-1.5 bg-slate-800 hover:bg-cyan-500/20 text-slate-300 hover:text-cyan-400 py-2 rounded-lg text-xs font-medium transition-all"
-                          >
-                            <Edit2 className="w-3 h-3" />
-                            Edit
-                          </button>
-                          <button 
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDelete(id);
-                            }}
-                            disabled={isDeleting}
-                            className="flex-1 flex items-center justify-center gap-1.5 bg-slate-800 hover:bg-red-500/20 text-slate-300 hover:text-red-400 py-2 rounded-lg text-xs font-medium transition-all disabled:opacity-50"
-                          >
-                            <Trash2 className="w-3 h-3" />
-                            Delete
-                          </button>
-                          <button 
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSelectedSchool(school);
-                            }}
-                            className="flex items-center justify-center w-8 h-8 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition-all"
-                          >
-                            <Eye className="w-3 h-3" />
-                          </button>
-                        </div>
-                      </div>
-                    );
-                  })
-                )}
+              <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
+                <BarChart3 className="w-6 h-6 text-orange-600" />
               </div>
             </div>
           </div>
         </div>
+        
+        {/* Search and Filters Bar */}
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search by school name, address, or city..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full bg-gray-50 border border-gray-200 rounded-lg py-2.5 pl-10 pr-4 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:bg-white transition-colors"
+              />
+            </div>
+            
+            <div className="flex gap-3">
+              <div className="relative">
+                <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <select
+                  value={selectedDistrict}
+                  onChange={(e) => setSelectedDistrict(e.target.value)}
+                  className="pl-10 pr-8 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-700 focus:outline-none focus:border-blue-400 cursor-pointer appearance-none"
+                >
+                  {districts.map(district => (
+                    <option key={district} value={district}>{district}</option>
+                  ))}
+                </select>
+                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+              </div>
+              
+              <button
+                onClick={fetchSchools}
+                className="px-4 py-2.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors flex items-center gap-2 text-sm font-medium"
+              >
+                <RefreshCcw className="w-4 h-4" />
+                Refresh
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        {/* Tab Navigation */}
+        <div className="border-b border-gray-200">
+          <div className="flex gap-6">
+            <button
+              onClick={() => setActiveTab("list")}
+              className={`pb-3 px-1 text-sm font-medium transition-colors relative ${
+                activeTab === "list"
+                  ? "text-blue-600 border-b-2 border-blue-600"
+                  : "text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <School className="w-4 h-4" />
+                School Directory
+              </div>
+            </button>
+            <button
+              onClick={() => setActiveTab("map")}
+              className={`pb-3 px-1 text-sm font-medium transition-colors relative ${
+                activeTab === "map"
+                  ? "text-blue-600 border-b-2 border-blue-600"
+                  : "text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <Map className="w-4 h-4" />
+                Map View
+              </div>
+            </button>
+          </div>
+        </div>
+        
+        {/* Main Content */}
+        {activeTab === "map" ? (
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+            <div className="p-4 border-b border-gray-100">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-lg font-semibold text-gray-800">School Locations Map</h2>
+                  <p className="text-sm text-gray-500">{filteredSchools.length} schools displayed</p>
+                </div>
+              </div>
+            </div>
+            <div className="h-[500px] relative">
+              <SchoolMap
+                schools={filteredSchools}
+                onEdit={(s) => setSchoolToEdit(s)}
+                onDelete={(id) => handleDelete(id)}
+                onSelect={(s) => setSelectedSchool(s)}
+              />
+              
+              {/* Selected School Info Overlay */}
+              {selectedSchool && (
+                <div className="absolute bottom-4 left-4 right-4 bg-white rounded-lg shadow-lg p-4 border border-gray-200">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <h3 className="text-gray-800 font-semibold mb-1">{selectedSchool.name}</h3>
+                      <div className="flex flex-wrap items-center gap-3 text-sm text-gray-500">
+                        <span className="flex items-center gap-1">
+                          <MapPin className="w-3 h-3" />
+                          {selectedSchool.city}, {selectedSchool.district}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Users className="w-3 h-3" />
+                          {selectedSchool.studentCount || 0} students
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => setSchoolToEdit(selectedSchool)}
+                        className="px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-sm hover:bg-blue-100 transition-colors"
+                      >
+                        View Details
+                      </button>
+                      <button
+                        onClick={() => setSelectedSchool(null)}
+                        className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
+                      >
+                        <X className="w-4 h-4 text-gray-400" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        ) : (
+          // School Table View
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50 border-b border-gray-200">
+                  <tr>
+                    <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">School</th>
+                    <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">District</th>
+                    <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Location</th>
+                    <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Students</th>
+                    <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Teachers</th>
+                    <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Performance</th>
+                    <th className="text-center py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {paginatedSchools.length === 0 ? (
+                    <tr>
+                      <td colSpan={7} className="py-12 text-center">
+                        <Building className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                        <p className="text-gray-500">No schools found matching your filters</p>
+                      </td>
+                    </tr>
+                  ) : (
+                    paginatedSchools.map((school) => {
+                      const id = school.id || school._id || "";
+                      return (
+                        <tr key={id} className="hover:bg-gray-50 transition-colors">
+                          <td className="py-3 px-4">
+                            <div>
+                              <p className="font-medium text-gray-800">{school.name}</p>
+                              <p className="text-xs text-gray-500 mt-0.5">{school.type || "School"}</p>
+                            </div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
+                              {school.district}
+                            </span>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="text-sm text-gray-600">
+                              <p>{school.city}</p>
+                              <p className="text-xs text-gray-400">{school.address}</p>
+                            </div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="flex items-center gap-1 text-sm text-gray-700">
+                              <Users className="w-3.5 h-3.5 text-gray-400" />
+                              {school.studentCount?.toLocaleString() || 0}
+                            </div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="flex items-center gap-1 text-sm text-gray-700">
+                              <GraduationCap className="w-3.5 h-3.5 text-gray-400" />
+                              {school.teacherCount || 0}
+                            </div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="flex items-center gap-2">
+                              <div className="w-16 bg-gray-200 rounded-full h-1.5">
+                                <div 
+                                  className={`h-1.5 rounded-full ${
+                                    (school.performance || 0) >= 80 ? "bg-green-500" :
+                                    (school.performance || 0) >= 60 ? "bg-yellow-500" : "bg-red-500"
+                                  }`}
+                                  style={{ width: `${school.performance || 0}%` }}
+                                />
+                              </div>
+                              <span className="text-sm font-medium text-gray-700">{school.performance || 0}%</span>
+                            </div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="flex items-center justify-center gap-2">
+                              <button
+                                onClick={() => setSchoolToEdit(school)}
+                                className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                title="Edit"
+                              >
+                                <Edit2 className="w-4 h-4" />
+                              </button>
+                              <button
+                                onClick={() => handleDelete(id)}
+                                disabled={isDeleting}
+                                className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
+                                title="Delete"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                              <button
+                                onClick={() => setSelectedSchool(school)}
+                                className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                                title="View"
+                              >
+                                <Eye className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
+            
+            {/* Pagination */}
+            {filteredSchools.length > 0 && (
+              <div className="px-4 py-3 border-t border-gray-200 flex items-center justify-between bg-gray-50">
+                <div className="text-sm text-gray-500">
+                  Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, filteredSchools.length)} of {filteredSchools.length} schools
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                    className="p-2 rounded-lg border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+                  <div className="flex gap-1">
+                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                      let pageNum;
+                      if (totalPages <= 5) {
+                        pageNum = i + 1;
+                      } else if (currentPage <= 3) {
+                        pageNum = i + 1;
+                      } else if (currentPage >= totalPages - 2) {
+                        pageNum = totalPages - 4 + i;
+                      } else {
+                        pageNum = currentPage - 2 + i;
+                      }
+                      
+                      return (
+                        <button
+                          key={pageNum}
+                          onClick={() => setCurrentPage(pageNum)}
+                          className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${
+                            currentPage === pageNum
+                              ? "bg-blue-600 text-white"
+                              : "border border-gray-200 bg-white text-gray-600 hover:bg-gray-50"
+                          }`}
+                        >
+                          {pageNum}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <button
+                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                    disabled={currentPage === totalPages}
+                    className="p-2 rounded-lg border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
       
       {/* Edit Modal */}
       {schoolToEdit && (
-        <EditSchoolModal 
-          school={schoolToEdit} 
-          onClose={() => setSchoolToEdit(null)} 
+        <EditSchoolModal
+          school={schoolToEdit}
+          onClose={() => setSchoolToEdit(null)}
+          onUpdate={fetchSchools}
         />
       )}
-
-      <style jsx>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: rgba(30, 41, 59, 0.5);
-          border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(6, 182, 212, 0.3);
-          border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: rgba(6, 182, 212, 0.5);
-        }
-      `}</style>
     </div>
   );
 };

@@ -8,7 +8,6 @@ const ok = (res, data, message = "Success") =>
 const created = (res, data, message = "Created") =>
   res.status(201).json({ success: true, message, data });
 
-
 const resolveSchool = (req) => {
   if (req.user.role === "superAdmin") {
     if (!req.query.schoolId) {
@@ -31,6 +30,12 @@ class GradeController {
     const createdList = result.created.map((n) => `Grade ${n}`).join(", ");
     const message = `Created ${result.total} grade(s): ${createdList}`;
     created(res, result, message);
+  });
+
+  addIndividualGrade = catchAsync(async (req, res) => {
+    const schoolId = resolveSchool(req);
+    const grade = await gradeService.addIndividualGrade(schoolId, req.body);
+    created(res, grade, `Grade ${grade.gradeNumber} created successfully`);
   });
 
   getGrades = catchAsync(async (req, res) => {
@@ -57,10 +62,29 @@ class GradeController {
     ok(res, grade, `Grade ${grade.gradeNumber} deactivated successfully`);
   });
 
-  checkSanitizerAndAlert = catchAsync(async (req, res) => {
-    const report = await gradeService.checkSanitizerAndAlert(req.user.school);
+  distributeBottles = catchAsync(async (req, res) => {
+    const schoolId = resolveSchool(req);
+    const { bottlesPerClassroom, month } = req.body;
 
-    // Build response message based on whether SMS was sent
+    const result = await gradeService.distributeToClassrooms(
+      schoolId,
+      req.params.gradeId,
+      bottlesPerClassroom,
+      month,
+      req.user._id
+    );
+
+    ok(
+      res,
+      result,
+      `Distributed ${result.bottlesPerClassroom} bottle(s) to ${result.classroomsUpdated} classroom(s) for Grade ${result.gradeNumber}`
+    );
+  });
+
+  checkSanitizerAndAlert = catchAsync(async (req, res) => {
+    const schoolId = resolveSchool(req);
+    const report = await gradeService.checkSanitizerAndAlert(schoolId);
+
     const message = report.summary.alertSentViaSMS
       ? `Sanitizer report generated — SMS alert sent for ${report.summary.critical + report.summary.empty} critical grade(s)`
       : `Sanitizer report generated — all grades adequate`;

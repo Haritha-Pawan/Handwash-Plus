@@ -36,7 +36,7 @@ export function Navbar() {
             </div>
             <span className="text-xl font-bold text-gray-900">CleanHands</span>
           </div>
-          
+
           <div className="hidden md:flex items-center gap-8">
             <a href="/" className="text-gray-700 hover:text-cyan-600 transition-colors">Home</a>
             <a href="#" className="text-gray-700 hover:text-cyan-600 transition-colors">Features</a>
@@ -55,7 +55,7 @@ export function Navbar() {
                   <span className="text-sm font-bold text-gray-900">{user.name}</span>
                   <span className="text-xs text-gray-500 capitalize">{user.role}</span>
                 </div>
-                <button 
+                <button
                   onClick={handleLogout}
                   className="p-2.5 rounded-xl bg-slate-50 text-slate-500 hover:bg-red-50 hover:text-red-600 transition-all shadow-sm"
                   title="Logout"
@@ -64,7 +64,7 @@ export function Navbar() {
                 </button>
               </div>
             ) : (
-              <Button 
+              <Button
                 onClick={() => router.push("/login")}
                 className="bg-cyan-600 text-white px-6 py-2.5 rounded-xl hover:bg-cyan-700 transition-all font-bold shadow-lg shadow-cyan-200"
               >
