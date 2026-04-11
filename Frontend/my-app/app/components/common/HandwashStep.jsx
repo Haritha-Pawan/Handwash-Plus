@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { steps } from '../../constance/costance';
+import { steps } from '../../constance/data/costance';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '../ui/button';
 

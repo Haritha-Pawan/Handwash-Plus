@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { Droplets } from "lucide-react";
+import { SOCIAL_LINKS } from "../constance/data/costance";
+
 
 const footerLinks = {
   Navigation: ["Home", "Features", "Community", "Monitoring"],
@@ -30,14 +32,17 @@ export default function Footer() {
       Building healthier handwash habits for everyone — one rinse at a time.
     </p>
     <div className="flex gap-2 mt-5">
-      {["Twitter", "LinkedIn", "Instagram"].map((s) => (
-        <button
-          key={s}
-          className="w-9 h-9 rounded-lg bg-slate-800 hover:bg-blue-700 flex items-center justify-center transition-colors"
-          aria-label={s}
-        >
-          <span className="text-xs text-slate-400">{s[0]}</span>
-        </button>
+      {SOCIAL_LINKS.map((s) => (
+        <a
+          key={s.alt}
+          href={s.href}
+        target="_blank"
+            rel="noopener noreferrer"
+            
+            className="w-9 h-9 rounded-lg bg-slate-800 hover:bg-blue-700 flex items-center justify-center transition-colors"
+          >
+            <img src={s.src} alt={s.alt} className="w-4 h-4" />
+          </a>
       ))}
     </div>
   </div>
