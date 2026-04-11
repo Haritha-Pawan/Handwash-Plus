@@ -25,7 +25,7 @@ export function HandwashSteps() {
     <div className="mx-auto px-6 py-16 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl my-16">
       <div className="text-center mb-12">
         <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-          Follow These 6 Easy Steps 🧼
+          Follow These 6 Easy Steps 
         </h2>
         <p className="text-lg text-gray-600 max-w-2xl mx-auto">
           Select a step to learn the proper handwashing technique
@@ -37,7 +37,7 @@ export function HandwashSteps() {
         {/* Left Arrow */}
         <Button
           onClick={scrollLeft}
-          className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full bg-white shadow-lg hover:bg-gray-100 p-0 items-center justify-center"
+          className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-lg bg-white shadow-md hover:bg-gray-100 p-0 items-center justify-center"
           variant="ghost"
         >
           <ChevronLeft className="w-6 h-6 text-gray-700" />
@@ -106,7 +106,7 @@ export function HandwashSteps() {
       </div>
 
       {/* Bottom Tip */}
-      <div className="max-w-7xl mt-12 text-center bg-white rounded-2xl p-6 shadow-lg border-2 border-cyan-300">
+      <div className="max-w-7xl mx-auto mt-12 text-center bg-white rounded-2xl p-6 shadow-lg border-2 border-cyan-300">
         <p className="text-lg text-gray-700">
           <span className="font-bold text-cyan-600">💡 Remember:</span> Wash your hands for at least{' '}
           <span className="font-bold text-cyan-600">20 seconds</span> - that&apos;s about the time it takes to sing &quot;Happy Birthday&quot; twice! 🎵
