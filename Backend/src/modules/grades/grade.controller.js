@@ -82,8 +82,7 @@ class GradeController {
   });
 
   checkSanitizerAndAlert = catchAsync(async (req, res) => {
-    const schoolId = resolveSchool(req);
-    const report = await gradeService.checkSanitizerAndAlert(schoolId);
+    const report = await gradeService.checkSanitizerAndAlert(req.user.school);
 
     const message = report.summary.alertSentViaSMS
       ? `Sanitizer report generated — SMS alert sent for ${report.summary.critical + report.summary.empty} critical grade(s)`

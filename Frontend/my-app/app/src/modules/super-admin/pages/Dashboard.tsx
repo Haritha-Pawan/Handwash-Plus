@@ -35,6 +35,7 @@ import {
 } from "lucide-react";
 import { SchoolMap } from "../../../../components/SchoolMap";
 import { EditSchoolModal } from "../../../../components/EditSchoolModal";
+import { CreateSchoolModal } from "../../../../components/CreateSchoolModal";
 import type { School } from "../../../features/school/types/school.types";
 
 // API Base URL
@@ -59,6 +60,7 @@ const Dashboard = () => {
   const [activeTab, setActiveTab] = useState<"map" | "list">("list");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
+  const [showCreateModal, setShowCreateModal] = useState(false);
   
   // Fetch schools from API
   const fetchSchools = async () => {
@@ -314,6 +316,14 @@ const Dashboard = () => {
                 <RefreshCcw className="w-4 h-4" />
                 Refresh
               </button>
+
+              <button
+                onClick={() => setShowCreateModal(true)}
+                className="px-4 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2 text-sm font-medium shadow-sm"
+              >
+                <Plus className="w-4 h-4" />
+                Create School
+              </button>
             </div>
           </div>
         </div>
@@ -567,6 +577,14 @@ const Dashboard = () => {
         )}
       </div>
       
+      {/* Create Modal */}
+      {showCreateModal && (
+        <CreateSchoolModal
+          onClose={() => setShowCreateModal(false)}
+          onCreated={fetchSchools}
+        />
+      )}
+
       {/* Edit Modal */}
       {schoolToEdit && (
         <EditSchoolModal

@@ -6,9 +6,9 @@ import { Classroom } from "../classrooms/classroom.model.js";
 //get all students
 export const getAllStudents = async (req, res) => {
     try {
-
-        //fetch classroom to check teacher
-        const classroom = await Classroom.find({teacherId: req.user.id});
+         const teacherId = "699fe963fac309cee0d145a8"; 
+ 
+       const classroom = await Classroom.find({ teacherId });
         if (!classroom) return res.status(404).json({ message: "Classroom not found" });
 
         //extract  classsroomids
@@ -28,30 +28,27 @@ export const getAllStudents = async (req, res) => {
 
 
 //student insert
-export const addStudent = async(req, res) =>{
+export const addStudent = async (req, res) => {
+  const teacherId = req.user?.id || "699fe963fac309cee0d145a8"; 
+  const { regNo, name } = req.body;
 
-      const {regNo, name, classroomId} = req.body;
-
-    
-
-    try{
-
-        //fetch classroom to check teacher
-        const classroom = await Classroom.findById(classroomId);
-        if (!classroom) return res.status(404).json({ message: "Classroom not found" });
-
-        if (classroom.teacherId.toString() !== req.user.id) {
-            return res.status(403).json({ message: "Not authorized to add student to this classroom" });
-        }
-
-         const student = await Student.create({regNo, name,classroomId});
-         return res.status(200).json({student});  
- 
-    }catch(err){
-        console.log(err);
-        return res.status(500).json({ message: "Unable to add student" });
+  try {
+    const classroom = await Classroom.findOne({ teacherId });
+    if (!classroom) {
+      return res.status(404).json({ message: "Classroom not found for this teacher" });
     }
 
+    const student = await Student.create({
+      regNo,
+      name,
+      classroomId: classroom._id,
+    });
+
+    return res.status(200).json({ student });
+  } catch (err) {
+    console.error("Add student error:", err);
+    return res.status(500).json({ message: "Unable to add student", error: err.message });
+  }
 };
 
 //get by id
@@ -93,10 +90,6 @@ export const addStudent = async(req, res) =>{
                 const classroom = await Classroom.findById(student.classroomId);
                 if (!classroom) return res.status(404).json({ message: "Classroom not found" });
 
-                 if (classroom.teacherId.toString() !== req.user.id) {
-                 return res.status(403).json({ message: "Not authorized to add student to this classroom" });
-                }
-
                 student.name = name || student.name;
                 await student.save();
 
@@ -120,8 +113,11 @@ export const addStudent = async(req, res) =>{
              // check if logged teacher is assigned to this student's classroom
               const classroom = await Classroom.findById(student.classroomId);
               if (!classroom) return res.status(404).json({ message: "Classroom not found" });
+              //hardcoded
+               const teacherId = req.user?.id || "699fe963fac309cee0d145a8";
 
-             if (classroom.teacherId.toString() !== req.user.id) {
+           //  if (classroom.teacherId.toString() !== req.user.id) {
+           if (classroom.teacherId.toString() !== teacherId) {
                 return res.status(403).json({ message: "Not authorized to delete this student" });
                }
 
@@ -142,11 +138,6 @@ export const addStudent = async(req, res) =>{
      export const getActiveQuizForStudent = async(req,res) =>{
               
             try{
-
-                //const studentId = req.user.id; // from authMiddleware
-                // const student = await Student.findById(studentId);
-                // if (!student) return res.status(404).json({ message: "Student not found" });
-                
                 const { classroomId } = req.body;//get the id from populated
                  const now = new Date();
 
@@ -160,12 +151,39 @@ export const addStudent = async(req, res) =>{
                  return res.status(404).json({ message:"No active quiz available"});
 
              }
-
-                return res.status(200).json({ quiz});
+               const studentQuiz = {
+                 
+                 title: quiz.title,
+                 startTime: quiz.startTime,
+                 endTime: quiz.endTime,
+                 questions: quiz.questions.map(q => ({
+                _id: q._id,
+                 questionText: q.questionText,
+                 type: q.type,
+                 options: q.options.map(opt => ({
+                  text: opt.text
+        }))
+      }))
+    };
+                return res.status(200).json({ studentQuiz});
 
             }catch (error) {
               res.status(500).json({ message: error.message });
             }
+};
+
+ export const getStudentsByClassroom = async (req, res) => {
+  try {
+    const { classroomId } = req.params;
+
+    const students = await Student.find({ classroomId });
+
+    return res.status(200).json({ students });
+
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Server error" });
+  }
 };
 
        

@@ -40,6 +40,7 @@ export default function GradesPage() {
     handleCreate,
     handleUpdate,
     handleDeactivate,
+    handleCheckSanitizer,
     handleDistribute,
   } = useGradeActions(refetch);
 
@@ -81,6 +82,17 @@ export default function GradesPage() {
           disabled={actionLoading}
         >
           + Create Grade
+        </button>
+
+        <button
+          onClick={async () => {
+            closeMessages();
+            await handleCheckSanitizer();
+          }}
+          className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-5 py-3 text-emerald-300 hover:bg-emerald-500/20 disabled:opacity-50 flex items-center justify-center transition-colors"
+          disabled={actionLoading}
+        >
+          {actionLoading ? "Checking..." : "Check Sanitizer & Alert"}
         </button>
 
         <button
