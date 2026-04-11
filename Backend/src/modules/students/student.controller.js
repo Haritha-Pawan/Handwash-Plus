@@ -7,9 +7,7 @@ import { Classroom } from "../classrooms/classroom.model.js";
 export const getAllStudents = async (req, res) => {
     try {
          const teacherId = "699fe963fac309cee0d145a8"; 
-
-        //fetch classroom to check teacher
-       // const classroom = await Classroom.find({teacherId: req.user.id});
+ 
        const classroom = await Classroom.find({ teacherId });
         if (!classroom) return res.status(404).json({ message: "Classroom not found" });
 
@@ -92,10 +90,6 @@ export const addStudent = async (req, res) => {
                 const classroom = await Classroom.findById(student.classroomId);
                 if (!classroom) return res.status(404).json({ message: "Classroom not found" });
 
-                //  if (classroom.teacherId.toString() !== req.user.id) {
-                //  return res.status(403).json({ message: "Not authorized to add student to this classroom" });
-                // }
-
                 student.name = name || student.name;
                 await student.save();
 
@@ -144,11 +138,6 @@ export const addStudent = async (req, res) => {
      export const getActiveQuizForStudent = async(req,res) =>{
               
             try{
-
-                //const studentId = req.user.id; // from authMiddleware
-                // const student = await Student.findById(studentId);
-                // if (!student) return res.status(404).json({ message: "Student not found" });
-                
                 const { classroomId } = req.body;//get the id from populated
                  const now = new Date();
 
@@ -181,6 +170,20 @@ export const addStudent = async (req, res) => {
             }catch (error) {
               res.status(500).json({ message: error.message });
             }
+};
+
+ export const getStudentsByClassroom = async (req, res) => {
+  try {
+    const { classroomId } = req.params;
+
+    const students = await Student.find({ classroomId });
+
+    return res.status(200).json({ students });
+
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Server error" });
+  }
 };
 
        
