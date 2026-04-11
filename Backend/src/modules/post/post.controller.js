@@ -89,6 +89,15 @@ export const updatePost = async (req, res) => {
     if (title !== undefined) post.title = title;
     if (content !== undefined) post.content = content;
 
+    // Handle image upload
+    if (req.file) {
+      const uploadResult = await imagekit.upload({
+        file: req.file.buffer,
+        fileName: `handwash_${Date.now()}.jpg`,
+      });
+      post.imageUrl = uploadResult.url;
+    }
+
     await post.save();
 
     res.json(post);
