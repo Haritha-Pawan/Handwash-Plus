@@ -1,6 +1,42 @@
   import { Activity, BarChart3, Bell, Users } from 'lucide-react';
   import { Clock, CheckCircle, TrendingUp } from 'lucide-react';
   import Image from 'next/image';
+
+
+  export const dummyPosts = [
+  {
+    id: 1,
+    title: "Best handwash for sensitive skin?",
+    description: "Looking for a gentle handwash for daily use.",
+    image: "/images/handwash1.webp",
+    votes: 12,
+    user: "Lahiru",
+  },
+  {
+    id: 2,
+    title: "Public hygiene tips",
+    description: "How to maintain hygiene in crowded places?",
+    image: "/images/post1.png",
+    votes: 30,
+    user: "Nimal",
+  },
+    {
+    id: 3,
+    title: "Public hygiene tips",
+    description: "How to maintain hygiene in crowded places?",
+    image: "/images/post2.jpg",
+    votes: 30,
+    user: "Nimal",
+  },
+    {
+    id: 4,
+    title: "Public hygiene tips",
+    description: "How to maintain hygiene in crowded places?",
+    image: "/images/step4.jpg",
+    votes: 30,
+    user: "Nimal",
+  }
+];
   
   export const features = [
     {

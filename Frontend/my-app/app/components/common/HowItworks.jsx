@@ -1,5 +1,5 @@
 'use client';
-import { howItWorksSteps } from '../constance/costance';
+import { howItWorksSteps } from '../../constance/costance';
 
 export function HowItWorks() {
 

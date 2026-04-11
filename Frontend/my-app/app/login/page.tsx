@@ -37,7 +37,11 @@ export default function LoginPage() {
             router.push("/teacher/classrooms");
           } else if (response.data.user.role === "admin") {
             router.push("/grades");
-          } else if (role === "student") {
+
+          } else if(response.data.user.role === "user")
+           router.push("/dashbord/my-posts");
+
+           else if (role === "student") {
             router.push("/studentQuiz");
            } else {
             router.push("/");
