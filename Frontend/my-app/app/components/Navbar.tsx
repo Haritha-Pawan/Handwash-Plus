@@ -38,14 +38,14 @@ export function Navbar() {
           </div>
 
           <div className="hidden md:flex items-center gap-8">
-            <a href="/" className="text-gray-700 hover:text-cyan-600 transition-colors">Home</a>
-            <a href="#" className="text-gray-700 hover:text-cyan-600 transition-colors">Features</a>
-            <a href="#" className="text-gray-700 hover:text-cyan-600 transition-colors">Monitoring</a>
-            <a href="/community" className="text-gray-700 hover:text-cyan-600 transition-colors">Community</a>
+            <a href="/" className="text-md font-medium text-gray-600 px-4 py-2 rounded-lg hover:bg-blue-50 hover:text-blue-700 transition-colors">Home</a>
+            <a href="#" className="text-md font-medium text-gray-600 px-4 py-2 rounded-lg hover:bg-blue-50 hover:text-blue-700 transition-colors">Features</a>
+            <a href="#" className="text-md font-medium text-gray-600 px-4 py-2 rounded-lg hover:bg-blue-50 hover:text-blue-700 transition-colors">Monitoring</a>
+            <a href="/community" className="text-md font-medium text-gray-600 px-4 py-2 rounded-lg hover:bg-blue-50 hover:text-blue-700 transition-colors">Community</a>
             {user?.role === "superAdmin" && (
               <a href="/dashboard" className="text-cyan-600 font-bold hover:text-cyan-700 transition-colors">Dashboard</a>
             )}
-            <a href="#" className="text-gray-700 hover:text-cyan-600 transition-colors">Contact</a>
+            <a href="#" className="text-md font-medium text-gray-600 px-4 py-2 rounded-lg hover:bg-blue-50 hover:text-blue-700 transition-colors">Contact</a>
           </div>
 
           <div className="flex items-center gap-4">
