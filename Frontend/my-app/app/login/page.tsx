@@ -22,9 +22,20 @@ export default function LoginPage() {
     login(formData, {
       onSuccess: (response) => {
         if (response.success) {
-          if (response.data.user.role === "superAdmin") {
+          
+           // const token = response.data.tokens.accessToken ;
+           const token = response.data?.tokens?.accessToken ||(response as any)?.tokens?.accessToken || (response as any)?.data?.accessToken || (response as any)?.accessToken ;
+            localStorage.setItem("token", token); 
+            console.log("TOKEN AFTER LOGIN:", token);
+            const role = response.data.user.role;
+              localStorage.setItem("user", JSON.stringify(response.data.user));
+
+          if (role === "superAdmin") {
             router.push("/dashboard");
-          } else {
+          } else if (role === "teacher") {
+            router.push("/teacher/classrooms");
+           
+            } else {
             // Handle non-superAdmin login if needed
             router.push("/");
           }

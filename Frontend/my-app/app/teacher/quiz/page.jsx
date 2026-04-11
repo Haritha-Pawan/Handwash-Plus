@@ -2,32 +2,76 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import axios from "axios";
 
+
 export default function TeacherQuizPage() {
-  const classroomId = "699c1b8f7d82290b85e8bdd9"; //  classroom ID
+ 
+  const searchParams = useSearchParams();
+  const classroomId = searchParams.get("classroomId");
   const [quizzes, setQuizzes] = useState([]);
 
-  const fetchQuizzes = async () => {
-    try {
-      const res = await axios.get(`http://localhost:5000/api/quiz/classroom/${classroomId}`);
-      setQuizzes(res.data);
-    } catch (err) {
-      console.error(err);
-      alert("Failed to fetch quizzes");
-    }
-  };
+  //  useEffect(() => {
+  //   if (!classroomId) return; 
+
+  //   fetchQuizzes();
+  // }, [classroomId])
+
+  useEffect(() => {
+  fetchQuizzes();
+}, []);
+
+ const fetchQuizzes = async () => {
+  try {
+    //newly 
+     //const classroomId = searchParams.get("classroomId");
+
+const classroomId =
+      searchParams.get("classroomId") ||
+      localStorage.getItem("classroomId");
+
+    if (!classroomId) {
+      console.warn("Missing classroomId in URL");
+      return;
+    }//new
+
+    const token = localStorage.getItem("token");
+
+    const res = await axios.get(
+      `http://localhost:5000/api/quiz/classroom/${classroomId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    setQuizzes(res.data);
+  } catch (err) {
+    console.error(err);
+    alert("Failed to fetch quizzes");
+  }
+};
 
   const handleDelete = async (id) => {
-    if (!confirm("Are you sure you want to delete this quiz?")) return;
-    try {
-      await axios.delete(`http://localhost:5000/api/quiz/${id}`);
-      setQuizzes(quizzes.filter((q) => q._id !== id));
-    } catch (err) {
-      console.error(err);
-      alert("Failed to delete quiz");
-    }
-  };
+  if (!confirm("Are you sure you want to delete this quiz?")) return;
+
+  try {
+    const token = localStorage.getItem("token");
+
+    await axios.delete(`http://localhost:5000/api/quiz/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    setQuizzes((prev) => prev.filter((q) => q._id !== id));
+  } catch (err) {
+    console.error(err);
+    alert("Failed to delete quiz");
+  }
+};
 
   useEffect(() => {
     fetchQuizzes();
@@ -37,7 +81,7 @@ export default function TeacherQuizPage() {
     <div className="p-4">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Quizzes</h1>
-        <Link href="/teacher/quiz/create">
+        <Link href={`/teacher/quiz/create?classroomId=${classroomId}`}>
           <button className="bg-cyan-500 hover:bg-cyan-600 text-white px-4 py-2 rounded font-semibold">
             ➕ Create Quiz
           </button>

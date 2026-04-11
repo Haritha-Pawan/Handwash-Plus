@@ -1,23 +1,21 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 export default function TeacherLayout({ children }) {
   const pathname = usePathname();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
-  const teacher = {
-    name: "John Doe",
-  };
+  const classroomId = searchParams.get("classroomId");
 
   const navItems = [
     { name: "Quiz", path: "/teacher/quiz" },
     { name: "Students", path: "/teacher/students" },
-    { name: "Classroom Bottles", path: "/teacher/classroom-bottles/view" }, // ✅ renamed
+    { name: "Classroom Bottles", path: "/teacher/classroom-bottles/view" },
   ];
 
-  // Logout function
   const handleLogout = () => {
     localStorage.removeItem("token");
     router.push("/login");
@@ -40,11 +38,18 @@ export default function TeacherLayout({ children }) {
           {navItems.map((item) => (
             <li key={item.path} style={{ marginBottom: "10px" }}>
               <Link
-                href={item.path}
+                href={
+                  item.name === "Quiz"
+                   ? classroomId
+                    ? `/teacher/quiz?classroomId=${classroomId || ""}`
+                    : "/teacher/classroom"
+                    : item.path
+                }
                 style={{
                   color: pathname === item.path ? "#38bdf8" : "#fff",
                   textDecoration: "none",
-                  fontWeight: pathname === item.path ? "bold" : "normal",
+                  fontWeight:
+                    pathname === item.path ? "bold" : "normal",
                 }}
               >
                 {item.name}
@@ -52,7 +57,7 @@ export default function TeacherLayout({ children }) {
             </li>
           ))}
 
-          {/* Logout directly under Classroom Bottles */}
+          {/* Logout */}
           <li style={{ marginTop: "15px" }}>
             <button
               onClick={handleLogout}
@@ -75,19 +80,6 @@ export default function TeacherLayout({ children }) {
 
       {/* Main content */}
       <main style={{ flex: 1, padding: "20px", background: "#f1f5f9" }}>
-        {/* Greeting */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "flex-end",
-            marginBottom: "20px",
-          }}
-        >
-          <p style={{ fontSize: "22px", fontWeight: "600" }}>
-            👋 Hello, <span style={{ fontWeight: "bold" }}>{teacher.name}</span>
-          </p>
-        </div>
-
         {children}
       </main>
     </div>

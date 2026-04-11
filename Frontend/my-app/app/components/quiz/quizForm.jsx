@@ -59,6 +59,11 @@ export default function QuizForm({ classroomId, refresh }) {
   // Submit quiz
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!classroomId) {
+        alert("Missing classroomId");
+        return;
+      }
+
     try {
       await createQuiz({
         title,

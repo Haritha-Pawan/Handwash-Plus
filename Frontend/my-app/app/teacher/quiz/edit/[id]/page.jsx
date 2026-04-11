@@ -14,6 +14,7 @@ export default function EditQuizPage() {
   const [endTime, setEndTime] = useState("");
   const [isActive, setIsActive] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [classroomId, setClassroomId] = useState(null);
 
   //  Load quiz data
   useEffect(() => {
@@ -31,6 +32,7 @@ export default function EditQuizPage() {
             type: q.type || "multiple-choice"
           }))
         );
+        setClassroomId(quiz.classroomId?._id);
         setStartTime(quiz.startTime ? quiz.startTime.slice(0, 16) : ""); // convert ISO to datetime-local
         setEndTime(quiz.endTime ? quiz.endTime.slice(0, 16) : "");
         setIsActive(quiz.isPublished || false);
@@ -44,14 +46,14 @@ export default function EditQuizPage() {
     if (id) fetchQuiz();
   }, [id]);
 
-  // 🔹 Handle question text change
+  // Handle question text change
   const handleQuestionChange = (qIndex, field, value) => {
     const updated = [...questions];
     updated[qIndex][field] = value;
     setQuestions(updated);
   };
 
-  // 🔹 Handle option change
+  //  Handle option change
   const handleOptionChange = (qIndex, oIndex, value) => {
     const updated = [...questions];
     updated[qIndex].options[oIndex].text = value;
@@ -77,15 +79,20 @@ export default function EditQuizPage() {
   // Update quiz
   const handleUpdate = async () => {
     try {
+       const token = localStorage.getItem("token");
       await axios.put(`http://localhost:5000/api/quiz/${id}`, {
         title,
         questions,
         startTime,
         endTime,
         isPublished: isActive,
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`, 
+        },
       });
       alert("✅ Quiz updated successfully!");
-      router.push("/teacher/quiz");
+      router.push("/teacher/quiz?classroomId=" + classroomId);
     } catch (err) {
       console.error(err);
       alert("❌ Update failed");

@@ -73,6 +73,23 @@ export const addClassroom = async(req, res) =>{
         return res.status(500).json({ message: "Server error" });
     }
     };
+    export const getMyClassrooms = async (req, res) => {
+  try {
+    const teacherId = req.user.userId;
+
+    const classrooms = await Classroom.find({ teacherId })
+      .populate("teacherId", "name email");
+
+    if (!classrooms.length) {
+      return res.status(404).json({ message: "No classrooms found" });
+    }
+
+    return res.status(200).json({ classrooms });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
 
    
   

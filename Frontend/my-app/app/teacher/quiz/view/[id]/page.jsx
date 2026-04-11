@@ -63,7 +63,7 @@ export default function ViewQuizPage() {
         </div>
       ))}
        <Link
-          href="/teacher/quiz"
+         href={`/teacher/quiz?classroomId=${quiz.classroomId?._id}`}
           className="bg-gray-200 hover:bg-gray-335 text-black px-3 py-1 rounded text-sm mr-4"
         >
            Back to Quiz List
