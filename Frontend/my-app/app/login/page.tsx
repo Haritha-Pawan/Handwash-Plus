@@ -35,11 +35,11 @@ export default function LoginPage() {
             router.push("/dashboard");
           } else if (role === "teacher") {
             router.push("/teacher/classrooms");
-           
-            
           } else if (response.data.user.role === "admin") {
             router.push("/grades");
-          } else {
+          } else if (role === "student") {
+            router.push("/studentQuiz");
+           } else {
             router.push("/");
           }
         }
