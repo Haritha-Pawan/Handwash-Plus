@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
+
 export default function TeacherLayout({ children }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -11,9 +12,9 @@ export default function TeacherLayout({ children }) {
   const classroomId = searchParams.get("classroomId");
 
   const navItems = [
-    { name: "Quiz", path: "/teacher/quiz" },
+    { name: "Quiz", path: "/teacher/classrooms" },
     { name: "Students", path: "/teacher/students" },
-    { name: "Classroom Bottles", path: "/teacher/classroom-bottles/view" },
+    { name: "Classroom Bottles", path: `/teacher/classroom-bottles/view/${classroomId}` }
   ];
 
   const handleLogout = () => {
@@ -40,9 +41,9 @@ export default function TeacherLayout({ children }) {
               <Link
                 href={
                   item.name === "Quiz"
-                   ? classroomId
-                    ? `/teacher/quiz?classroomId=${classroomId || ""}`
-                    : "/teacher/classroom"
+                    ? `/teacher/quiz${classroomId ? `?classroomId=${classroomId}` : ""}`
+                    : item.name === "Classroom Bottles"
+                    ? `/teacher/classroom-bottles/view${classroomId ? `?classroomId=${classroomId}` : ""}`
                     : item.path
                 }
                 style={{
@@ -56,25 +57,6 @@ export default function TeacherLayout({ children }) {
               </Link>
             </li>
           ))}
-
-          {/* Logout */}
-          <li style={{ marginTop: "15px" }}>
-            <button
-              onClick={handleLogout}
-              style={{
-                background: "#1e293b",
-                color: "#fff",
-                border: "none",
-                padding: "8px",
-                borderRadius: "6px",
-                cursor: "pointer",
-                width: "100%",
-                textAlign: "left",
-              }}
-            >
-              🚪 Logout
-            </button>
-          </li>
         </ul>
       </nav>
 
