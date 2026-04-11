@@ -68,9 +68,9 @@ export default function PostDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
+    <div className="min-h-screen  bg-gray-100 p-6">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-2xl p-8 mb-6 shadow-lg">
+      <div className="  bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-2xl p-8 mb-6 shadow-lg">
         <h1 className="text-3xl font-bold">Welcome Back 👋</h1>
         <p className="mt-2 text-blue-100">
           Here’s an overview of your posts and activity.

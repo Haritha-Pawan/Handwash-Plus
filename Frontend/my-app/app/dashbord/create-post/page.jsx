@@ -33,7 +33,7 @@ export default function CreatePost() {
 
       const formData = new FormData();
       formData.append("title", title);
-      formData.append("content", description); // <-- changed to 'content' to match backend
+      formData.append("content", description); 
       if (image) formData.append("image", image);
 
       await createPost(formData);
@@ -54,7 +54,7 @@ export default function CreatePost() {
   };
 
   return (
-    <div className="min-h-screen flex items-center  p-6">
+    <div className="min-h-screen flex items-center max-w-3xl  p-6">
       <div className="bg-white shadow-xl rounded-lg w-full max-w-[500px]  p-8">
 
         {/* Header */}
@@ -63,7 +63,7 @@ export default function CreatePost() {
           <p className="text-gray-500 text-sm">Share your idea with others</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-6">
 
           {/* Image Upload */}
           <div>
