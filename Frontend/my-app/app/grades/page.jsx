@@ -5,6 +5,7 @@ import GradeStats from "../components/grades/GradeStats";
 import GradeTable from "../components/grades/GradeTable";
 import GradeFormModal from "../components/grades/GradeFormModal";
 import ConfirmDeactivateModal from "../components/grades/ConfirmDeactivateModal";
+import DistributeBottlesModal from "../components/grades/DistributeBottlesModal";
 import Loader from "../components/grades/Loader";
 import EmptyState from "../components/grades/EmptyState";
 import useGrades from "../hooks/useGrades";
@@ -23,7 +24,6 @@ export default function GradesPage() {
     const token = getAuthToken();
     setHasToken(!!token);
     setReady(true);
-    
     if (!token) {
       window.location.href = "/login";
     }
@@ -41,11 +41,13 @@ export default function GradesPage() {
     handleUpdate,
     handleDeactivate,
     handleCheckSanitizer,
+    handleDistribute,
   } = useGradeActions(refetch);
 
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [editingGrade, setEditingGrade] = useState(null);
   const [deactivatingGrade, setDeactivatingGrade] = useState(null);
+  const [distributingGrade, setDistributingGrade] = useState(null);
 
   const stats = useMemo(() => {
     return {
@@ -63,13 +65,8 @@ export default function GradesPage() {
     setSuccessMessage("");
   };
 
-  if (!ready) {
-    return <Loader text="Checking session..." />;
-  }
-
-  if (!hasToken) {
-    return <Loader text="Redirecting to login..." />;
-  }
+  if (!ready) return <Loader text="Checking session..." />;
+  if (!hasToken) return <Loader text="Redirecting to login..." />;
 
   return (
     <div className="space-y-6">
@@ -81,7 +78,7 @@ export default function GradesPage() {
             closeMessages();
             setIsCreateOpen(true);
           }}
-          className="rounded-xl bg-blue-600 px-5 py-3 text-white hover:bg-blue-500"
+          className="rounded-xl bg-blue-600 px-5 py-3 text-white hover:bg-blue-500 transition-colors disabled:opacity-50"
           disabled={actionLoading}
         >
           + Create Grade
@@ -92,7 +89,7 @@ export default function GradesPage() {
             closeMessages();
             await handleCheckSanitizer();
           }}
-          className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-5 py-3 text-emerald-300 hover:bg-emerald-500/20 disabled:opacity-50 flex items-center justify-center"
+          className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-5 py-3 text-emerald-300 hover:bg-emerald-500/20 disabled:opacity-50 flex items-center justify-center transition-colors"
           disabled={actionLoading}
         >
           {actionLoading ? "Checking..." : "Check Sanitizer & Alert"}
@@ -104,29 +101,30 @@ export default function GradesPage() {
             clearAuthUser();
             window.location.href = "/login";
           }}
-          className="rounded-xl border border-white/10 px-5 py-3 text-slate-200"
+          className="rounded-xl border border-white/10 px-5 py-3 text-slate-200 hover:bg-white/5 transition-colors"
         >
           Logout
         </button>
       </div>
 
-      {successMessage ? (
-        <div className="rounded-xl border border-emerald-400/20 bg-emerald-400/10 px-4 py-3 text-emerald-300">
-          {successMessage}
+      {successMessage && (
+        <div className="rounded-xl border border-emerald-400/20 bg-emerald-400/10 px-4 py-3 text-emerald-300 flex items-start gap-2">
+          <span className="mt-0.5">✓</span>
+          <span>{successMessage}</span>
         </div>
-      ) : null}
+      )}
 
-      {actionError ? (
+      {actionError && (
         <div className="rounded-xl border border-rose-400/20 bg-rose-400/10 px-4 py-3 text-rose-300">
           {actionError}
         </div>
-      ) : null}
+      )}
 
-      {error ? (
+      {error && (
         <div className="rounded-xl border border-rose-400/20 bg-rose-400/10 px-4 py-3 text-rose-300">
           {error}
         </div>
-      ) : null}
+      )}
 
       {loading ? (
         <Loader text="Loading grades..." />
@@ -146,9 +144,14 @@ export default function GradesPage() {
             closeMessages();
             setDeactivatingGrade(grade);
           }}
+          onDistribute={(grade) => {
+            closeMessages();
+            setDistributingGrade(grade);
+          }}
         />
       )}
 
+      {/* Create Modal */}
       <GradeFormModal
         isOpen={isCreateOpen}
         onClose={() => setIsCreateOpen(false)}
@@ -160,6 +163,7 @@ export default function GradesPage() {
         }}
       />
 
+      {/* Edit Modal */}
       <GradeFormModal
         isOpen={!!editingGrade}
         onClose={() => setEditingGrade(null)}
@@ -172,6 +176,7 @@ export default function GradesPage() {
         }}
       />
 
+      {/* Deactivate Confirm Modal */}
       <ConfirmDeactivateModal
         isOpen={!!deactivatingGrade}
         onClose={() => setDeactivatingGrade(null)}
@@ -180,6 +185,18 @@ export default function GradesPage() {
         onConfirm={async () => {
           await handleDeactivate(deactivatingGrade._id);
           setDeactivatingGrade(null);
+        }}
+      />
+
+      {/* Distribute Bottles Modal */}
+      <DistributeBottlesModal
+        isOpen={!!distributingGrade}
+        onClose={() => setDistributingGrade(null)}
+        grade={distributingGrade}
+        loading={actionLoading}
+        onSubmit={async (payload) => {
+          await handleDistribute(distributingGrade._id, payload);
+          setDistributingGrade(null);
         }}
       />
     </div>
