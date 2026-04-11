@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useLogin } from "../src/features/auth/hooks/useAuth";
 import { Droplets, Lock, Mail, Loader2, AlertCircle } from "lucide-react";
+import { AxiosError } from "axios";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -35,8 +36,10 @@ export default function LoginPage() {
           } else if (role === "teacher") {
             router.push("/teacher/classrooms");
            
-            } else {
-            // Handle non-superAdmin login if needed
+            
+          } else if (response.data.user.role === "admin") {
+            router.push("/grades");
+          } else {
             router.push("/");
           }
         }
@@ -45,7 +48,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-blue-50 via-white to-cyan-50 flex items-center justify-center p-6">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50 flex items-center justify-center p-6">
       <div className="w-full max-w-md">
         {/* Logo Section */}
         <div className="text-center mb-10">
@@ -105,7 +108,7 @@ export default function LoginPage() {
               <div className="bg-red-50 border border-red-100 p-4 rounded-2xl flex items-start gap-3 animate-shake">
                 <AlertCircle className="h-5 w-5 text-red-500 shrink-0 mt-0.5" />
                 <p className="text-sm font-semibold text-red-600">
-                  {(error as any)?.response?.data?.message || "Invalid credentials. Please try again."}
+                  {((error as AxiosError<any>)?.response?.data?.message) || "Invalid credentials. Please try again."}
                 </p>
               </div>
             )}

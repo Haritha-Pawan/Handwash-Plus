@@ -18,7 +18,7 @@ export const SchoolRepository = {
         return School.findByIdAndUpdate(
             id, 
             { ...data, updatedAt: new Date() }, 
-            { new: true, runValidators: true }
+            { returnDocument: 'after', runValidators: true }
         );
     },
 

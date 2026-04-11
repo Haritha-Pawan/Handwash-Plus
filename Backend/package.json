@@ -11,9 +11,11 @@
     "create:super-admin": "node infrastructure/scripts/seed.js",
     "dev": "nodemon src/bootstrap/server.js",
     "start": "node src/bootstrap/server.js",
-     "test": "node --experimental-vm-modules node_modules/.bin/jest",
-  "test:unit": "jest --testPathPatterns=\"_tests_/unit\"",
- "test:integration": "NODE_OPTIONS=--experimental-vm-modules jest --testPathPatterns=_tests_/integration"
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --testPathPattern=\"__tests__\" --forceExit",
+    "test:unit": "node --experimental-vm-modules node_modules/jest/bin/jest.js --testPathPattern=\"src/modules\" --forceExit",
+    "test:integration": "node --experimental-vm-modules node_modules/jest/bin/jest.js --testPathPattern=\"tests/integration\" --forceExit",
+    "test:coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage --forceExit",
+    "test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch"
   },
   "repository": {
     "type": "git",
@@ -49,15 +51,11 @@
     "yaml": "^2.8.2"
   },
   "devDependencies": {
-    "@babel/core": "^7.29.0",
-    "@babel/preset-env": "^7.29.2",
-    "babel-jest": "^30.3.0",
-    "jest": "^30.3.0",
-    "mongodb-memory-server": "^11.0.1",
+    "@jest/globals": "^29.7.0",
+    "cross-env": "^7.0.3",
+    "jest": "^29.7.0",
+    "mongodb-memory-server": "^10.1.4",
     "nodemon": "^3.1.14",
-    "supertest": "^7.2.2"
-  },
-  "jest": {
-    "testTimeout": 30000
+    "supertest": "^7.0.0"
   }
 }

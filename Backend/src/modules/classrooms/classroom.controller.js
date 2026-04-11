@@ -64,7 +64,7 @@ export const addClassroom = async(req, res) =>{
          try{
             classroom = await Classroom.findByIdAndUpdate(id,
                  { name, grade, schoolId, teacherId },
-                 { new: true, runValidators: true }
+                 { returnDocument: 'after', runValidators: true }
             );
              if (!classroom) return res.status(404).json({ message: "Classroom not found" });
         return res.status(200).json({ classroom});
