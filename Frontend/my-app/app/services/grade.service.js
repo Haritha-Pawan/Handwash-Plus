@@ -66,3 +66,14 @@ export const checkSanitizerAndAlert = async () => {
   });
   return data;
 };
+
+export const distributeBottles = async (gradeId, payload) => {
+  const { data } = await api.post(
+    `/grades/${gradeId}/distribute-bottles`,
+    payload,
+    {
+      params: buildSchoolParams(),
+    }
+  );
+  return data;
+};

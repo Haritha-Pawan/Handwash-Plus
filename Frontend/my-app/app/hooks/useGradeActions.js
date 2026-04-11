@@ -5,7 +5,8 @@ import {
   createIndividualGrade,
   updateGrade,
   deactivateGrade,
-  checkSanitizerAndAlert
+  checkSanitizerAndAlert,
+  distributeBottles,
 } from "../services/grade.service";
 
 export default function useGradeActions(refetch) {
@@ -81,6 +82,26 @@ export default function useGradeActions(refetch) {
     }
   };
 
+  const handleDistribute = async (gradeId, payload) => {
+    try {
+      setActionLoading(true);
+      setActionError("");
+      setSuccessMessage("");
+
+      const res = await distributeBottles(gradeId, payload);
+      const { classroomsUpdated, totalDeducted, remainingGradeStock } = res?.data || {};
+      setSuccessMessage(
+        res?.message ||
+          `Distributed to ${classroomsUpdated} classroom(s). Deducted: ${totalDeducted}, Remaining: ${remainingGradeStock}`
+      );
+      await refetch();
+    } catch (err) {
+      setActionError(err?.response?.data?.message || "Failed to distribute bottles");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   return {
     actionLoading,
     actionError,
@@ -91,5 +112,6 @@ export default function useGradeActions(refetch) {
     handleUpdate,
     handleDeactivate,
     handleCheckSanitizer,
+    handleDistribute,
   };
 }
