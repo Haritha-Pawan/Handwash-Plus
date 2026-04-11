@@ -1,9 +1,39 @@
 export default function GradeStats({ stats }) {
   const items = [
-    { label: "Total Grades", value: stats.total },
-    { label: "Active Grades", value: stats.active },
-    { label: "Low Stock", value: stats.low },
-    { label: "Critical / Empty", value: stats.critical },
+    {
+      label: "Total Grades",
+      value: stats.total,
+      color: "border-sky-100 bg-white",
+      valueColor: "text-sky-600",
+      labelColor: "text-sky-600/60",
+    },
+    {
+      label: "Active Grades",
+      value: stats.active,
+      color: "border-emerald-100 bg-white",
+      valueColor: "text-emerald-600",
+      labelColor: "text-emerald-600/60",
+    },
+    {
+      label: "Low Stock",
+      value: stats.low,
+      color:
+        stats.low > 0
+          ? "border-yellow-100 bg-white"
+          : "border-slate-100 bg-white",
+      valueColor: stats.low > 0 ? "text-yellow-600" : "text-slate-400",
+      labelColor: stats.low > 0 ? "text-yellow-600/60" : "text-slate-400/60",
+    },
+    {
+      label: "Critical / Empty",
+      value: stats.critical,
+      color:
+        stats.critical > 0
+          ? "border-rose-100 bg-white"
+          : "border-slate-100 bg-white",
+      valueColor: stats.critical > 0 ? "text-rose-600" : "text-slate-400",
+      labelColor: stats.critical > 0 ? "text-rose-600/60" : "text-slate-400/60",
+    },
   ];
 
   return (
@@ -11,10 +41,13 @@ export default function GradeStats({ stats }) {
       {items.map((item) => (
         <div
           key={item.label}
-          className="rounded-2xl border border-white/10 bg-slate-900/70 p-5 shadow-sm"
+          className={`rounded-2xl border p-5 shadow-sm transition-colors ${item.color}`}
         >
-          <p className="text-sm text-slate-400">{item.label}</p>
-          <p className="mt-2 text-3xl font-bold text-white">{item.value}</p>
+          <div className="flex items-center justify-between">
+            <p className={`text-sm font-medium ${item.labelColor}`}>{item.label}</p>
+            <span className="text-xl">{item.icon}</span>
+          </div>
+          <p className={`mt-3 text-4xl font-bold ${item.valueColor}`}>{item.value}</p>
         </div>
       ))}
     </div>

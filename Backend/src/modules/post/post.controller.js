@@ -5,7 +5,10 @@ import imagekit from "../../config/imagekitConfig.js";
 export const createPost = async (req, res) => {
   try {
     const { title, content } = req.body;
-    const author = req.user.id;
+    const author = req.user?.id;
+    if (!author) {
+      return res.status(401).json({ message: "User not authenticated or ID missing" });
+    }
 
     let imageUrl = null;
 
@@ -85,6 +88,15 @@ export const updatePost = async (req, res) => {
 
     if (title !== undefined) post.title = title;
     if (content !== undefined) post.content = content;
+
+    // Handle image upload
+    if (req.file) {
+      const uploadResult = await imagekit.upload({
+        file: req.file.buffer,
+        fileName: `handwash_${Date.now()}.jpg`,
+      });
+      post.imageUrl = uploadResult.url;
+    }
 
     await post.save();
 

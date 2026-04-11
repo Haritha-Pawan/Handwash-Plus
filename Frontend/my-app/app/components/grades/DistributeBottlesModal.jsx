@@ -9,21 +9,23 @@ export default function DistributeBottlesModal({
   grade,
   loading = false,
 }) {
+  const currentMonth = new Date().toISOString().slice(0, 7); // e.g. "2026-04"
+
   const [form, setForm] = useState({
     bottlesPerClassroom: "",
-    month: "",
+    month: currentMonth,
   });
 
   useEffect(() => {
     if (isOpen) {
-      setForm({
-        bottlesPerClassroom: "",
-        month: "",
-      });
+      setForm({ bottlesPerClassroom: "", month: currentMonth });
     }
   }, [isOpen]);
 
   if (!isOpen || !grade) return null;
+
+  const currentStock = grade?.sanitizer?.currentQuantity ?? 0;
+  const unit = grade?.sanitizer?.unit || "ml";
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -33,61 +35,89 @@ export default function DistributeBottlesModal({
     });
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-      <div className="w-full max-w-md rounded-2xl border border-white/10 bg-slate-950 p-6">
-        <h2 className="text-xl font-semibold text-white">
-          Distribute Bottles - Grade {grade.gradeNumber}
-        </h2>
+    "w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-slate-900 placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all shadow-sm";
 
-        <form onSubmit={handleSubmit} className="mt-4 space-y-4">
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm">
+      <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white shadow-2xl overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50/50 px-6 py-4">
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-violet-600/10 text-lg">
+              🧴
+            </div>
+            <div>
+              <h2 className="text-lg font-bold text-slate-900">
+                Distribute Bottles
+              </h2>
+              <p className="text-xs text-slate-500 font-medium">Grade {grade.gradeNumber}</p>
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-900 transition-colors"
+          >
+            ✕
+          </button>
+        </div>
+
+        {/* Stock info */}
+        <div className="mx-6 mt-5 rounded-xl border border-violet-100 bg-violet-50 px-4 py-3">
+          <p className="text-xs font-semibold text-violet-600 uppercase tracking-wider">Current Stock Available</p>
+          <p className="mt-0.5 text-2xl font-bold text-violet-700">
+            {currentStock} <span className="text-sm font-normal text-violet-500">{unit}</span>
+          </p>
+        </div>
+
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-4 p-6">
           <div>
-            <label className="mb-2 block text-sm text-slate-300">
-              Bottles Per Classroom
-            </label>
+            <div className="mb-1.5 flex items-baseline justify-between">
+              <label className="text-sm font-semibold text-slate-700">
+                Bottles per Classroom
+              </label>
+              <span className="text-xs text-slate-500 font-medium">min 1</span>
+            </div>
             <input
               type="number"
               min="1"
               required
               value={form.bottlesPerClassroom}
+              placeholder="e.g. 5"
               onChange={(e) =>
-                setForm((prev) => ({
-                  ...prev,
-                  bottlesPerClassroom: e.target.value,
-                }))
+                setForm((prev) => ({ ...prev, bottlesPerClassroom: e.target.value }))
               }
-              className="w-full rounded-xl border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none"
+              className={inputClass}
             />
           </div>
 
           <div>
-            <label className="mb-2 block text-sm text-slate-300">Month</label>
+            <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+              Month
+            </label>
             <input
               type="month"
               required
               value={form.month}
               onChange={(e) =>
-                setForm((prev) => ({
-                  ...prev,
-                  month: e.target.value,
-                }))
+                setForm((prev) => ({ ...prev, month: e.target.value }))
               }
-              className="w-full rounded-xl border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none"
+              className={inputClass}
             />
           </div>
 
-          <div className="flex justify-end gap-3">
+          <div className="flex justify-end gap-3 pt-2">
             <button
               type="button"
               onClick={onClose}
-              className="rounded-xl border border-white/10 px-4 py-2 text-slate-300"
+              className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="rounded-xl bg-emerald-600 px-4 py-2 text-white disabled:opacity-60"
+              className="rounded-xl bg-violet-600 px-5 py-2 text-sm font-medium text-white hover:bg-violet-500 disabled:opacity-60 transition-colors"
             >
               {loading ? "Distributing..." : "Distribute"}
             </button>

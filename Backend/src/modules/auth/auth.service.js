@@ -25,7 +25,7 @@ export class AuthService {
 
     // Generate tokens
     const tokens = generateToken({
-      userId: user._id,
+      id: user._id,
       email: user.email,
       role: user.role
     });
@@ -59,9 +59,13 @@ export class AuthService {
 
     // Generate tokens
     const tokens = generateToken({
-      userId: user._id,
+      id: user._id,
       email: user.email,
-      role: user.role
+      role: user.role,
+      ...(user.role !== 'superAdmin' && user.school && { 
+        school: user.school._id || user.school, 
+        schoolName: user.school.name 
+      })
     });
 
     // Save refresh token
@@ -79,7 +83,7 @@ export class AuthService {
       const decoded = verifyToken(refreshToken, true);
       
       // Find user with refresh token
-      const user = await this.userRepository.findById(decoded.userId, true);
+      const user = await this.userRepository.findById(decoded.id, true);
       
       if (!user || user.refreshToken !== refreshToken) {
         throw new Error('Invalid refresh token');
@@ -87,9 +91,13 @@ export class AuthService {
 
       // Generate new tokens
       const tokens = generateToken({
-        userId: user._id,
+        id: user._id,
         email: user.email,
-        role: user.role
+        role: user.role,
+        ...(user.role !== 'superAdmin' && user.school && { 
+          school: user.school._id || user.school, 
+          schoolName: user.school.name 
+        })
       });
 
       // Update refresh token
