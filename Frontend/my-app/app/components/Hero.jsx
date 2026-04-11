@@ -23,18 +23,16 @@ export function Hero() {
           </p>
 
           <div className="flex flex-wrap gap-4">
-            <Link href="/studentQuiz" passHref>
+            
             <Button className="bg-cyan-500 hover:bg-cyan-600 text-white px-8 py-6 text-lg rounded-full shadow-lg hover:shadow-xl transition-all">
               Start Monitoring
             </Button>
-            </Link>
+            
             <Button
           variant="outline"
-          className="px-8 py-6 text-lg rounded-full border-2 border-cyan-500 text-cyan-600 hover:bg-cyan-50"
-          onClick={() => router.push("/teacher")} //  navigate to teacher page
->
-  View Dashboard
-</Button>
+          className="px-8 py-6 text-lg rounded-full border-2 border-cyan-500 text-cyan-600 hover:bg-cyan-50">
+         View Dashboard
+        </Button>
           </div>
 
           {/* Statistics */}
