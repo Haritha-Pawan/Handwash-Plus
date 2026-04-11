@@ -91,11 +91,11 @@ export default function EditQuizPage() {
           Authorization: `Bearer ${token}`, 
         },
       });
-      alert("✅ Quiz updated successfully!");
+      alert(" Quiz updated successfully!");
       router.push("/teacher/quiz?classroomId=" + classroomId);
     } catch (err) {
       console.error(err);
-      alert("❌ Update failed");
+      alert("Update failed");
     }
   };
 

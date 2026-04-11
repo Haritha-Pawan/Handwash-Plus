@@ -11,12 +11,10 @@ export default function CreateQuizPage() {
 
    useEffect(() => {
     const urlId = searchParams.get("classroomId");
-   // const localId = localStorage.getItem("classroomId");
-
-    //setClassroomId(urlId || localId);
+   
     if (urlId) {
     setClassroomId(urlId);
-    localStorage.setItem("classroomId", urlId); // IMPORTANT FIX
+    localStorage.setItem("classroomId", urlId); 
   }
   }, [searchParams]);
 

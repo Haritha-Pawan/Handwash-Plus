@@ -12,29 +12,21 @@ export default function TeacherQuizPage() {
   const classroomId = searchParams.get("classroomId");
   const [quizzes, setQuizzes] = useState([]);
 
-  //  useEffect(() => {
-  //   if (!classroomId) return; 
-
-  //   fetchQuizzes();
-  // }, [classroomId])
-
   useEffect(() => {
   fetchQuizzes();
 }, []);
 
  const fetchQuizzes = async () => {
   try {
-    //newly 
-     //const classroomId = searchParams.get("classroomId");
-
-const classroomId =
+   
+     const classroomId =
       searchParams.get("classroomId") ||
       localStorage.getItem("classroomId");
 
     if (!classroomId) {
       console.warn("Missing classroomId in URL");
       return;
-    }//new
+    }
 
     const token = localStorage.getItem("token");
 

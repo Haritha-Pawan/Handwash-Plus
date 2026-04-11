@@ -26,12 +26,12 @@ export default function QuizForm({ classroomId, refresh }) {
     setQuestions(updated);
   };
 
-  // Add new question
+  // add new question
   const addQuestion = () => {
     setQuestions([...questions, { questionText: "",type: "multiple-choice", options: [{ text: "" }], correctAnswer: "" }]);
   };
 
-  // Remove a question
+  // remove a question
   const removeQuestion = (qIndex) => {
     const updated = [...questions];
     if (updated.length > 1) {
@@ -40,14 +40,14 @@ export default function QuizForm({ classroomId, refresh }) {
     }
   };
 
-  // Add option to question
+  // add option to question
   const addOption = (qIndex) => {
     const updated = [...questions];
     updated[qIndex].options.push({ text: "" });
     setQuestions(updated);
   };
 
-  // Remove option from question
+  // remove option from question
   const removeOption = (qIndex, oIndex) => {
     const updated = [...questions];
     if (updated[qIndex].options.length > 1) {
@@ -56,7 +56,7 @@ export default function QuizForm({ classroomId, refresh }) {
     }
   };
 
-  // Submit quiz
+  // submit quiz
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!classroomId) {
@@ -73,7 +73,7 @@ export default function QuizForm({ classroomId, refresh }) {
         endTime,
         isActive,
       });
-      alert("✅ Quiz Created Successfully!");
+      alert("Quiz Created Successfully!");
       setTitle("");
       setQuestions([{ questionText: "", options: [{ text: "" }], correctAnswer: "" }]);
       setStartTime("");
@@ -82,7 +82,7 @@ export default function QuizForm({ classroomId, refresh }) {
       refresh && refresh();
     } catch (err) {
       console.error(err);
-      alert("❌ Failed to create quiz");
+      alert("Failed to create quiz");
     }
   };
 

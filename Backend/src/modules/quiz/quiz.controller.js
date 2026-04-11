@@ -73,7 +73,7 @@ export const getQuizById = async (req, res) => {
 export const getQuizzesByClassroom = async(req, res) => {
     try{
          const { classroomId } = req.params;
-       // const teacherId = req.user.userId; 
+       
     if (!mongoose.Types.ObjectId.isValid(classroomId)) {
       return res.status(400).json({ message: "Invalid classroomId" });
     }
@@ -85,10 +85,6 @@ export const getQuizzesByClassroom = async(req, res) => {
       return res.status(404).json({ message: "Classroom not found" });
     }
 
-    //check teacher owns classroom
-    // if (classroom.teacherId.toString() !== teacherId) {
-    //   return res.status(403).json({ message: "Not authorized" });
-    // }
        const quizzes = await Quiz.find({ classroomId: req.params.classroomId })
       .populate("classroomId", "name") // populate classroom name
       .sort({ createdAt: -1 });
@@ -100,55 +96,10 @@ export const getQuizzesByClassroom = async(req, res) => {
 };
 
 
-// Update quiz
-// export const UpdateQuiz = async(req, res) =>{
-//     try{
-//         const {title, questions,isPublished, startTime, endTime } = req.body;
-//         const quiz = await Quiz.findById(req.params.id).populate('classroomId');
-        
-//        // check teachers authorization
-//          if (!quiz.classroomId|| quiz.classroomId.teacherId.toString() !== req.user.id) {
-//          return res.status(403).json({ message: "Not authorized" });
-//          }
-       
-
-//         //validation
-//          if (isPublished) {
-//             if (!startTime || !endTime) {
-//                 return res.status(400).json({
-//                     message: "Start time and end time are required to publish quiz"
-//                 });
-//             }
-
-//             if (new Date(startTime) >= new Date(endTime)) {
-//                 return res.status(400).json({
-//                     message: "End time must be after start time"
-//                 });
-//             }
-//         }
-
-
-//          quiz.title = title || quiz.title;
-//          quiz.questions = questions || quiz.questions;
-         
-//          if (typeof isPublished !== "undefined") {
-//             quiz.isPublished = isPublished;
-//         }
-
-//         if (startTime) quiz.startTime = startTime;
-//         if (endTime) quiz.endTime = endTime;
-
-//          await quiz.save();
-//          return res.status(200).json({ message: "Quiz updated" ,quiz});
-//     }catch(err){
-//         return res.status(500).json({ message: err.message });
-//     }
-// };
-
 // update 
 export const UpdateQuiz = async (req, res) => {
   try {
-    const teacherId = req.user.userId;// fallback ID for testing
+    const teacherId = req.user.userId;
     const { title, questions, startTime, endTime, isPublished } = req.body;
 
     const quiz = await Quiz.findById(req.params.id).populate('classroomId');
@@ -220,21 +171,3 @@ export const deleteQuiz = async(req, res) =>{
   
 
 };
-// export const deleteQuiz = async (req, res) => {
-//   try {
-//     const quiz = await Quiz.findById(req.params.id);
-
-//     if (!quiz) {
-//       return res.status(404).json({ message: "Quiz not found" });
-//     }
-
-//    // await Quiz.findByIdAndDelete(req.params.id);
-   
-
-//     res.status(200).json({ message: "Quiz deleted successfully" });
-
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ message: error.message });
-//   }
-// };
