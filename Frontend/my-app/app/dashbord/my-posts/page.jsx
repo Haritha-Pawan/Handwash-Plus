@@ -11,7 +11,7 @@ import {
   Search,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { getMyPosts, deletePost, updatePost } from "../../services/postService";
+import { getMyPosts, deletePost, updatePost } from "../../services/postServices/postService";
 import { useRouter } from "next/navigation";
 import PostUpdate from "../../components/dashboard/updatePost";
 

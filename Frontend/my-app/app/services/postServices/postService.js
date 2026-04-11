@@ -1,5 +1,5 @@
 
-import API from "../api/api";
+import API from "../../api/api";
 
 // ✅ Create Post (with image upload)
 export const createPost = async (formData) => {

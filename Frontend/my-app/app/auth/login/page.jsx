@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { loginUser } from "../../services/postService";
+import { loginUser } from "../../services/postServices/postService";
 
 export default function LoginPage() {
   const [form, setForm] = useState({

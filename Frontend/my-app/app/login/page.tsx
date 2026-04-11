@@ -27,8 +27,12 @@ export default function LoginPage() {
             router.push("/dashboard");
           } else if (response.data.user.role === "admin") {
             router.push("/grades");
-          } else {
-            router.push("/");
+          } else if(response.data.user.role === "user")
+           router.push("/dashbord/my-posts");
+          
+           {
+
+            
           }
         }
       },

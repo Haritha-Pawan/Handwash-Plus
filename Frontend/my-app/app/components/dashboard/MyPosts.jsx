@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { Pencil, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { getMyPosts, deletePost, updatePost } from "../../services/postService";
+import { getMyPosts, deletePost, updatePost } from "../../services/postServices/postService";
 import { useRouter } from "next/navigation";
 
 export default function MyPosts() {

@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import { Upload, ImagePlus, Send } from "lucide-react";
-import { createPost } from "../../services/postService";
+import { createPost } from "../../services/postServices/postService";
 
 export default function CreatePost() {
   const [title, setTitle] = useState("");

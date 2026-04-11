@@ -41,7 +41,7 @@ export function Navbar() {
             <a href="/" className="text-gray-700 hover:text-cyan-600 transition-colors">Home</a>
             <a href="#" className="text-gray-700 hover:text-cyan-600 transition-colors">Features</a>
             <a href="#" className="text-gray-700 hover:text-cyan-600 transition-colors">Monitoring</a>
-            <a href="#" className="text-gray-700 hover:text-cyan-600 transition-colors">Community</a>
+            <a href="/community" className="text-gray-700 hover:text-cyan-600 transition-colors">Community</a>
             {user?.role === "superAdmin" && (
               <a href="/dashboard" className="text-cyan-600 font-bold hover:text-cyan-700 transition-colors">Dashboard</a>
             )}
