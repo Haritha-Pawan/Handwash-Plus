@@ -53,29 +53,27 @@ export function Hero() {
         </div>
 
         {/* Right Content - Hexagonal Image */}
-        <div className="relative flex items-center justify-center">
+        <div className="relative flex items-center justify-center mb-50 lg:mb-24 ">
           {/* Decorative floating icons */}
-          <div className="absolute top-10 left-10 w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center animate-bounce" style={{ animationDelay: '0s', animationDuration: '3s' }}>
-            <Droplet className="w-6 h-6 text-blue-500" />
-          </div>
           
-          <div className="absolute top-20 right-10 w-14 h-14 bg-purple-100 rounded-full flex items-center justify-center animate-bounce" style={{ animationDelay: '0.5s', animationDuration: '3s' }}>
+          
+          <div className="absolute top-0 right-10 left-[-20] w-14 h-14 bg-purple-100 rounded-full flex items-center justify-center animate-bounce" style={{ animationDelay: '0.5s', animationDuration: '3s' }}>
             <Sparkles className="w-7 h-7 text-purple-500" />
           </div>
           
-          <div className="absolute bottom-32 left-0 w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center animate-bounce" style={{ animationDelay: '1s', animationDuration: '3s' }}>
+          <div className="absolute bottom-8 left-[-50] w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center animate-bounce" style={{ animationDelay: '1s', animationDuration: '3s' }}>
             <Heart className="w-6 h-6 text-pink-500" fill="currentColor" />
           </div>
           
-          <div className="absolute bottom-20 right-20 w-16 h-16 bg-cyan-100 rounded-full flex items-center justify-center animate-bounce" style={{ animationDelay: '1.5s', animationDuration: '3s' }}>
+          <div className="absolute  right-[-20] w-12 h-12 bg-cyan-100 rounded-full flex items-center justify-center animate-bounce" style={{ animationDelay: '1.5s', animationDuration: '3s' }}>
             <Shield className="w-8 h-8 text-cyan-500" />
           </div>
 
-          <div className="absolute top-1/2 left-5 w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center animate-bounce" style={{ animationDelay: '2s', animationDuration: '3s' }}>
+          <div className="absolute  left-[-4] w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center animate-bounce" style={{ animationDelay: '2s', animationDuration: '3s' }}>
             <HandMetal className="w-5 h-5 text-indigo-500" />
           </div>
 
-          <div className="absolute bottom-10 right-5 w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center animate-bounce" style={{ animationDelay: '2.5s', animationDuration: '3s' }}>
+          <div className="absolute bottom-10 right-[-1] w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center animate-bounce" style={{ animationDelay: '2.5s', animationDuration: '3s' }}>
             <Waves className="w-6 h-6 text-teal-500" />
           </div>
           
@@ -86,9 +84,9 @@ export function Hero() {
              
             >
               <img
-                src={'images/wash1.webp'}
+                src={'images/handwash.webp'}
                 alt="Students washing hands"
-                className="w-full h-full object-cover"
+                className=" object-cover  rounded-lg"
               />
             </div>
           </div>

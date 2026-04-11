@@ -3,7 +3,7 @@
 import { useState } from "react";
 import CommunitySection from "../components/community/communitySection";
 import PostCard from "../components/community/PostCard";
-import { dummyPosts } from "../constance/costance";
+import { dummyPosts } from "../constance/data/costance";
 
 
 

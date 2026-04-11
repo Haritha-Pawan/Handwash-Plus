@@ -1,4 +1,4 @@
-import { features } from '../../constance/costance';
+import { features } from '../../constance/data/costance';
 import { Card } from '../ui/card';
 
 export function Features() {

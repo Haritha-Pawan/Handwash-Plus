@@ -131,3 +131,8 @@
       step: '03',
     },
   ];
+export const SOCIAL_LINKS = [
+  { src: "/images/twitter-logo.png", alt: "Twitter", href: "#" },
+  { src: "/images/linkedin.png", alt: "LinkedIn", href: "#" },
+  { src: "/images/instagram.png", alt: "Instagram", href: "#" },
+];

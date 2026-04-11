@@ -29,26 +29,27 @@ export default function CommunityTopSection({ setFilter }) {
       </div>
 
       {/* 🔽 CONTROLS SECTION */}
-      <div className="max-w-7xl mx-auto px-4 mt-6">
+      <div className=" max-w-7xl mx-auto px-4 mt-6">
         
         {/* Row 1: Stats + Button */}
-        <div className="flex justify-between items-center flex-wrap gap-4">
+        <div className="items-center  flex gap-4">
           
           {/* Stats */}
-          <div className="flex gap-6 text-gray-700 text-sm">
-            <span>👥 12,000 Members</span>
-            <span>📝 4,500 Posts</span>
+          <div className=" text-sm p-4 bg-blue-50 rounded-lg font-bold text-blue-600">
+            <div>
+                 <span>12,000 Members</span>
+            </div>
+         
+           
+          </div>
+          <div className=" bg-blue-50 rounded-lg font-bold text-blue-600 text-sm p-4 rounded-lg">
+          
+            <span>4,500 Posts</span>
           </div>
 
           {/* My Post Button */}
          
-        <Link
-  href="/dashbord"
-  
-><button className="flex items-center gap-2 bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700">
-  + My Post
-</button>
-</Link>
+
 
         </div>
 

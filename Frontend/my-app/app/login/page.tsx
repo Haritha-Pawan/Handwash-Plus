@@ -39,7 +39,7 @@ export default function LoginPage() {
             router.push("/grades");
 
           } else if(response.data.user.role === "user")
-           router.push("/dashbord/my-posts");
+           router.push("/");
 
            else if (role === "student") {
             router.push("/studentQuiz");
@@ -52,8 +52,8 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50 flex items-center justify-center p-6">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50 flex items-center justify-center ">
+      <div className="w-full max-w-md  rounded-2xl p-6">
         {/* Logo Section */}
         <div className="text-center mb-10">
           <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-3xl shadow-xl shadow-blue-200 mb-6 group hover:scale-110 transition-transform duration-300">
