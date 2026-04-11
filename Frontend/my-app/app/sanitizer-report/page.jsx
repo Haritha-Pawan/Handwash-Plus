@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { checkSanitizerAndAlert } from "../services/grade.service";
+import { getAuthToken } from "../lib/auth";
 import Loader from "../components/grades/Loader";
 import EmptyState from "../components/grades/EmptyState";
 import SanitizerStatusBadge from "../components/grades/SanitizerStatusBadge";
@@ -14,7 +15,6 @@ const summaryConfig = [
   {
     key: "empty",
     label: "Empty",
-    icon: "⛔",
     bg: "bg-rose-500/10",
     border: "border-rose-500/20",
     text: "text-rose-300",
@@ -23,7 +23,6 @@ const summaryConfig = [
   {
     key: "critical",
     label: "Critical",
-    icon: "⚠️",
     bg: "bg-orange-500/10",
     border: "border-orange-500/20",
     text: "text-orange-300",
@@ -32,7 +31,6 @@ const summaryConfig = [
   {
     key: "low",
     label: "Low Stock",
-    icon: "🔶",
     bg: "bg-yellow-500/10",
     border: "border-yellow-500/20",
     text: "text-yellow-300",
@@ -41,7 +39,6 @@ const summaryConfig = [
   {
     key: "adequate",
     label: "Adequate",
-    icon: "✅",
     bg: "bg-emerald-500/10",
     border: "border-emerald-500/20",
     text: "text-emerald-300",
@@ -50,13 +47,25 @@ const summaryConfig = [
 ];
 
 export default function SanitizerReportPage() {
+  // All hooks declared first — no early returns before this block
+  const [ready, setReady] = useState(false);
   const [report, setReport] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [sortBy, setSortBy] = useState("status"); // "status" | "quantity"
+  const [sortBy, setSortBy] = useState("status");
   const [alertSent, setAlertSent] = useState(false);
 
-  const fetchReport = async () => {
+  // Auth guard
+  useEffect(() => {
+    const token = getAuthToken();
+    if (!token) {
+      window.location.href = "/login";
+    } else {
+      setReady(true);
+    }
+  }, []);
+
+  const fetchReport = useCallback(async () => {
     try {
       setLoading(true);
       setError("");
@@ -68,11 +77,12 @@ export default function SanitizerReportPage() {
     } finally {
       setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    fetchReport();
   }, []);
+
+  // Fetch once ready
+  useEffect(() => {
+    if (ready) fetchReport();
+  }, [ready, fetchReport]);
 
   const sortedDetails = report?.details
     ? [...report.details].sort((a, b) => {
@@ -83,11 +93,14 @@ export default function SanitizerReportPage() {
       })
     : [];
 
+  // — Render guards —
+  if (!ready) return <Loader text="Checking session..." />;
   if (loading) return <Loader text="Loading sanitizer report..." />;
 
   return (
     <div className="min-h-screen bg-slate-950 px-4 py-8 text-white md:px-6">
       <div className="mx-auto max-w-7xl space-y-6">
+
         {/* Back + Header */}
         <Link
           href="/grades"
@@ -98,25 +111,24 @@ export default function SanitizerReportPage() {
 
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold">Sanitizer Report</h1>
+            <h1 className="text-3xl font-bold tracking-tight">Sanitizer Report</h1>
             <p className="mt-1 text-slate-400">
               {report?.schoolName && (
-                <span className="font-medium text-white">{report.schoolName}</span>
-              )}{" "}
-              {report?.timestamp && (
-                <span>— {new Date(report.timestamp).toLocaleString()}</span>
+                <span className="font-medium text-white">{report.schoolName} — </span>
               )}
+              {report?.timestamp && new Date(report.timestamp).toLocaleString()}
             </p>
           </div>
           <button
             onClick={fetchReport}
-            className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-2 text-sm text-emerald-300 hover:bg-emerald-500/20 transition-colors"
+            disabled={loading}
+            className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-2 text-sm text-emerald-300 hover:bg-emerald-500/20 disabled:opacity-50 transition-colors"
           >
-            ↻ Refresh & Alert
+            ↻ Refresh &amp; Alert
           </button>
         </div>
 
-        {/* Alert sent banner */}
+        {/* WhatsApp alert banner */}
         {alertSent && (
           <div className="rounded-xl border border-sky-400/20 bg-sky-400/10 px-4 py-3 text-sky-300 flex items-center gap-2">
             <span>📲</span>
@@ -124,6 +136,7 @@ export default function SanitizerReportPage() {
           </div>
         )}
 
+        {/* Error banner */}
         {error && (
           <div className="rounded-xl border border-rose-400/20 bg-rose-400/10 px-4 py-3 text-rose-300">
             {error}
@@ -131,7 +144,7 @@ export default function SanitizerReportPage() {
         )}
 
         {!report ? (
-          <EmptyState title="No report found" />
+          <EmptyState title="No report found" subtitle="Click Refresh & Alert to generate a report." />
         ) : (
           <>
             {/* Summary cards */}

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "cd /d \"%~dp0\" 2>nul || cd \"C:\\Users\\Naveen\\Desktop\\handwash-plus\\Frontend\\my-app\" && next dev",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"

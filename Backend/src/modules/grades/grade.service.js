@@ -219,8 +219,10 @@ class GradeService {
   }
 
   async checkSanitizerAndAlert(schoolId) {
-    const school = await School.findById(schoolId);
-    if (!school) throw notFound("School not found");
+    // School lookup is best-effort — grades may exist even if the school
+    // document was deleted or never created (data integrity mismatch).
+    const school = await School.findById(schoolId).catch(() => null);
+    const schoolName = school?.name || "Unknown School";
 
     const grades = await Grade.find({ school: schoolId, isActive: true });
 
@@ -247,7 +249,7 @@ class GradeService {
       const adminPhone = process.env.ADMIN_PHONE_NUMBER;
       if (adminPhone) {
         try {
-          await sendSanitizerAlertWhatsApp(adminPhone, school.name, criticalGrades);
+          await sendSanitizerAlertWhatsApp(adminPhone, schoolName, criticalGrades);
           summary.alertSentViaSMS = true;
         } catch (error) {
           console.error("[WhatsApp Service Error]", error);
@@ -256,7 +258,7 @@ class GradeService {
     }
 
     return {
-      schoolName: school.name,
+      schoolName,
       timestamp: new Date(),
       summary,
       details: grades.map((g) => ({
