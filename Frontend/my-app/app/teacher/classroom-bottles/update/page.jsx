@@ -26,20 +26,26 @@ export default function UpdateClassroomBottles() {
     e.preventDefault();
 
     try {
+      const token = localStorage.getItem("token");
       await axios.put(
         "http://localhost:5000/api/classroomsBottles/update",
         {
           classroomId,
           month,
           bottleUsed: Number(bottleUsed),
-        }
+        },
+        {
+      headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }
       );
 
-      setMessage("✅ Bottles updated successfully!");
+      setMessage(" Bottles updated successfully!");
 
       // Redirect to the list after 1 second
       setTimeout(() => {
-        router.push(`/teacher/classroom-bottles/view`); // <-- change to your list page route
+        router.push(`/teacher/classroom-bottles/view`); 
       }, 1000);
 
     } catch (err) {
@@ -52,7 +58,7 @@ export default function UpdateClassroomBottles() {
     <div className="min-h-screen bg-gray-100 flex justify-center items-center">
       <div className="bg-white shadow-lg rounded-2xl p-8 w-full max-w-md">
         <h1 className="text-2xl font-bold mb-6 text-center text-blue-600">
-          🧴 Update Bottles
+           Update Bottles
         </h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -89,7 +95,7 @@ export default function UpdateClassroomBottles() {
           </div>
 
           <div className="bg-green-50 p-3 rounded text-sm text-center">
-            🟢 Remaining Bottles:{" "}
+             Remaining Bottles:{" "}
             <strong className="text-green-600 text-lg">{remaining}</strong>
           </div>
 
@@ -97,7 +103,7 @@ export default function UpdateClassroomBottles() {
             type="submit"
             className="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600 transition"
           >
-            ✅ Update Bottles
+             Update Bottles
           </button>
         </form>
 

@@ -4,8 +4,7 @@ import {Classroom} from "../classrooms/classroom.model.js";
 
 export const updateClassroomBottles = async(req,res) =>{
     const {classroomId,month,bottleUsed} = req.body;
-   //const  teacherId = req.user.id; // auth middleware
-     const teacherId = "699fe963fac309cee0d145a8";
+     const teacherId = req.user.userId;
     try{
 
         const classroom = await Classroom.findById(classroomId);
@@ -50,34 +49,13 @@ export const updateClassroomBottles = async(req,res) =>{
 };
 
 
-//get classroombottlesByclassroomId
 
-// export const getClassroomBottlesByClassroomId = async(req,res) =>{
-
-//     try{
-//         const{classroomId} = req.params;
-
-//         //fetch classroom bottles for that classroom
-//         const records = await ClassroomBottles.find({classroomId});
-
-//         if(!records || records.length === 0){
-//              return res.status(404).json({message:"No classroom bottles found for this  classroom"});
-//         }
-
-//                return res.status(200).json({ ClassroomBottles: records});
-//     }catch(err){
-//         console.error(err);
-//         return res.status(500).json({ message: "Server error" });
-
-//     }
-// };
-
-
+//getclassrooms bottles by id
 export const getClassroomBottlesByClassroomId = async (req, res) => {
   try {
     const { classroomId } = req.params;
 
-    // 1. Get ALL distributed bottles (MAIN DATA)
+    //  Get ALL distributed bottles 
     const distributedRecords = await DistributedBottles.find({ classroomId });
 
     if (!distributedRecords || distributedRecords.length === 0) {
@@ -86,10 +64,10 @@ export const getClassroomBottlesByClassroomId = async (req, res) => {
       });
     }
 
-    // 2. Get classroom usage records
+    //  Get classroom usage records
     const classroomRecords = await ClassroomBottles.find({ classroomId });
 
-    // 3. Merge data
+    //  Merge data
     const result = distributedRecords.map((dist) => {
       const match = classroomRecords.find(
         (c) => c.month === dist.month
