@@ -67,6 +67,14 @@ export default function PostDashboard() {
     }
   };
 
+  const handlePostUpdate = (updatedPost) => {
+    setPosts((prevPosts) =>
+      prevPosts.map((post) =>
+        post._id === updatedPost._id ? updatedPost : post
+      )
+    );
+  };
+
   return (
     <div className="min-h-screen  bg-gray-100 p-6">
       {/* Header */}
@@ -221,6 +229,7 @@ export default function PostDashboard() {
                 setIsOpen(false);
                 setSelectedPost(null);
               }}
+              onUpdate={handlePostUpdate}
             />
           </div>
         </div>

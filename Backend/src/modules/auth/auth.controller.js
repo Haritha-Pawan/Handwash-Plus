@@ -54,6 +54,12 @@ export const loginUser = async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
+        ...(user.role !== 'superAdmin' && user.school && { 
+          school: {
+            id: user.school._id,
+            name: user.school.name
+          }
+        })
       },
       tokens
     });

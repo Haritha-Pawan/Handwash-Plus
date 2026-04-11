@@ -13,7 +13,7 @@ export const generateToken = (payload) =>{
     );
 
     const refreshToken = jwt.sign(
-        {userId:payload.userId},
+        {id:payload.id},
         config.jwt.refreshSecret,
         {expiresIn:config.jwt.refreshExpiration}
     )

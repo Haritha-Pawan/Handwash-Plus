@@ -7,7 +7,7 @@ export class UserRepository {
   }
 
   async findByEmail(email, includePassword = false) {
-    let query = User.findOne({ email });
+    let query = User.findOne({ email }).populate('school');
 
     if (includePassword) {
       query = query.select('+password +refreshToken');
@@ -17,7 +17,7 @@ export class UserRepository {
   }
 
   async findById(id, includePassword = false) {
-    let query = User.findById(id);
+    let query = User.findById(id).populate('school');
 
     if (includePassword) {
       query = query.select('+password +refreshToken');

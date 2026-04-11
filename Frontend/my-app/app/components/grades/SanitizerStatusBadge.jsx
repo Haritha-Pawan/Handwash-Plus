@@ -2,10 +2,10 @@ export default function SanitizerStatusBadge({ status = "adequate" }) {
   const value = String(status).toLowerCase();
 
   const styles = {
-    adequate: "bg-emerald-500/15 text-emerald-300 border-emerald-400/20",
-    low: "bg-yellow-500/15 text-yellow-300 border-yellow-400/20",
-    critical: "bg-orange-500/15 text-orange-300 border-orange-400/20",
-    empty: "bg-rose-500/15 text-rose-300 border-rose-400/20",
+    adequate: "bg-emerald-100 text-emerald-700 border-emerald-200",
+    low: "bg-yellow-100 text-yellow-700 border-yellow-200",
+    critical: "bg-orange-100 text-orange-700 border-orange-200",
+    empty: "bg-rose-100 text-rose-700 border-rose-200",
   };
 
   return (
