@@ -15,34 +15,34 @@ const summaryConfig = [
   {
     key: "empty",
     label: "Empty",
-    bg: "bg-rose-500/10",
-    border: "border-rose-500/20",
-    text: "text-rose-300",
-    value_text: "text-rose-400",
+    bg: "bg-white",
+    border: "border-rose-100",
+    text: "text-rose-600",
+    value_text: "text-rose-700",
   },
   {
     key: "critical",
     label: "Critical",
-    bg: "bg-orange-500/10",
-    border: "border-orange-500/20",
-    text: "text-orange-300",
-    value_text: "text-orange-400",
+    bg: "bg-white",
+    border: "border-orange-100",
+    text: "text-orange-600",
+    value_text: "text-orange-700",
   },
   {
     key: "low",
     label: "Low Stock",
-    bg: "bg-yellow-500/10",
-    border: "border-yellow-500/20",
-    text: "text-yellow-300",
-    value_text: "text-yellow-400",
+    bg: "bg-white",
+    border: "border-yellow-100",
+    text: "text-yellow-600",
+    value_text: "text-yellow-700",
   },
   {
     key: "adequate",
     label: "Adequate",
-    bg: "bg-emerald-500/10",
-    border: "border-emerald-500/20",
-    text: "text-emerald-300",
-    value_text: "text-emerald-400",
+    bg: "bg-white",
+    border: "border-emerald-100",
+    text: "text-emerald-600",
+    value_text: "text-emerald-700",
   },
 ];
 
@@ -98,23 +98,23 @@ export default function SanitizerReportPage() {
   if (loading) return <Loader text="Loading sanitizer report..." />;
 
   return (
-    <div className="min-h-screen bg-slate-950 px-4 py-8 text-white md:px-6">
+    <div className="min-h-screen bg-slate-50 px-4 py-8 text-slate-900 md:px-6 transition-colors duration-300">
       <div className="mx-auto max-w-7xl space-y-6">
 
         {/* Back + Header */}
         <Link
           href="/grades"
-          className="inline-flex items-center gap-1 text-sm text-sky-300 hover:text-sky-200 transition-colors"
+          className="inline-flex items-center gap-1 text-sm font-medium text-sky-600 hover:text-sky-700 transition-colors"
         >
           ← Back to Grades
         </Link>
 
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Sanitizer Report</h1>
-            <p className="mt-1 text-slate-400">
+            <h1 className="text-3xl font-bold tracking-tight text-slate-900">Sanitizer Report</h1>
+            <p className="mt-1 text-slate-500 text-sm font-medium">
               {report?.schoolName && (
-                <span className="font-medium text-white">{report.schoolName} — </span>
+                <span className="text-slate-900">{report.schoolName} — </span>
               )}
               {report?.timestamp && new Date(report.timestamp).toLocaleString()}
             </p>
@@ -122,7 +122,7 @@ export default function SanitizerReportPage() {
           <button
             onClick={fetchReport}
             disabled={loading}
-            className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-2 text-sm text-emerald-300 hover:bg-emerald-500/20 disabled:opacity-50 transition-colors"
+            className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700 hover:bg-emerald-100 disabled:opacity-50 transition-colors shadow-sm"
           >
             ↻ Refresh &amp; Alert
           </button>
@@ -130,7 +130,7 @@ export default function SanitizerReportPage() {
 
         {/* WhatsApp alert banner */}
         {alertSent && (
-          <div className="rounded-xl border border-sky-400/20 bg-sky-400/10 px-4 py-3 text-sky-300 flex items-center gap-2">
+          <div className="rounded-xl border border-sky-200 bg-sky-50 px-4 py-3 text-sky-700 font-medium flex items-center gap-2 shadow-sm">
             <span>📲</span>
             <span>WhatsApp alert sent to admin for critical/empty grades.</span>
           </div>
@@ -152,11 +152,11 @@ export default function SanitizerReportPage() {
               {summaryConfig.map(({ key, label, icon, bg, border, text, value_text }) => (
                 <div
                   key={key}
-                  className={`rounded-2xl border ${border} ${bg} p-5 flex items-center gap-4`}
+                  className={`rounded-2xl border shadow-sm ${border} ${bg} p-5 flex items-center gap-4 transition-all hover:shadow-md`}
                 >
                   <span className="text-3xl">{icon}</span>
                   <div>
-                    <p className={`text-sm ${text}`}>{label}</p>
+                    <p className={`text-xs font-bold uppercase tracking-wider ${text}`}>{label}</p>
                     <p className={`text-4xl font-bold ${value_text}`}>
                       {report.summary[key] ?? 0}
                     </p>
@@ -172,10 +172,10 @@ export default function SanitizerReportPage() {
                 <button
                   key={opt}
                   onClick={() => setSortBy(opt)}
-                  className={`rounded-lg px-3 py-1.5 text-xs font-medium capitalize transition-all ${
+                  className={`rounded-lg px-3 py-1.5 text-xs font-semibold capitalize transition-all ${
                     sortBy === opt
-                      ? "bg-sky-600 text-white"
-                      : "border border-white/10 bg-slate-900 text-slate-400 hover:text-white"
+                      ? "bg-sky-600 text-white shadow-md shadow-sky-500/20"
+                      : "border border-slate-200 bg-white text-slate-500 hover:bg-slate-50 hover:text-slate-900"
                   }`}
                 >
                   {opt}
@@ -184,9 +184,9 @@ export default function SanitizerReportPage() {
             </div>
 
             {/* Detail table */}
-            <div className="overflow-hidden rounded-2xl border border-white/10 bg-slate-900/70">
-              <table className="min-w-full text-sm text-white">
-                <thead className="bg-slate-800/80 text-left text-xs uppercase tracking-wider text-slate-400">
+            <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+              <table className="min-w-full text-sm text-slate-900">
+                <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 border-b border-slate-200">
                   <tr>
                     <th className="px-4 py-3">Grade</th>
                     <th className="px-4 py-3">Level</th>
@@ -201,8 +201,8 @@ export default function SanitizerReportPage() {
                     return (
                       <tr
                         key={item.gradeNumber}
-                        className={`border-t border-white/10 transition-colors ${
-                          isUrgent ? "bg-rose-950/20" : "hover:bg-slate-800/30"
+                        className={`border-t border-slate-100 transition-colors ${
+                          isUrgent ? "bg-rose-50/50" : "hover:bg-slate-50/80"
                         }`}
                       >
                         <td className="px-4 py-3 font-medium">
@@ -221,8 +221,8 @@ export default function SanitizerReportPage() {
                             status={item.status}
                           />
                         </td>
-                        <td className="px-4 py-3 text-slate-300">{item.quantity}</td>
-                        <td className="px-4 py-3 text-slate-500">{item.unit}</td>
+                        <td className="px-4 py-3 text-slate-700 font-medium">{item.quantity}</td>
+                        <td className="px-4 py-3 text-slate-400 font-medium">{item.unit}</td>
                         <td className="px-4 py-3">
                           <SanitizerStatusBadge status={item.status} />
                         </td>
