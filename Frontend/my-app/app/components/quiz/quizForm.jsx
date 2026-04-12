@@ -6,29 +6,29 @@ import { createQuiz } from "../../constance/quizApi.js";
 export default function QuizForm({ classroomId, refresh }) {
   const [title, setTitle] = useState("");
   const [questions, setQuestions] = useState([
-    { questionText: "", options: [{ text: "" }], correctAnswer: "" },
+    { questionText: "", type: "mcq", options: [{ text: "" }], correctAnswer: "" },
   ]);
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [isActive, setIsActive] = useState(true);
-
+ 
   // Update question text
   const handleQuestionChange = (qIndex, field, value) => {
     const updated = [...questions];
     updated[qIndex][field] = value;
     setQuestions(updated);
   };
-
+ 
   // Update option text
   const handleOptionChange = (qIndex, oIndex, value) => {
     const updated = [...questions];
     updated[qIndex].options[oIndex].text = value;
     setQuestions(updated);
   };
-
+ 
   // add new question
   const addQuestion = () => {
-    setQuestions([...questions, { questionText: "",type: "multiple-choice", options: [{ text: "" }], correctAnswer: "" }]);
+    setQuestions([...questions, { questionText: "", type: "mcq", options: [{ text: "" }], correctAnswer: "" }]);
   };
 
   // remove a question
@@ -75,7 +75,7 @@ export default function QuizForm({ classroomId, refresh }) {
       });
       alert("Quiz Created Successfully!");
       setTitle("");
-      setQuestions([{ questionText: "", options: [{ text: "" }], correctAnswer: "" }]);
+      setQuestions([{ questionText: "", type: "mcq", options: [{ text: "" }], correctAnswer: "" }]);
       setStartTime("");
       setEndTime("");
       setIsActive(true);

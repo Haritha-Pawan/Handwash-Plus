@@ -1,4 +1,7 @@
+import { Suspense } from 'react';
 import './globals.css'
+
+export const dynamic = 'force-dynamic';
 import { Navbar } from "./components/Navbar";
 import Footer from "./components/Footer";
 import { ReactQueryProvider } from "./src/modules/super-admin/provider/ReactQueryProvider";
@@ -9,7 +12,9 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body>
         <ReactQueryProvider>
-          <Navbar />
+          <Suspense fallback={<div className="h-16 border-b" />}>
+            <Navbar />
+          </Suspense>
           {children}
         </ReactQueryProvider>
         <Footer />

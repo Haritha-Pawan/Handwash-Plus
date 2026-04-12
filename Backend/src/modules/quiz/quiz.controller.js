@@ -39,7 +39,7 @@ export const createQuiz = async (req,res) =>{
             teacherId: classroom.teacherId,
             questions: questions.map(q => ({
              ...q,
-    type: q.type || "multiple-choice"  // set default if missing
+    type: q.type || "mcq"  // set default to 'mcq' to match model validator
         })),
         startTime: startTime ? new Date(startTime) : undefined,
       endTime: endTime ? new Date(endTime) : undefined,
@@ -88,7 +88,7 @@ export const getQuizzesByClassroom = async(req, res) => {
       return res.status(404).json({ message: "Classroom not found" });
     }
 
-       const quizzes = await Quiz.find({ classroomId: req.params.classroomId })
+       const quizzes = await Quiz.find({ classroomId })
       .populate("classroomId", "name") // populate classroom name
       .sort({ createdAt: -1 });
 
@@ -131,7 +131,7 @@ export const UpdateQuiz = async (req, res) => {
         questionText: q.questionText || "",
         options: Array.isArray(q.options) ? q.options.map(o => ({ text: o.text || "" })) : [{ text: "" }],
         correctAnswer: q.correctAnswer || "",
-        type: q.type || "multiple-choice"
+        type: q.type || "mcq"
       }));
     }
 
