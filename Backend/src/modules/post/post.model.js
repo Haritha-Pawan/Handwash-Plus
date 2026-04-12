@@ -10,18 +10,29 @@ const postSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    imageUrl: {          
+    imageUrl: {
       type: String,
       default: null,
     },
- 
+    votes: [
+      {
+        user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+        value: Number, // +1 (upvote) or -1 (downvote)
+      },
+    ],
+
+    voteCount: {
+      type: Number,
+      default: 0,
+    },
+
     author: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export default mongoose.model("Post", postSchema);
