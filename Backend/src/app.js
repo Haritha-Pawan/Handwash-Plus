@@ -36,8 +36,10 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
   : ['http://localhost:3000'];
 
-// Matches any Vercel preview/production URL for this project
-const vercelPattern = /^https:\/\/handwash-plus-ea8v(-[a-z0-9]+)?-haritha-cds-projects\.vercel\.app$/;
+// Production: https://handwash-plus-ea8v.vercel.app
+// Team/preview: https://handwash-plus-ea8v-…-haritha-cds-projects.vercel.app
+const vercelPattern =
+  /^https:\/\/handwash-plus-ea8v(\.vercel\.app|(-[a-z0-9]+)?-haritha-cds-projects\.vercel\.app)$/;
 
 app.use(cors({
   origin: (origin, callback) => {
