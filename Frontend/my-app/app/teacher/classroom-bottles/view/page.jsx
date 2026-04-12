@@ -3,8 +3,10 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function ClassroomBottlesTable() {
+  const router = useRouter();
   const [classroomId, setClassroomId] = useState(null);
   const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -12,12 +14,16 @@ export default function ClassroomBottlesTable() {
   // 1. Get classroomId from localStorage
   useEffect(() => {
     const id = localStorage.getItem("classroomId");
+    if (!id || id === "null") {
+      router.push("/teacher/classrooms");
+      return;
+    }
     setClassroomId(id);
-  }, []);
+  }, [router]);
 
   // 2. Fetch data when classroomId is ready
   useEffect(() => {
-    if (!classroomId) return;
+    if (!classroomId || classroomId === "null") return;
 
     const fetchData = async () => {
       try {

@@ -9,10 +9,10 @@ export default function Sidebar() {
 
  const menu = [
   { name: "Home", icon: Home, href: "/" },
-  { name: "My Profile", icon: User, href: "/dashbord/profile" },
-  { name: "Create Post", icon: PlusSquare, href: "/dashbord/create-post" },
-  { name: "My Posts", icon: Users, href: "/dashbord/my-posts" },
-  { name: "Notifications", icon: Bell, href: "/dashbord/notifications" }, // ✅ fixed
+  { name: "My Profile", icon: User, href: "/dashboard/profile" },
+  { name: "Create Post", icon: PlusSquare, href: "/dashboard/create-post" },
+  { name: "My Posts", icon: Users, href: "/dashboard/my-posts" },
+  { name: "Notifications", icon: Bell, href: "/dashboard/notifications" }, // ✅ fixed
 ];
 
   return (

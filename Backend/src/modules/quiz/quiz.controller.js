@@ -15,11 +15,14 @@ export const createQuiz = async (req,res) =>{
         }
 
         //find classroom
+        if (!classroomId || classroomId === "null" || !mongoose.Types.ObjectId.isValid(classroomId)) {
+             return res.status(400).json({message:"Invalid classroomId"});
+        }
+
         const classroom = await Classroom.findById(classroomId);
 
         if(!classroom){
              return res.status(404).json({message:"classroom not found"});
-
         }
 
         //check teacher is assign to the classsroom
@@ -72,10 +75,10 @@ export const getQuizById = async (req, res) => {
 
 export const getQuizzesByClassroom = async(req, res) => {
     try{
-         const { classroomId } = req.params;
+    const { classroomId } = req.params;
        
-    if (!mongoose.Types.ObjectId.isValid(classroomId)) {
-      return res.status(400).json({ message: "Invalid classroomId" });
+    if (!classroomId || classroomId === "null" || !mongoose.Types.ObjectId.isValid(classroomId)) {
+      return res.status(200).json([]);
     }
 
      // find classroom

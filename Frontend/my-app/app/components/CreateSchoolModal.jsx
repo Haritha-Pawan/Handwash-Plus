@@ -4,14 +4,9 @@ import { X, Save, Building, MapPin, Loader2 } from "lucide-react";
 
 const API_BASE_URL = "http://localhost:5000/api";
 
-interface CreateSchoolModalProps {
-  onClose: () => void;
-  onCreated: () => void;
-}
-
-export function CreateSchoolModal({ onClose, onCreated }: CreateSchoolModalProps) {
+export function CreateSchoolModal({ onClose, onCreated }) {
   const [isPending, setIsPending] = useState(false);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [errorMsg, setErrorMsg] = useState(null);
   const [formData, setFormData] = useState({
     name: "",
     address: "",
@@ -28,12 +23,12 @@ export function CreateSchoolModal({ onClose, onCreated }: CreateSchoolModalProps
     };
   }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMsg(null);
     setIsPending(true);

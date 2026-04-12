@@ -1,6 +1,6 @@
 import express from "express";
 import authMiddleware from "../../@core/middleware/auth.middleware.js";
-import  roleMiddleware  from "../../@core/middleware/role.middlewere.js";
+import  roleMiddleware  from "../../@core/middleware/role.middleware.js";
 import { updateClassroomBottles,getClassroomBottlesByClassroomId } from "./classroomBottles.controller.js";
 
 const router = express.Router();

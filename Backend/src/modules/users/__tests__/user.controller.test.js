@@ -139,10 +139,10 @@ describe('User Controller — Unit Tests', () => {
 
   describe('loginUser()', () => {
     it('should return 200 with token on valid credentials', async () => {
-      const userWithPassword = { ...sampleUser, password: 'hashed_pw', select: jest.fn() };
-      // select returns the user itself for chaining
+      const userWithPassword = { ...sampleUser, password: 'hashed_pw' };
       User.findOne.mockReturnValue({
-        select: jest.fn().mockResolvedValue(userWithPassword),
+        select: jest.fn().mockReturnThis(),
+        populate: jest.fn().mockResolvedValue(userWithPassword),
       });
       bcrypt.compare.mockResolvedValue(true);
       process.env.JWT_SECRET = 'test_secret';
@@ -160,7 +160,8 @@ describe('User Controller — Unit Tests', () => {
 
     it('should return 400 when user is not found', async () => {
       User.findOne.mockReturnValue({
-        select: jest.fn().mockResolvedValue(null),
+        select: jest.fn().mockReturnThis(),
+        populate: jest.fn().mockResolvedValue(null),
       });
 
       const req = { body: { email: 'unknown@school.com', password: 'Pass123!' } };
@@ -177,7 +178,8 @@ describe('User Controller — Unit Tests', () => {
     it('should return 400 when password does not match', async () => {
       const userWithPassword = { ...sampleUser, password: 'hashed_pw' };
       User.findOne.mockReturnValue({
-        select: jest.fn().mockResolvedValue(userWithPassword),
+        select: jest.fn().mockReturnThis(),
+        populate: jest.fn().mockResolvedValue(userWithPassword),
       });
       bcrypt.compare.mockResolvedValue(false);
 

@@ -1,7 +1,7 @@
 import express  from "express";
 import { Quiz } from "./quiz.model.js";
 import authMiddleware from "../../@core/middleware/auth.middleware.js";
-import  roleMiddleware  from "../../@core/middleware/role.middlewere.js";
+import  roleMiddleware  from "../../@core/middleware/role.middleware.js";
 import { createQuiz, deleteQuiz, getQuizzesByClassroom, UpdateQuiz ,getQuizById} from "./quiz.controller.js";
 
 const router = express.Router();

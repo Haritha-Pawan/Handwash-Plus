@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useLogin } from "../src/features/auth/hooks/useAuth";
 import { Droplets, Lock, Mail, Loader2, AlertCircle } from "lucide-react";
-import { AxiosError } from "axios";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -13,37 +12,31 @@ export default function LoginPage() {
     password: "",
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     login(formData, {
       onSuccess: (response) => {
         if (response.success) {
-          
-           // const token = response.data.tokens.accessToken ;
-           const token = response.data?.tokens?.accessToken ||(response as any)?.tokens?.accessToken || (response as any)?.data?.accessToken || (response as any)?.accessToken ;
+           const token = response.data?.tokens?.accessToken || response.tokens?.accessToken || response.data?.accessToken || response.accessToken ;
             localStorage.setItem("token", token); 
             console.log("TOKEN AFTER LOGIN:", token);
             const role = response.data.user.role;
               localStorage.setItem("user", JSON.stringify(response.data.user));
 
           if (role === "superAdmin") {
-            router.push("/dashboard");
+            router.push("/admin-dashboard");
           } else if (role === "teacher") {
             router.push("/teacher/classrooms");
           } else if (response.data.user.role === "admin") {
             router.push("/grades");
-
-          } else if(response.data.user.role === "user")
-           router.push("/");
-
-           else if (role === "student") {
-            router.push("/studentQuiz");
-           } else {
+          } else if (role === "student" || role === "user") {
+            router.push("/dashboard");
+          } else {
             router.push("/");
           }
         }
@@ -112,7 +105,7 @@ export default function LoginPage() {
               <div className="bg-red-50 border border-red-100 p-4 rounded-2xl flex items-start gap-3 animate-shake">
                 <AlertCircle className="h-5 w-5 text-red-500 shrink-0 mt-0.5" />
                 <p className="text-sm font-semibold text-red-600">
-                  {((error as AxiosError<any>)?.response?.data?.message) || "Invalid credentials. Please try again."}
+                  {error?.response?.data?.message || "Invalid credentials. Please try again."}
                 </p>
               </div>
             )}

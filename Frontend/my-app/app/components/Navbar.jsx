@@ -6,9 +6,9 @@ import { Button } from './ui/button';
 
 export function Navbar() {
   const router = useRouter();
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef(null);
 
   useEffect(() => {
     const userStr = localStorage.getItem("user");
@@ -23,8 +23,8 @@ export function Navbar() {
 
   // close dropdown when clicking outside
   useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+    function handleClickOutside(e) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
         setDropdownOpen(false);
       }
     }
@@ -57,7 +57,7 @@ export function Navbar() {
             <a href="#" className="text-md font-medium text-gray-600 px-4 py-2 rounded-lg hover:bg-blue-50 hover:text-blue-700 transition-colors">Monitoring</a>
             <a href="/community" className="text-md font-medium text-gray-600 px-4 py-2 rounded-lg hover:bg-blue-50 hover:text-blue-700 transition-colors">Community</a>
             {user?.role === "superAdmin" && (
-              <a href="/dashboard" className="text-cyan-600 font-bold hover:text-cyan-700 transition-colors">Dashboard</a>
+              <a href="/admin-dashboard" className="text-cyan-600 font-bold hover:text-cyan-700 transition-colors">Dashboard</a>
             )}
             <a href="#" className="text-md font-medium text-gray-600 px-4 py-2 rounded-lg hover:bg-blue-50 hover:text-blue-700 transition-colors">Contact</a>
           </div>
@@ -86,7 +86,7 @@ export function Navbar() {
 
                     {/* My Dashboard */}
                     <button
-                      onClick={() => { router.push("/dashbord/my-posts"); setDropdownOpen(false); }}
+                      onClick={() => { router.push("/dashboard/my-posts"); setDropdownOpen(false); }}
                       className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors"
                     >
                       <LayoutDashboard className="w-4 h-4" />

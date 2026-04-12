@@ -3,8 +3,8 @@ const BASE_URL = "http://localhost:5000/api/quiz";
 export const createQuiz = async (data) => {
   const token = localStorage.getItem("token");
 
-if (!data.classroomId) {
-    throw new Error("classroomId is missing");
+if (!data.classroomId || data.classroomId === "null") {
+    throw new Error("classroomId is missing or invalid");
   }
 
   const payload = {

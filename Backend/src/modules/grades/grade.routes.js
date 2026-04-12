@@ -9,7 +9,7 @@ import {
 } from "./grade.validation.js";
 import { validate } from "../../@core/middleware/validate.middleware.js";
 import authMiddleware from "../../@core/middleware/auth.middleware.js";
-import authorizeRoles from "../../@core/middleware/role.middlewere.js";
+import authorizeRoles from "../../@core/middleware/role.middleware.js";
 
 const router = Router();
 
