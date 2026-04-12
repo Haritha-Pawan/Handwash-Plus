@@ -33,14 +33,17 @@ const app = express();
 
 
 const allowedOrigins = process.env.ALLOWED_ORIGINS
-  ? process.env.ALLOWED_ORIGINS.split(',')
-  : ['https://handwash-plus-ea8v-eydgnny7f-haritha-cds-projects.vercel.app/'];
+  ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
+  : ['http://localhost:3000'];
+
+// Matches any Vercel preview/production URL for this project
+const vercelPattern = /^https:\/\/handwash-plus-ea8v(-[a-z0-9]+)?-haritha-cds-projects\.vercel\.app$/;
 
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow requests with no origin (mobile apps, curl, Render health checks)
     if (!origin) return callback(null, true);
     if (allowedOrigins.includes(origin)) return callback(null, true);
+    if (vercelPattern.test(origin)) return callback(null, true);
     callback(new Error(`CORS: origin ${origin} not allowed`));
   },
   credentials: true,
