@@ -5,9 +5,22 @@ import { jest } from "@jest/globals";
 */
 
 const mockGrade = {
-  find: jest.fn(),
+  find: jest.fn().mockReturnValue({
+    select: jest.fn().mockReturnThis(),
+    populate: jest.fn().mockReturnThis(),
+    sort: jest.fn().mockReturnThis(),
+    // Make the query object thenable to satisfy await
+    then: function(onFulfilled) {
+      return Promise.resolve(this._resolvedValue || []).then(onFulfilled);
+    }
+  }),
   create: jest.fn(),
-  findOne: jest.fn(),
+  findOne: jest.fn().mockReturnValue({
+    populate: jest.fn().mockReturnThis(),
+    then: function(onFulfilled) {
+      return Promise.resolve(this._resolvedValue || null).then(onFulfilled);
+    }
+  }),
   findOneAndUpdate: jest.fn(),
 };
 
@@ -48,10 +61,11 @@ describe("Grade Service Unit Tests", () => {
     it("should create missing grades successfully", async () => {
 
       // mock existing grades
-      mockGrade.find.mockResolvedValue([
+      const query = mockGrade.find();
+      query._resolvedValue = [
         { gradeNumber: 1 },
         { gradeNumber: 2 },
-      ]);
+      ];
 
       // mock creation
       mockGrade.create.mockResolvedValue([
@@ -85,11 +99,12 @@ describe("Grade Service Unit Tests", () => {
 
     it("should throw error when all grades already exist", async () => {
 
-      mockGrade.find.mockResolvedValue([
+      const query = mockGrade.find();
+      query._resolvedValue = [
         { gradeNumber: 1 },
         { gradeNumber: 2 },
         { gradeNumber: 3 },
-      ]);
+      ];
 
       await expect(
         gradeService.createGrades("school123", 3)
