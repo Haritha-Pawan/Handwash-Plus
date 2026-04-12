@@ -1,9 +1,25 @@
 import axios from "axios";
 
 
+const normalizeApiBaseUrl = (rawUrl) => {
+  const fallback = "http://localhost:5000/api";
+  const candidate = (rawUrl || fallback).trim();
+
+  if (!candidate) return fallback;
+  if (candidate.endsWith("/api")) return candidate;
+  if (candidate.endsWith("/api/")) return candidate.slice(0, -1);
+  return `${candidate.replace(/\/+$/, "")}/api`;
+};
+
+const apiBaseUrl = normalizeApiBaseUrl(process.env.NEXT_PUBLIC_API_URL);
+
+
 const API = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || "https://handwash-plus-ea8v.vercel.app/",
   withCredentials: true,
+  baseURL: apiBaseUrl,
+  // Auth is sent via Bearer token; cookies are not required.
+  withCredentials: false,
 });
 
 API.interceptors.request.use((config) => {
