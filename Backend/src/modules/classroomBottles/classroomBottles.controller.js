@@ -1,11 +1,15 @@
 import DistributedBottles from "./distributedBottles.model.js";
 import ClassroomBottles from "./classroomBottles.model.js";
 import {Classroom} from "../classrooms/classroom.model.js";
+import mongoose from "mongoose";
 
 export const updateClassroomBottles = async(req,res) =>{
     const {classroomId,month,bottleUsed} = req.body;
      const teacherId = req.user.userId;
     try{
+        if (!classroomId || classroomId === "null" || !mongoose.Types.ObjectId.isValid(classroomId)) {
+            return res.status(400).json({ message: "Invalid classroomId" });
+        }
 
         const classroom = await Classroom.findById(classroomId);
 
@@ -54,6 +58,10 @@ export const updateClassroomBottles = async(req,res) =>{
 export const getClassroomBottlesByClassroomId = async (req, res) => {
   try {
     const { classroomId } = req.params;
+
+    if (!classroomId || classroomId === "null" || !mongoose.Types.ObjectId.isValid(classroomId)) {
+        return res.status(200).json({ ClassroomBottles: [] });
+    }
 
     //  Get ALL distributed bottles 
     const distributedRecords = await DistributedBottles.find({ classroomId });

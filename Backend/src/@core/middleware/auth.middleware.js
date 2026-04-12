@@ -15,9 +15,10 @@ const authMiddleware = async (req, res, next) => {
 
     req.user = decoded; 
     
-    // Normalize user ID to 'id' property (backward compatibility for 'userId')
+    // Normalize user ID (Backward compatibility for modules using 'userId' vs 'id')
     const userId = decoded.id || decoded.userId;
     if (userId) {
+        req.user.userId = userId.toString();
         req.user.id = userId.toString();
     }
     
