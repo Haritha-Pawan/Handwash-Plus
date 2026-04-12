@@ -1,6 +1,7 @@
 import { Student } from "./student.model.js";
 import { Quiz } from "../quiz/quiz.model.js"
 import { Classroom } from "../classrooms/classroom.model.js";
+import mongoose from "mongoose";
 
 
 //get all students
@@ -175,6 +176,10 @@ export const addStudent = async (req, res) => {
  export const getStudentsByClassroom = async (req, res) => {
   try {
     const { classroomId } = req.params;
+
+    if (!classroomId || classroomId === "null" || !mongoose.Types.ObjectId.isValid(classroomId)) {
+      return res.status(200).json({ students: [] });
+    }
 
     const students = await Student.find({ classroomId });
 

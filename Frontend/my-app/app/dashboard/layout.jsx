@@ -1,11 +1,11 @@
 
 import Sidebar from "../components/dashboard/Sidebar";
-import DashbordHeader from "../components/dashboard/dashbordHeader";
+import DashboardHeader from "../components/dashboard/DashboardHeader";
 
 export default function DashboardLayout({ children }) {
   return (
     <div className="flex h-screen">
-        <DashbordHeader />
+        <DashboardHeader />
     
       <Sidebar />
       <main className="flex-1  bg-gray-100 overflow-y-auto">

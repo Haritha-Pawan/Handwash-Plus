@@ -81,7 +81,7 @@ export const addClassroom = async(req, res) =>{
       .populate("teacherId", "name email");
 
     if (!classrooms.length) {
-      return res.status(404).json({ message: "No classrooms found" });
+      return res.status(200).json({ classrooms: [] });
     }
 
     return res.status(200).json({ classrooms });

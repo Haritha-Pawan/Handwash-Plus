@@ -2,14 +2,8 @@
 import React, { useState, useEffect } from "react";
 import { X, Save, Building, MapPin } from "lucide-react";
 import { useUpdateSchool } from "../src/features/school/hooks/useSchool";
-import type { School } from "../src/features/school/types/school.types";
 
-interface EditSchoolModalProps {
-  school: School;
-  onClose: () => void;
-}
-
-export function EditSchoolModal({ school, onClose }: EditSchoolModalProps) {
+export function EditSchoolModal({ school, onClose, onUpdate }) {
   const { mutate, isPending } = useUpdateSchool();
   const [formData, setFormData] = useState({
     name: school.name || "",
@@ -27,12 +21,12 @@ export function EditSchoolModal({ school, onClose }: EditSchoolModalProps) {
     };
   }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     const payload = {
       ...formData,
@@ -43,6 +37,7 @@ export function EditSchoolModal({ school, onClose }: EditSchoolModalProps) {
       { id: school.id || school._id || "", data: payload },
       {
         onSuccess: () => {
+          onUpdate();
           onClose();
         },
       }

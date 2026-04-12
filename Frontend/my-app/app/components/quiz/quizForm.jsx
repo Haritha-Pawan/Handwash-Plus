@@ -59,8 +59,8 @@ export default function QuizForm({ classroomId, refresh }) {
   // submit quiz
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!classroomId) {
-        alert("Missing classroomId");
+    if (!classroomId || classroomId === "null") {
+        alert("Missing or invalid classroomId");
         return;
       }
 
