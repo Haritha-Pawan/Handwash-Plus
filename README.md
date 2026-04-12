@@ -100,31 +100,33 @@ The app will be at `http://localhost:3000`.
 ### Backend (`Backend/.env`)
 
 ```bash
+# Server
 NODE_ENV=development
 PORT=5000
 
+# Database
+MONGODB_URI=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/handwashPlus
 
-
-MONGODB_URI=mongodb+srv://crowdflow_db:crowdflow123+@cluster0.idairv9.mongodb.net/handwashPlus
-
-
-JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
-JWT_REFRESH_SECRET=your-super-secret-refresh-key-change-this-in-production
-JWT_RESET_SECRET=your-super-secret-reset-key-change-this-in-production
+# JWT
+JWT_SECRET=<your-secret-key>
+JWT_REFRESH_SECRET=<your-refresh-secret-key>
+JWT_RESET_SECRET=<your-reset-secret-key>
 JWT_ACCESS_EXPIRATION=15m
 JWT_REFRESH_EXPIRATION=7d
 
+# CORS
+CORS_ORIGIN=http://localhost:3000
 
-CORS_ORIGIN=http://localhost:3000,http://localhost:5000
+# Twilio (for SMS alerts)
+TWILIO_ACCOUNT_SID=<your-twilio-sid>
+TWILIO_AUTH_TOKEN=<your-twilio-auth-token>
+TWILIO_PHONE_NUMBER=<your-twilio-number>
+ADMIN_PHONE_NUMBER=<the-number-that-receives-alerts>
 
-TWILIO_ACCOUNT_SID=ACa4b2770d6796f9b470466cbe4829bdff
-TWILIO_AUTH_TOKEN=14ed9efadfcbfca21c6695943f440dbf
-TWILIO_PHONE_NUMBER=+14179893463
-ADMIN_PHONE_NUMBER=+94776049950
-
-IMAGEKIT_PUBLIC_KEY='public_C5RoxZ4WvYlyXLkB96vpIlxuOjU='
-IMAGEKIT_PRIVATE_KEY='private_4jEYkYE7lLJiSOqUdaDMGd7A1Co=' 
-IMAGEKIT_URL_ENDPOINT='https://ik.imagekit.io/j57lutycub'
+# ImageKit (for image uploads)
+IMAGEKIT_PUBLIC_KEY=<your-imagekit-public-key>
+IMAGEKIT_PRIVATE_KEY=<your-imagekit-private-key>
+IMAGEKIT_URL_ENDPOINT=<your-imagekit-url>
 
 # World Bank API
 WORLD_BANK_API_URL=https://api.worldbank.org/v2
