@@ -11,7 +11,7 @@ export function Navbar() {
   const dropdownRef = useRef(null);
 
   useEffect(() => {
-    const userStr = localStorage.getItem("user");
+    const userStr = localStorage.getItem("authUser");
     if (userStr) {
       try {
         setUser(JSON.parse(userStr));
@@ -34,7 +34,7 @@ export function Navbar() {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    localStorage.removeItem("authUser");
     setUser(null);
     setDropdownOpen(false);
     router.push("/login");
@@ -113,7 +113,7 @@ export function Navbar() {
                   Log In
                 </Button>
                 <Button
-                  onClick={() => router.push("/signup")}
+                  onClick={() => router.push("/register")}
                   variant="outline"
                   className="text-gray-700 hover:bg-gray-100 transition-colors"
                 >

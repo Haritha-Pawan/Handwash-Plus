@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { Pencil, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { getMyPosts, deletePost, updatePost } from "../../services/postServices/postService";
+import { getMyPosts, deletePost } from "../../services/postServices/postService";
 import { useRouter } from "next/navigation";
 
 export default function MyPosts() {
@@ -50,20 +50,6 @@ export default function MyPosts() {
     }
   };
 
-  // 👍 Update Votes
-  const handleUpdateVotes = async (id, newVotes) => {
-    try {
-      await updatePost(id, { votes: newVotes });
-
-      setPosts((prev) =>
-        prev.map((p) => (p._id === id ? { ...p, votes: newVotes } : p))
-      );
-    } catch (err) {
-      console.log(err.response?.data || err.message);
-      alert("Failed to update votes.");
-    }
-  };
-
   // ✏️ Edit
   const handleEdit = (id) => {
     router.push(`/edit-post/${id}`);
@@ -103,15 +89,7 @@ export default function MyPosts() {
                   </p>
 
                   <div className="text-sm mt-2 text-gray-600 flex items-center gap-2">
-                    👍 {post.votes} votes
-                    <button
-                      onClick={() =>
-                        handleUpdateVotes(post._id, post.votes + 1)
-                      }
-                      className="text-blue-500 text-xs"
-                    >
-                      +1
-                    </button>
+                     {post.voteCount ?? 0} votes
                   </div>
                 </div>
 

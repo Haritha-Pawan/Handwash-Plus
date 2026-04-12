@@ -16,6 +16,11 @@ export const getMyPosts = async () => {
   const res = await API.get("/posts/my-posts");
   return res.data;
 };
+//get my stats
+export const getMyStats = async () => {
+  const res = await API.get("/posts/me");
+  return res.data;
+};
 
 // ✅ Get All Posts
 export const getAllPosts = async () => {
@@ -32,6 +37,18 @@ export const updatePost = async (id, data) => {
 // ✅ Delete Post
 export const deletePost = async (id) => {
   const res = await API.delete(`/posts/${id}`);
+  return res.data;
+};
+// ✅ Vote Post
+export const votePost = async (postId, value) => {
+  const res = await API.post(`/posts/${postId}/vote`, { value });
+  return res.data;
+};
+
+
+// ✅ Get Top Posts (Ranking)
+export const getTopPosts = async () => {
+  const res = await API.get("/posts/top-posts");
   return res.data;
 };
 

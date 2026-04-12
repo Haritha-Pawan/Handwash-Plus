@@ -6,15 +6,43 @@ const postSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+
     content: {
       type: String,
       required: true,
     },
-    imageUrl: {          
+
+    imageUrl: {
       type: String,
       default: null,
     },
- 
+
+    votes: [
+      {
+        user: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+          required: true,
+        },
+        value: {
+          type: Number,
+          enum: [1, -1],
+          required: true,
+        },
+      },
+    ],
+
+    voteCount: {
+      type: Number,
+      default: 0,
+    },
+
+    status: {
+      type: String,
+      enum: ["active", "deleted"],
+      default: "active",
+    },
+
     author: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

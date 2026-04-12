@@ -49,7 +49,7 @@ export const getMyPosts = async (req, res) => {
     console.log("Logged user:", req.user.id);
 
     const posts = await Post.find({ author: req.user.id })
-      .populate("author", "name email")
+      .populate("author", "name email school class")
       .sort({ createdAt: -1 });
 
     res.status(200).json(posts);
@@ -60,7 +60,7 @@ export const getMyPosts = async (req, res) => {
 
 export const getAllPosts = async (req, res) => {
   const posts = await Post.find()
-    .populate("author", "name")
+    .populate("author", "name email school class")
     .sort({ createdAt: -1 });
 
   res.json(posts);
@@ -119,4 +119,48 @@ export const deletePost = async (req, res) => {
 
   await post.deleteOne();
   res.json({ message: "Post deleted successfully" });
+};
+
+export const votePost = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { value } = req.body; // +1 or -1
+    const postId = req.params.id;
+
+    const post = await Post.findById(postId);
+
+    // Check if user already voted
+    const existingVote = post.votes.find(v => v.user.toString() === userId);
+
+    if (existingVote) {
+      // Remove old vote
+      post.voteCount -= existingVote.value;
+
+      // Update vote
+      existingVote.value = value;
+    } else {
+      // Add new vote
+      post.votes.push({ user: userId, value });
+    }
+
+    // Add new vote value
+    post.voteCount += value;
+
+    await post.save();
+
+    res.json(post);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+
+
+export const getTopPosts = async (req, res) => {
+  const posts = await Post.find()
+    .populate("author", "name email school class")
+    .sort({ voteCount: -1 }) // highest votes first
+    .limit(10);
+
+  res.json(posts);
 };

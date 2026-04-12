@@ -31,9 +31,8 @@ const users = new mongoose.Schema({
   },
 
   school: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "School",
-    default: null,
+    type: String,
+  required: true,
   },
 
   class: {

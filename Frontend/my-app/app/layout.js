@@ -1,11 +1,9 @@
-import { Suspense } from 'react';
-import './globals.css'
+import { Suspense } from "react";
+import "./globals.css";
 
-export const dynamic = 'force-dynamic';
 import { Navbar } from "./components/Navbar";
 import Footer from "./components/Footer";
 import { ReactQueryProvider } from "./src/modules/super-admin/provider/ReactQueryProvider";
-
 
 export default function RootLayout({ children }) {
   return (
@@ -15,8 +13,10 @@ export default function RootLayout({ children }) {
           <Suspense fallback={<div className="h-16 border-b" />}>
             <Navbar />
           </Suspense>
+
           {children}
         </ReactQueryProvider>
+
         <Footer />
       </body>
     </html>

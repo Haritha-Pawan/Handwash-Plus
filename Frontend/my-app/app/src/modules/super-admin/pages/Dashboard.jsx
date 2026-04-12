@@ -152,7 +152,7 @@ const Dashboard = () => {
     : 0;
   
   useEffect(() => {
-    const userStr = localStorage.getItem("user");
+    const userStr = localStorage.getItem("authUser");
     const token = localStorage.getItem("token");
     
     if (!token || !userStr) {

@@ -2,68 +2,66 @@
 
 import { useEffect, useState, use } from "react";
 import Link from "next/link";
-import { getGradeById } from "../../services/grade.service";
-import { distributeBottles } from "../../services/grade.service";
+import { getGradeById, distributeBottles } from "../../services/grade.service";
 import Loader from "../../components/grades/Loader";
 import SanitizerStatusBadge from "../../components/grades/SanitizerStatusBadge";
 import DistributeBottlesModal from "../../components/grades/DistributeBottlesModal";
 
+const STATUS_CONFIG = {
+  empty:    { track: "#f43f5e", bg: "bg-rose-50",    border: "border-rose-200",   text: "text-rose-700",    icon: "🔴", label: "Empty"    },
+  critical: { track: "#f97316", bg: "bg-orange-50",  border: "border-orange-200", text: "text-orange-700",  icon: "🟠", label: "Critical"  },
+  low:      { track: "#facc15", bg: "bg-yellow-50",  border: "border-yellow-200", text: "text-yellow-700",  icon: "🟡", label: "Low"      },
+  adequate: { track: "#10b981", bg: "bg-emerald-50", border: "border-emerald-200",text: "text-emerald-700", icon: "🟢", label: "Adequate" },
+};
+
 function SanitizerGauge({ currentQty, threshold, unit, status }) {
+  const cfg = STATUS_CONFIG[status] || STATUS_CONFIG.adequate;
   const safeThreshold = threshold > 0 ? threshold : 1;
   const percent = Math.min(100, Math.max(0, (currentQty / safeThreshold) * 100));
-
-  const trackColor =
-    status === "empty"
-      ? "#f43f5e"
-      : status === "critical"
-      ? "#f97316"
-      : status === "low"
-      ? "#facc15"
-      : "#10b981";
-
-  const radius = 54;
+  const radius = 60;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (percent / 100) * circumference;
 
   return (
     <div className="flex flex-col items-center gap-3">
       <div className="relative">
-        <svg width="140" height="140" viewBox="0 0 140 140">
-          {/* Background track */}
+        <svg width="160" height="160" viewBox="0 0 160 160">
+          <circle cx="80" cy="80" r={radius} fill="none" stroke="#e2e8f0" strokeWidth="14" />
           <circle
-            cx="70"
-            cy="70"
-            r={radius}
+            cx="80" cy="80" r={radius}
             fill="none"
-            stroke="#1e293b"
-            strokeWidth="10"
-          />
-          {/* Animated fill */}
-          <circle
-            cx="70"
-            cy="70"
-            r={radius}
-            fill="none"
-            stroke={trackColor}
-            strokeWidth="10"
+            stroke={cfg.track}
+            strokeWidth="14"
             strokeLinecap="round"
             strokeDasharray={circumference}
             strokeDashoffset={strokeDashoffset}
-            transform="rotate(-90 70 70)"
+            transform="rotate(-90 80 80)"
             style={{ transition: "stroke-dashoffset 1s ease, stroke 0.5s ease" }}
           />
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-2xl font-bold text-white">{currentQty}</span>
-          <span className="text-xs text-slate-400">{unit}</span>
+          <span className="text-3xl font-bold text-slate-800">{currentQty}</span>
+          <span className="text-xs font-medium text-slate-500">{unit}</span>
         </div>
       </div>
       <div className="text-center">
-        <p className="text-xs text-slate-500">of {threshold} {unit} threshold</p>
-        <p className="mt-1 text-sm font-semibold" style={{ color: trackColor }}>
+        <p className="text-sm text-slate-500">of {threshold} {unit} threshold</p>
+        <p className="mt-0.5 text-sm font-bold" style={{ color: cfg.track }}>
           {Math.round(percent)}% remaining
         </p>
       </div>
+    </div>
+  );
+}
+
+function StatCard({ label, icon, children, bg = "bg-white", border = "border-slate-200", labelClass = "text-slate-500" }) {
+  return (
+    <div className={`rounded-2xl border ${border} ${bg} p-5 flex flex-col justify-between min-h-[120px]`}>
+      <div className="flex items-center justify-between mb-3">
+        <p className={`text-xs font-semibold uppercase tracking-wider ${labelClass}`}>{label}</p>
+        <span className="text-xl leading-none">{icon}</span>
+      </div>
+      {children}
     </div>
   );
 }
@@ -92,9 +90,7 @@ export default function GradeDetailsPage({ params }) {
     }
   };
 
-  useEffect(() => {
-    fetchGrade();
-  }, [gradeId]);
+  useEffect(() => { fetchGrade(); }, [gradeId]);
 
   const handleDistribute = async (payload) => {
     try {
@@ -120,11 +116,12 @@ export default function GradeDetailsPage({ params }) {
   if (error) {
     return (
       <div className="space-y-4">
-        <Link href="/grades" className="inline-block text-sm text-sky-300">
+        <Link href="/grades" className="inline-flex items-center gap-1.5 text-sm font-medium text-sky-600 hover:text-sky-700 transition-colors">
           ← Back to Grades
         </Link>
-        <div className="rounded-xl border border-rose-400/20 bg-rose-400/10 px-4 py-3 text-rose-300">
-          {error}
+        <div className="rounded-2xl border border-rose-200 bg-rose-50 px-5 py-4 text-rose-700 flex items-center gap-3">
+          <span>⚠️</span>
+          <span className="text-sm">{error}</span>
         </div>
       </div>
     );
@@ -133,9 +130,12 @@ export default function GradeDetailsPage({ params }) {
   if (!grade) return null;
 
   const status = grade?.sanitizer?.status || "adequate";
+  const cfg = STATUS_CONFIG[status] || STATUS_CONFIG.adequate;
   const currentQty = grade?.sanitizer?.currentQuantity ?? 0;
   const threshold = grade?.sanitizer?.lowThreshold ?? 100;
   const unit = grade?.sanitizer?.unit || "ml";
+  const safeThreshold = threshold > 0 ? threshold : 1;
+  const percent = Math.round(Math.min(100, Math.max(0, (currentQty / safeThreshold) * 100)));
   const lastUpdatedAt = grade?.sanitizer?.lastUpdatedAt
     ? new Date(grade.sanitizer.lastUpdatedAt).toLocaleString()
     : null;
@@ -143,110 +143,122 @@ export default function GradeDetailsPage({ params }) {
 
   return (
     <div className="space-y-6">
+      {/* Back */}
       <Link
         href="/grades"
-        className="inline-flex items-center gap-1 text-sm text-sky-300 hover:text-sky-200 transition-colors"
+        className="inline-flex items-center gap-1.5 text-sm font-medium text-sky-600 hover:text-sky-700 transition-colors"
       >
         ← Back to Grades
       </Link>
 
-      {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <h2 className="text-2xl font-bold text-white">Grade {grade.gradeNumber}</h2>
-          <SanitizerStatusBadge status={status} />
-          <span
-            className={`text-xs font-medium ${
-              grade.isActive ? "text-emerald-400" : "text-slate-500"
-            }`}
-          >
-            {grade.isActive ? "Active" : "Inactive"}
-          </span>
+      {/* Page header */}
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div className="space-y-2">
+          <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Grade {grade.gradeNumber}</h2>
+          <div className="flex items-center gap-2 flex-wrap">
+            <SanitizerStatusBadge status={status} />
+            <span className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium ${
+              grade.isActive
+                ? "bg-emerald-100 text-emerald-700 border-emerald-200"
+                : "bg-slate-100 text-slate-500 border-slate-200"
+            }`}>
+              <span className={`w-1.5 h-1.5 rounded-full ${grade.isActive ? "bg-emerald-500" : "bg-slate-400"}`} />
+              {grade.isActive ? "Active" : "Inactive"}
+            </span>
+          </div>
         </div>
         <button
-          onClick={() => {
-            setDistributeError("");
-            setDistributeSuccess("");
-            setDistributeOpen(true);
-          }}
-          className="rounded-xl border border-violet-400/30 bg-violet-400/10 px-5 py-2.5 text-sm text-violet-300 hover:bg-violet-400/20 transition-colors"
+          onClick={() => { setDistributeError(""); setDistributeSuccess(""); setDistributeOpen(true); }}
+          className="inline-flex items-center gap-2 rounded-xl bg-violet-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-violet-700 active:scale-95 transition-all"
         >
           🧴 Distribute Bottles
         </button>
       </div>
 
-      {/* Success / Error banners */}
+      {/* Alerts */}
       {distributeSuccess && (
-        <div className="rounded-xl border border-emerald-400/20 bg-emerald-400/10 px-4 py-3 text-emerald-300 flex items-start gap-2">
-          <span>✓</span>
-          <span>{distributeSuccess}</span>
+        <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-emerald-700 flex items-center gap-3">
+          <span className="font-bold">✓</span>
+          <span className="text-sm">{distributeSuccess}</span>
         </div>
       )}
       {distributeError && (
-        <div className="rounded-xl border border-rose-400/20 bg-rose-400/10 px-4 py-3 text-rose-300">
-          {distributeError}
+        <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-rose-700 flex items-center gap-3">
+          <span>⚠️</span>
+          <span className="text-sm">{distributeError}</span>
         </div>
       )}
 
-      {/* Main cards */}
-      <div className="grid gap-6 md:grid-cols-3">
-        {/* Sanitizer Gauge */}
-        <div className="rounded-2xl border border-white/10 bg-slate-900/70 p-6 flex flex-col items-center justify-center gap-2">
-          <p className="text-sm font-medium text-slate-400 mb-2">Sanitizer Level</p>
-          <SanitizerGauge
-            currentQty={currentQty}
-            threshold={threshold}
-            unit={unit}
-            status={status}
-          />
+      {/* Status banner */}
+      <div className={`rounded-2xl border ${cfg.border} ${cfg.bg} px-5 py-4 flex items-center justify-between gap-4`}>
+        <div className="flex items-center gap-3">
+          <span className="text-2xl">{cfg.icon}</span>
+          <div>
+            <p className={`text-sm font-semibold ${cfg.text}`}>Sanitizer {cfg.label}</p>
+            <p className="text-xs text-slate-500 mt-0.5">
+              {currentQty} {unit} available · {threshold} {unit} threshold
+            </p>
+          </div>
         </div>
-
-        {/* Info Grid */}
-        <div className="md:col-span-2 grid gap-4 grid-cols-2">
-          <div className="rounded-xl bg-slate-800/60 p-4">
-            <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Students</p>
-            <p className="text-2xl font-bold text-white">{grade.studentCount ?? 0}</p>
-          </div>
-
-          <div className="rounded-xl bg-slate-800/60 p-4">
-            <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Low Threshold</p>
-            <p className="text-2xl font-bold text-white">
-              {threshold} <span className="text-sm font-normal text-slate-400">{unit}</span>
-            </p>
-          </div>
-
-          <div className="rounded-xl bg-slate-800/60 p-4">
-            <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Current Qty</p>
-            <p className="text-2xl font-bold text-white">
-              {currentQty} <span className="text-sm font-normal text-slate-400">{unit}</span>
-            </p>
-          </div>
-
-          <div className="rounded-xl bg-slate-800/60 p-4">
-            <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Status</p>
-            <div className="mt-1">
-              <SanitizerStatusBadge status={status} />
-            </div>
-          </div>
-
-          {(lastUpdatedAt || lastUpdatedBy) && (
-            <div className="rounded-xl bg-slate-800/60 p-4 col-span-2">
-              <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Last Updated</p>
-              <p className="text-sm text-white">
-                {lastUpdatedAt}
-                {lastUpdatedBy && (
-                  <span className="text-slate-400"> by {lastUpdatedBy}</span>
-                )}
-              </p>
-            </div>
-          )}
+        <div className={`text-right`}>
+          <p className={`text-3xl font-bold ${cfg.text}`}>{percent}%</p>
+          <p className="text-xs text-slate-400">remaining</p>
         </div>
       </div>
 
-      {/* Grade ID (subtle) */}
-      <p className="text-xs text-slate-600 break-all">ID: {grade._id}</p>
+      {/* Main grid */}
+      <div className="grid gap-5 lg:grid-cols-3 items-stretch">
+        {/* Gauge card */}
+        <div className="rounded-2xl border border-slate-200 bg-white shadow-sm p-6 flex flex-col items-center justify-center gap-4">
+          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Sanitizer Level</p>
+          <SanitizerGauge currentQty={currentQty} threshold={threshold} unit={unit} status={status} />
+        </div>
 
-      {/* Distribute Modal */}
+        {/* 2×2 stats */}
+        <div className="lg:col-span-2 grid grid-cols-2 gap-4">
+          <StatCard label="Students" icon="👥" bg="bg-sky-50" border="border-sky-100" labelClass="text-sky-600">
+            <p className="text-3xl font-bold text-sky-700">{grade.studentCount ?? 0}</p>
+          </StatCard>
+
+          <StatCard label="Low Threshold" icon="⚠️" bg="bg-amber-50" border="border-amber-100" labelClass="text-amber-600">
+            <p className="text-3xl font-bold text-amber-700">
+              {threshold}
+              <span className="ml-1 text-sm font-normal text-amber-500">{unit}</span>
+            </p>
+          </StatCard>
+
+          <StatCard label="Current Qty" icon="🧴" bg={cfg.bg} border={cfg.border} labelClass={cfg.text}>
+            <p className={`text-3xl font-bold ${cfg.text}`}>
+              {currentQty}
+              <span className="ml-1 text-sm font-normal opacity-70">{unit}</span>
+            </p>
+          </StatCard>
+
+          <StatCard label="Status" icon="📊">
+            <div className="mt-1">
+              <SanitizerStatusBadge status={status} />
+            </div>
+          </StatCard>
+        </div>
+      </div>
+
+      {/* Last updated */}
+      {(lastUpdatedAt || lastUpdatedBy) && (
+        <div className="rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4 flex items-center gap-3">
+          <span className="text-lg">🕐</span>
+          <div>
+            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Last Updated</p>
+            <p className="text-sm text-slate-700 mt-0.5">
+              {lastUpdatedAt}
+              {lastUpdatedBy && <span className="text-slate-400"> · by {lastUpdatedBy}</span>}
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Grade ID */}
+      <p className="text-xs text-slate-400 break-all select-all">ID: {grade._id}</p>
+
       <DistributeBottlesModal
         isOpen={distributeOpen}
         onClose={() => setDistributeOpen(false)}
