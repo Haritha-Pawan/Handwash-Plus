@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { registerUser } from "../../services/postServices/postService";
+import { registerUser } from "../services/postServices/postService";
 
 export default function RegisterPage() {
   const [form, setForm] = useState({

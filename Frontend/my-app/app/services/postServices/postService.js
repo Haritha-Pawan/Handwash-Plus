@@ -34,6 +34,18 @@ export const deletePost = async (id) => {
   const res = await API.delete(`/posts/${id}`);
   return res.data;
 };
+// ✅ Vote Post
+export const votePost = async (postId, value) => {
+  const res = await API.post(`/posts/${postId}/vote`, { value });
+  return res.data;
+};
+
+
+// ✅ Get Top Posts (Ranking)
+export const getTopPosts = async () => {
+  const res = await API.get("/posts/top-posts");
+  return res.data;
+};
 
 
 // ✅ Register

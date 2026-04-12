@@ -113,7 +113,7 @@ export function Navbar() {
                   Log In
                 </Button>
                 <Button
-                  onClick={() => router.push("/signup")}
+                  onClick={() => router.push("/register")}
                   variant="outline"
                   className="text-gray-700 hover:bg-gray-100 transition-colors"
                 >
