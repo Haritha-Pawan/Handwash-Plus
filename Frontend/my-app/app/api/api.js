@@ -3,8 +3,9 @@ import { clearAuthToken, clearAuthUser } from "../lib/auth";
 
 
 const API = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "https://handwash-plus-ea8v.vercel.app/",
-  withCredentials: true,
+  baseURL: apiBaseUrl,
+  // Auth is sent via Bearer token; cookies are not required.
+  withCredentials: false,
 });
 
 const getStoredToken = () => {
