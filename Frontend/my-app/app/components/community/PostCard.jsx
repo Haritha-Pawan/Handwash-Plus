@@ -3,7 +3,7 @@ import { Heart } from "lucide-react";
 import { useState } from "react";
 
 export default function PostCard({ post }) {
-    const [liked, setLiked] = useState(false);
+  const [liked, setLiked] = useState(false);
   const [votes, setVotes] = useState(post.votes);
 
   const handleClick = () => {
@@ -12,15 +12,21 @@ export default function PostCard({ post }) {
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow hover:shadow-lg transition overflow-hidden">
+    <div className="bg-white rounded-2xl shadow hover:shadow-lg transition overflow-hidden mb-20">
       {/* Image */}
       <div className="relative w-full h-60">
-        <Image
-          src={post.image}
-          alt={post.title}
-          fill
-          className="object-cover"
-        />
+        {post.image && post.image.trim() !== "" ? (
+          <Image
+            src={post.image}
+            alt={post.title}
+            fill
+            className="object-cover"
+          />
+        ) : (
+          <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+            No Image
+          </div>
+        )}
       </div>
 
       {/* Content */}
@@ -49,9 +55,8 @@ export default function PostCard({ post }) {
           {/* RIGHT: Vote */}
           <button
             onClick={handleClick}
-            className={`flex items-center gap-1 ${
-              liked ? "text-red-500" : "text-gray-600"
-            }`}
+            className={`flex items-center gap-1 ${liked ? "text-red-500" : "text-gray-600"
+              }`}
           >
             <Heart size={18} fill={liked ? "currentColor" : "none"} />
             <span className="text-sm">{votes}</span>
