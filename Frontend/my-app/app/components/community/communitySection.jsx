@@ -1,0 +1,82 @@
+"use client";
+import { useState } from "react";
+import Link from "next/link";
+
+export default function CommunityTopSection({ setFilter }) {
+  const [search, setSearch] = useState("");
+
+  return (
+    <div className="w-full">
+      
+      {/* 🔝 HEADER (Image + Overlay Text) */}
+      <div className="relative w-full h-[250px] rounded-b-3xl overflow-hidden">
+        <img
+          src="/images/banner1.jpg"
+          alt="community"
+          className="w-full h-full object-cover"
+        />
+
+        <div className="absolute inset-0 bg-black/40 flex items-center">
+          <div className="max-w-6xl mx-auto px-6 text-white">
+            <h1 className="text-3xl md:text-4xl font-bold">
+              Join the HandWash Community
+            </h1>
+            <p className="mt-2 text-sm md:text-base">
+              Share ideas, ask questions, and improve hygiene awareness.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* 🔽 CONTROLS SECTION */}
+      <div className=" max-w-7xl mx-auto px-4 mt-6">
+        
+        {/* Row 1: Stats + Button */}
+        <div className="items-center  flex gap-4">
+          
+          {/* Stats */}
+          <div className=" text-sm p-4 bg-blue-50 rounded-lg font-bold text-blue-600">
+            <div>
+                 <span>12,000 Members</span>
+            </div>
+         
+           
+          </div>
+          <div className=" bg-blue-50 rounded-lg font-bold text-blue-600 text-sm p-4 rounded-lg">
+          
+            <span>4,500 Posts</span>
+          </div>
+
+          {/* My Post Button */}
+         
+
+
+        </div>
+
+        {/* Row 2: Search + Filter */}
+        <div className="flex gap-3 mt-4  max-w-[700px]">
+          
+          {/* Search */}
+          <input
+            type="text"
+            placeholder="Search posts..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="flex-1 px-4  py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
+
+          {/* Filter Dropdown */}
+          <select
+            onChange={(e) => setFilter(e.target.value)}
+            className="px-6   py-2 border rounded-lg focus:outline-none"
+          >
+            <option value="latest">Latest</option>
+            <option value="votes">Highest Votes</option>
+            <option value="gradeA">Grade A</option>
+            <option value="gradeB">Grade B</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  );
+}

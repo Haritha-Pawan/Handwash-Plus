@@ -8,7 +8,7 @@ import jwt from "jsonwebtoken";
  */
 export const registerUser = async (req, res) => {
   try {
-    const { schoolRegNo, schoolName, name, class: studentClass, email, password, role } = req.body;
+    const { name, email, password, role, school, class: studentClass } = req.body;
 
     // Check if email already exists
     const existingUser = await User.findOne({ email });
@@ -16,18 +16,13 @@ export const registerUser = async (req, res) => {
       return res.status(400).json({ message: "Email already exists" });
     }
 
-    // Hash password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
     const user = await User.create({
-      schoolRegNo,
-      schoolName,
       name,
-      class: studentClass,
       email,
-      password: hashedPassword,
+      password,
       role,
+      school,
+      class: studentClass,
     });
 
     res.status(201).json({
@@ -48,7 +43,7 @@ export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }).select("+password").populate("school");
     if (!user) {
       return res.status(400).json({ message: "Invalid email or password" });
     }
@@ -59,7 +54,14 @@ export const loginUser = async (req, res) => {
     }
 
     const token = jwt.sign(
-      { id: user._id, role: user.role},
+      { 
+        id: user._id, 
+        role: user.role, 
+        ...(user.role !== 'superAdmin' && user.school && { 
+          school: user.school._id || user.school,
+          schoolName: user.school.name
+        })
+      },
       process.env.JWT_SECRET,
       { expiresIn: "1d" }
     );
@@ -67,7 +69,18 @@ export const loginUser = async (req, res) => {
     res.status(200).json({
       message: "Login successful",
       token,
-      user,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        ...(user.role !== 'superAdmin' && user.school && {
+          school: {
+            id: user.school._id,
+            name: user.school.name
+          }
+        })
+      },
     });
 
   } catch (error) {
@@ -116,7 +129,7 @@ export const updateUser = async (req, res) => {
     const updatedUser = await User.findByIdAndUpdate(
       req.params.id,
       req.body,
-      { new: true }
+      { returnDocument: 'after' }
     ).select("-password");
 
     if (!updatedUser) {

@@ -1,6 +1,5 @@
 import { UserRepository } from '../users/user.repository.js';
-import { comparePassword, hashPassword } from '../../@core/utils/jwt.utils.js';
-import { generateTokens, verifyToken, generateResetToken } from '../../@core/utils/jwt.util.js';
+import { comparePassword, hashPassword, generateToken, verifyToken, generateResetToken } from '../../@core/utils/jwt.utils.js';
 import { ROLES } from '../../@core/constants/roles.constants.js';
 
 export class AuthService {
@@ -25,8 +24,8 @@ export class AuthService {
     });
 
     // Generate tokens
-    const tokens = generateTokens({
-      userId: user._id,
+    const tokens = generateToken({
+      id: user._id,
       email: user.email,
       role: user.role
     });
@@ -59,10 +58,14 @@ export class AuthService {
     await this.userRepository.update(user._id, { lastLogin: new Date() });
 
     // Generate tokens
-    const tokens = generateTokens({
-      userId: user._id,
+    const tokens = generateToken({
+      id: user._id,
       email: user.email,
-      role: user.role
+      role: user.role,
+      ...(user.role !== 'superAdmin' && user.school && { 
+        school: user.school._id || user.school, 
+        schoolName: user.school.name 
+      })
     });
 
     // Save refresh token
@@ -80,17 +83,21 @@ export class AuthService {
       const decoded = verifyToken(refreshToken, true);
       
       // Find user with refresh token
-      const user = await this.userRepository.findById(decoded.userId, true);
+      const user = await this.userRepository.findById(decoded.id, true);
       
       if (!user || user.refreshToken !== refreshToken) {
         throw new Error('Invalid refresh token');
       }
 
       // Generate new tokens
-      const tokens = generateTokens({
-        userId: user._id,
+      const tokens = generateToken({
+        id: user._id,
         email: user.email,
-        role: user.role
+        role: user.role,
+        ...(user.role !== 'superAdmin' && user.school && { 
+          school: user.school._id || user.school, 
+          schoolName: user.school.name 
+        })
       });
 
       // Update refresh token

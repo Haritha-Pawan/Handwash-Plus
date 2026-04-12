@@ -5,14 +5,18 @@ import {
   getAllPosts,
   updatePost,
   deletePost,
+  getMyPosts,
 } from "./post.controller.js";
-
+import multer from "multer";
 
 const router = express.Router();
 
-router.post("/", authMiddleware, createPost);
+const upload = multer({ storage: multer.memoryStorage() });
+
+router.post("/create", authMiddleware,upload.single("image"), createPost);
+router.get("/my-posts", authMiddleware, getMyPosts);
 router.get("/", getAllPosts);
-router.put("/:id", authMiddleware, updatePost);
+router.put("/:id", authMiddleware, upload.single("image"), updatePost);
 router.delete("/:id", authMiddleware, deletePost);
 
 export default router;

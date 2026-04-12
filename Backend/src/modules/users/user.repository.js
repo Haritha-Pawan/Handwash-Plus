@@ -1,4 +1,4 @@
-import { User } from './user.model.js';
+import User from './user.model.js';
 
 export class UserRepository {
   async create(userData) {
@@ -7,22 +7,22 @@ export class UserRepository {
   }
 
   async findByEmail(email, includePassword = false) {
-    let query = User.findOne({ email });
-    
+    let query = User.findOne({ email }).populate('school');
+
     if (includePassword) {
       query = query.select('+password +refreshToken');
     }
-    
+
     return query.exec();
   }
 
   async findById(id, includePassword = false) {
-    let query = User.findById(id);
-    
+    let query = User.findById(id).populate('school');
+
     if (includePassword) {
       query = query.select('+password +refreshToken');
     }
-    
+
     return query.exec();
   }
 
@@ -30,7 +30,7 @@ export class UserRepository {
     return User.findByIdAndUpdate(
       id,
       updateData,
-      { new: true, runValidators: true }
+      { returnDocument: 'after', runValidators: true }
     ).exec();
   }
 
@@ -38,14 +38,14 @@ export class UserRepository {
     return User.findByIdAndUpdate(
       userId,
       { refreshToken },
-      { new: true }
+      { returnDocument: 'after' }
     ).select('+refreshToken').exec();
   }
 
   async findBySchool(schoolId, role = null) {
     const query = { schoolId };
     if (role) query.role = role;
-    
+
     return User.find(query).exec();
   }
 
@@ -53,7 +53,7 @@ export class UserRepository {
     return User.findByIdAndUpdate(
       userId,
       { isBlocked: true },
-      { new: true }
+      { returnDocument: 'after' }
     ).exec();
   }
 
@@ -61,7 +61,7 @@ export class UserRepository {
     return User.findByIdAndUpdate(
       userId,
       { isBlocked: false },
-      { new: true }
+      { returnDocument: 'after' }
     ).exec();
   }
 }
