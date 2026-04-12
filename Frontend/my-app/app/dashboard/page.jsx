@@ -1,6 +1,17 @@
-'use client';
-import Dashboard from "../src/modules/super-admin/pages/Dashboard";
+"use client";
 
-export default function DashboardPage() {
-  return <Dashboard />;
+import Sidebar from "../components/dashboard/Sidebar";
+import MyPosts from "../components/dashboard/MyPosts";
+import DashboardHeader from "../components/dashboard/DashboardHeader";
+
+export default function Dashboard() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex ">
+        {/* Header */}
+      <DashboardHeader />
+    
+
+
+    </div>
+  );
 }

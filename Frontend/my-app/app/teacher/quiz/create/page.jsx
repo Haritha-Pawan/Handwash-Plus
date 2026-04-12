@@ -3,23 +3,30 @@
 import { useEffect, useState, Suspense } from "react";
 import QuizForm from "../../../components/quiz/quizForm";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 
 function CreateQuizContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const [classroomId, setClassroomId] = useState(null);
 
   useEffect(() => {
     const urlId = searchParams.get("classroomId");
+    const storedId = localStorage.getItem("classroomId");
    
-    if (urlId) {
+    if (urlId && urlId !== "null") {
       setClassroomId(urlId);
       localStorage.setItem("classroomId", urlId); 
+    } else if (storedId && storedId !== "null") {
+      setClassroomId(storedId);
+    } else {
+      // Automatic redirect if no ID is found anywhere
+      router.push("/teacher/classrooms");
     }
-  }, [searchParams]);
+  }, [searchParams, router]);
 
-  if (!classroomId) {
-    return <p className="p-6">Loading classroom...</p>;
+  if (!classroomId || classroomId === "null") {
+    return <p className="p-6">Redirecting to classroom selection...</p>;
   }
 
   return (
