@@ -14,9 +14,12 @@ function buildSchoolParams() {
   return {};
 }
 
-export const getGrades = async () => {
+export const getGrades = async (options = {}) => {
   const { data } = await api.get("/grades/", {
-    params: buildSchoolParams(),
+    params: {
+      ...buildSchoolParams(),
+      ...options,
+    },
   });
   return data;
 };

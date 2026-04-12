@@ -84,12 +84,56 @@ class GradeService {
     return newGrade;
   }
 
-  async getGrades(schoolId) {
-    const grades = await Grade.find({ school: schoolId, isActive: true })
-      .populate("classTeacher", "name email")
-      .sort({ gradeNumber: 1 });
+  async getGrades(schoolId, options = {}) {
+    const { page = 1, limit = 5, search = "", statusFilter = "all" } = options;
+    const skip = (page - 1) * limit;
 
-    return grades;
+    const query = { school: schoolId, isActive: true };
+
+    if (search) {
+      const parsedSearch = parseInt(search, 10);
+      if (!isNaN(parsedSearch)) {
+        query.gradeNumber = parsedSearch;
+      }
+    }
+
+    if (statusFilter && statusFilter !== "all") {
+      query["sanitizer.status"] = statusFilter;
+    }
+
+    const [items, totalCount] = await Promise.all([
+      Grade.find(query)
+        .populate("classTeacher", "name email")
+        .sort({ gradeNumber: 1 })
+        .skip(skip)
+        .limit(Number(limit)),
+      Grade.countDocuments(query),
+    ]);
+
+    const allActiveGrades = await Grade.find({ school: schoolId, isActive: true });
+    const stats = {
+      total: allActiveGrades.length, // Only counting active as 'total' here to match previous frontend logic which filtered on frontend, but actually frontend was showing all grades including inactive for total? Wait.
+      // In frontend: stats.total = grades.length, stats.active = grades.filter(g => g.isActive).length.
+      // But getGrades here has always returned {isActive: true}. Wait!
+      // In grade.service.js line 88: const grades = await Grade.find({ school: schoolId, isActive: true })
+      // So all grades returned are active. Therefore frontend's active and total were the same.
+      active: allActiveGrades.length,
+      low: allActiveGrades.filter((g) => g?.sanitizer?.status === "low").length,
+      critical: allActiveGrades.filter((g) =>
+        ["critical", "empty"].includes(g?.sanitizer?.status)
+      ).length,
+    };
+
+    return {
+      items,
+      meta: {
+        total: totalCount,
+        page: Number(page),
+        limit: Number(limit),
+        totalPages: Math.ceil(totalCount / limit),
+        stats,
+      },
+    };
   }
 
   async getGradeById(schoolId, gradeId) {

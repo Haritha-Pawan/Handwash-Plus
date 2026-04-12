@@ -40,8 +40,9 @@ class GradeController {
 
   getGrades = catchAsync(async (req, res) => {
     const schoolId = resolveSchool(req);
-    const grades = await gradeService.getGrades(schoolId);
-    ok(res, grades, "Grades retrieved successfully");
+    const { page, limit, search, statusFilter } = req.query;
+    const gradesData = await gradeService.getGrades(schoolId, { page, limit, search, statusFilter });
+    ok(res, gradesData, "Grades retrieved successfully");
   });
 
   getGrade = catchAsync(async (req, res) => {
