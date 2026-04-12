@@ -32,12 +32,12 @@ export default function PostUpdate({ post, onClose, onUpdate }) {
       }
 
       const res = await fetch(
-        `http://localhost:5000/api/posts/${post._id}`,
+        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/posts/${post._id}`,
         {
-          method: "PUT",headers: {
-    Authorization: `Bearer ${token}`,
-  },
-
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
           body: formData,
         }
       );

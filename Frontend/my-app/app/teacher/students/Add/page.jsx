@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import axios from "axios";
+import api from "../../lib/axios";
 import { useRouter } from "next/navigation";
 
 export default function AddStudent() {
@@ -21,7 +21,6 @@ export default function AddStudent() {
     e.preventDefault();
 
     try {
-      const token = localStorage.getItem("token");
       const classroomId = localStorage.getItem("classroomId");
 
       if (!classroomId) {
@@ -29,19 +28,11 @@ export default function AddStudent() {
         return;
       }
 
-      await axios.post(
-        "http://localhost:5000/api/students",
-        {
-          regNo: formData.regNo,
-          name: formData.name,
-          classroomId, // 🔥 IMPORTANT
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`, // 🔥 IMPORTANT
-          },
-        }
-      );
+      await api.post("/students", {
+        regNo: formData.regNo,
+        name: formData.name,
+        classroomId,
+      });
 
       router.push("/teacher/students");
     } catch (err) {

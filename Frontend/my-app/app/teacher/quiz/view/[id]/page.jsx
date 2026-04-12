@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../../../../lib/axios";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 
@@ -13,7 +13,7 @@ export default function ViewQuizPage() {
   useEffect(() => {
     const fetchQuiz = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/quiz/${id}`);
+        const res = await api.get(`/quiz/${id}`);
         setQuiz(res.data);
       } catch (err) {
         console.error(err);

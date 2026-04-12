@@ -18,7 +18,7 @@ const QuizPage = () => {
       return;
     }
 
-    fetch("http://localhost:5000/api/students/active", {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/students/active`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"

@@ -34,7 +34,7 @@ const app = express();
 
 const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(',')
-  : ['http://localhost:3000'];
+  : ['https://handwash-plus-ea8v-eydgnny7f-haritha-cds-projects.vercel.app/'];
 
 app.use(cors({
   origin: (origin, callback) => {

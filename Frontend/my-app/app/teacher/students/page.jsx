@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../../lib/axios";
 import Link from "next/link";
 
 export default function StudentList() {
@@ -23,15 +23,8 @@ export default function StudentList() {
       try {
         setLoading(true);
 
-        const token = localStorage.getItem("token");
-
-        const res = await axios.get(
-          `http://localhost:5000/api/students/by-classroom/${classroomId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
+        const res = await api.get(
+          `/students/by-classroom/${classroomId}`
         );
 
         setStudents(res.data.students);
@@ -101,14 +94,7 @@ export default function StudentList() {
                 <button
                   className="bg-red-500 text-white px-2 py-1 rounded"
                   onClick={async () => {
-                    await axios.delete(
-                      `http://localhost:5000/api/students/${student._id}`,
-                      {
-                       headers: {
-                        Authorization: `Bearer ${localStorage.getItem("token")}`,
-                       },
-                      }
-                    );
+                    await api.delete(`/students/${student._id}`);
 
                     setStudents((prev) =>
                       prev.filter((s) => s._id !== student._id)

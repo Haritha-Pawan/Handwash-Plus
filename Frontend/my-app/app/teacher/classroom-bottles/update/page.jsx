@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect, Suspense } from "react";
-import axios from "axios";
-import { useSearchParams, useRouter } from "next/navigation"; 
+import api from "../../../lib/axios";
+import { useSearchParams, useRouter } from "next/navigation";
 
 function UpdateClassroomBottlesContent() {
   const params = useSearchParams();
@@ -30,20 +30,11 @@ function UpdateClassroomBottlesContent() {
     e.preventDefault();
 
     try {
-      const token = localStorage.getItem("token");
-      await axios.put(
-        "http://localhost:5000/api/classroomsBottles/update",
-        {
-          classroomId,
-          month,
-          bottleUsed: Number(bottleUsed),
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await api.put("/classroomsBottles/update", {
+        classroomId,
+        month,
+        bottleUsed: Number(bottleUsed),
+      });
 
       setMessage("Bottles updated successfully!");
 

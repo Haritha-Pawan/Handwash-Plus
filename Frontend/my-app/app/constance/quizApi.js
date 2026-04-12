@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:5000/api/quiz";
+const BASE_URL = `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/quiz`;
 
 export const createQuiz = async (data) => {
   const token = localStorage.getItem("token");
