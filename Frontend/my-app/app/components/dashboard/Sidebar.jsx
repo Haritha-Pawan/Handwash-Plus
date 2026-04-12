@@ -12,7 +12,7 @@ export default function Sidebar() {
   { name: "My Profile", icon: User, href: "/dashboard/profile" },
   { name: "Create Post", icon: PlusSquare, href: "/dashboard/create-post" },
   { name: "My Posts", icon: Users, href: "/dashboard/my-posts" },
-  { name: "Notifications", icon: Bell, href: "/dashboard/notifications" }, // ✅ fixed
+  { name: "community", icon: Bell, href: "/community" }, // ✅ fixed
 ];
 
   return (

@@ -10,6 +10,7 @@ import {
   getTopPosts
   
 } from "./post.controller.js";
+import { getMyStats, getLeaderboard } from "../post/post.statController.js";
 import multer from "multer";
 
 const router = express.Router();
@@ -22,6 +23,8 @@ router.get("/", getAllPosts);
 router.put("/:id", authMiddleware, upload.single("image"), updatePost);
 router.delete("/:id", authMiddleware, deletePost);
 router.post("/:id/vote", authMiddleware, votePost);
+router.get("/me", authMiddleware, getMyStats);
+router.get("/leaderboard", getLeaderboard);
 router.get("/top-posts", getTopPosts);
 
 export default router;

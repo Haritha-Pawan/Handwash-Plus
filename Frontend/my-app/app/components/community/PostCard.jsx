@@ -1,14 +1,38 @@
 import Image from "next/image";
 import { Heart } from "lucide-react";
 import { useState } from "react";
+import { votePost } from "../../services/postServices/postService";
 
-export default function PostCard({ post }) {
+export default function PostCard({ post, onVoteChange }) {
   const [liked, setLiked] = useState(false);
-  const [votes, setVotes] = useState(post.votes);
+  const [votes, setVotes] = useState(post.voteCount ?? 0);
+  const [isSubmittingVote, setIsSubmittingVote] = useState(false);
 
-  const handleClick = () => {
-    setLiked(!liked);
-    setVotes(liked ? votes - 1 : votes + 1);
+  const handleClick = async () => {
+    if (isSubmittingVote) return;
+
+    const nextLiked = !liked;
+    const voteValue = nextLiked ? 1 : -1;
+    const previousVotes = votes;
+    const optimisticVotes = previousVotes + voteValue;
+
+    setLiked(nextLiked);
+    setVotes(optimisticVotes);
+    setIsSubmittingVote(true);
+
+    try {
+      const updatedPost = await votePost(post.id, voteValue);
+      const finalVoteCount = updatedPost?.voteCount ?? optimisticVotes;
+      setVotes(finalVoteCount);
+      onVoteChange?.(post.id, finalVoteCount);
+    } catch (error) {
+      // Rollback optimistic UI if backend vote fails.
+      setLiked(!nextLiked);
+      setVotes(previousVotes);
+      console.error("Failed to vote:", error?.response?.data || error?.message || error);
+    } finally {
+      setIsSubmittingVote(false);
+    }
   };
 
   return (
@@ -55,8 +79,9 @@ export default function PostCard({ post }) {
           {/* RIGHT: Vote */}
           <button
             onClick={handleClick}
+            disabled={isSubmittingVote}
             className={`flex items-center gap-1 ${liked ? "text-red-500" : "text-gray-600"
-              }`}
+              } ${isSubmittingVote ? "opacity-50 cursor-not-allowed" : ""}`}
           >
             <Heart size={18} fill={liked ? "currentColor" : "none"} />
             <span className="text-sm">{votes}</span>

@@ -21,24 +21,20 @@ export default function LoginPage() {
     e.preventDefault();
     login(formData, {
       onSuccess: (response) => {
-        if (response.success) {
-           const token = response.data?.tokens?.accessToken || response.tokens?.accessToken || response.data?.accessToken || response.accessToken ;
-            localStorage.setItem("token", token); 
-            console.log("TOKEN AFTER LOGIN:", token);
-            const role = response.data.user.role;
-              localStorage.setItem("user", JSON.stringify(response.data.user));
+        const user = response?.data?.user || response?.user;
+        if (!user) return;
 
-          if (role === "superAdmin") {
-            router.push("/admin-dashboard");
-          } else if (role === "teacher") {
-            router.push("/teacher/classrooms");
-          } else if (response.data.user.role === "admin") {
-            router.push("/grades");
-          } else if (role === "student" || role === "user") {
-            router.push("/dashboard");
-          } else {
-            router.push("/");
-          }
+        const role = user.role;
+        if (role === "superAdmin") {
+          router.push("/admin-dashboard");
+        } else if (role === "teacher") {
+          router.push("/teacher/classrooms");
+        } else if (role === "admin") {
+          router.push("/grades");
+        } else if (role === "student" || role === "user") {
+          router.push("/");
+        } else {
+          router.push("/");
         }
       },
     });

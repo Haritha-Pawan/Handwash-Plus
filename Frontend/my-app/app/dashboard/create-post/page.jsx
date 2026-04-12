@@ -2,10 +2,13 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Upload, ImagePlus, Send } from "lucide-react";
 import { createPost } from "../../services/postServices/postService";
+import { getAuthToken } from "../../lib/auth";
 
 export default function CreatePost() {
+  const router = useRouter();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [image, setImage] = useState(null);
@@ -22,6 +25,13 @@ export default function CreatePost() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const token = getAuthToken();
+    if (!token) {
+      alert("Session expired. Please login again.");
+      router.push("/login");
+      return;
+    }
 
     if (!title || !description) {
       alert("Please fill all fields ❌");
@@ -47,7 +57,12 @@ export default function CreatePost() {
       setPreview("");
     } catch (err) {
       console.log(err.response?.data || err.message);
-      alert("Failed to create post ❌");
+      if (err.response?.status === 401) {
+        alert("Unauthorized (401). Please login again.");
+        router.push("/login");
+      } else {
+        alert("Failed to create post ❌");
+      }
     } finally {
       setLoading(false);
     }

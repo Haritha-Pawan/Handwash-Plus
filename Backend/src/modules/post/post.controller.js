@@ -49,7 +49,7 @@ export const getMyPosts = async (req, res) => {
     console.log("Logged user:", req.user.id);
 
     const posts = await Post.find({ author: req.user.id })
-      .populate("author", "name email")
+      .populate("author", "name email school class")
       .sort({ createdAt: -1 });
 
     res.status(200).json(posts);
@@ -60,7 +60,7 @@ export const getMyPosts = async (req, res) => {
 
 export const getAllPosts = async (req, res) => {
   const posts = await Post.find()
-    .populate("author", "name")
+    .populate("author", "name email school class")
     .sort({ createdAt: -1 });
 
   res.json(posts);
@@ -154,8 +154,11 @@ export const votePost = async (req, res) => {
   }
 };
 
+
+
 export const getTopPosts = async (req, res) => {
   const posts = await Post.find()
+    .populate("author", "name email school class")
     .sort({ voteCount: -1 }) // highest votes first
     .limit(10);
 

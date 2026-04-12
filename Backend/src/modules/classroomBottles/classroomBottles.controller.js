@@ -43,7 +43,7 @@ export const updateClassroomBottles = async(req,res) =>{
            const record = await ClassroomBottles.findOneAndUpdate(
             {classroomId,month},
             {bottleUsed,bottleRemaining,updatedAt: new Date()},
-            {new:true,runValidators:true,upsert: true}
+            {returnDocument: "after", runValidators: true, upsert: true}
            );
        return res.status(200).json({ ClassroomBottles: record });
     }catch(err){

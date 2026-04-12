@@ -23,7 +23,7 @@ export default function CommunityPage() {
           description: post.content,
           image: post.imageUrl,
           user: post.author?.name || "Anonymous",
-          votes: post.votes || 0,
+          voteCount: post.voteCount ?? 0,
           createdAt: post.createdAt,
         }));
 
@@ -40,7 +40,7 @@ export default function CommunityPage() {
 
   // ✅ SORTING LOGIC
   const sortedPosts = [...posts].sort((a, b) => {
-    if (filter === "votes") return b.votes - a.votes;
+    if (filter === "votes") return b.voteCount - a.voteCount;
     if (filter === "latest")
       return new Date(b.createdAt) - new Date(a.createdAt);
     return 0;
@@ -58,7 +58,19 @@ export default function CommunityPage() {
         ) : (
           <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {sortedPosts.map((post) => (
-              <PostCard key={post.id} post={post} />
+              <PostCard
+                key={post.id}
+                post={post}
+                onVoteChange={(postId, nextVoteCount) => {
+                  setPosts((prevPosts) =>
+                    prevPosts.map((currentPost) =>
+                      currentPost.id === postId
+                        ? { ...currentPost, voteCount: nextVoteCount }
+                        : currentPost,
+                    ),
+                  );
+                }}
+              />
             ))}
           </div>
         )}

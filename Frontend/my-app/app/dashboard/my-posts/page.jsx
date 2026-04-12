@@ -11,37 +11,38 @@ import {
   Search,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { getMyPosts, deletePost, updatePost } from "../../services/postServices/postService";
-import { useRouter } from "next/navigation";
+import {
+  deletePost,
+  getMyStats,
+} from "../../services/postServices/postService";
 import PostUpdate from "../../components/dashboard/updatePost";
+import { usePosts } from "../../hooks/usePost";
 
 export default function PostDashboard() {
-  const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { posts, setPosts, loading } = usePosts();
   const [search, setSearch] = useState("");
-  const router = useRouter();
+  const [stats, setStats] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
   const filteredPosts = posts.filter((p) =>
     p.title.toLowerCase().includes(search.toLowerCase()),
   );
 
-
-
-  // Fetch Posts
-  useEffect(() => {
-    async function fetchPosts() {
-      try {
-        const data = await getMyPosts();
-        setPosts(data);
-      } catch (err) {
-        console.log(err.response?.data || err.message);
-      } finally {
-        setLoading(false);
-      }
+  const fetchStats = async () => {
+    try {
+      const myStats = await getMyStats();
+      setStats(myStats || null);
+    } catch (err) {
+      console.log(err.response?.data || err.message);
     }
-    fetchPosts();
+  };
+
+  useEffect(() => {
+    fetchStats();
   }, []);
+
+
+
 
   // Delete Post
   const handleDelete = async (id) => {
@@ -50,18 +51,7 @@ export default function PostDashboard() {
     try {
       await deletePost(id);
       setPosts((prev) => prev.filter((p) => p._id !== id));
-    } catch (err) {
-      console.log(err.response?.data || err.message);
-    }
-  };
-
-  // Update Votes
-  const handleUpdateVotes = async (id, newVotes) => {
-    try {
-      await updatePost(id, { votes: newVotes });
-      setPosts((prev) =>
-        prev.map((p) => (p._id === id ? { ...p, votes: newVotes } : p)),
-      );
+      fetchStats();
     } catch (err) {
       console.log(err.response?.data || err.message);
     }
@@ -73,6 +63,7 @@ export default function PostDashboard() {
         post._id === updatedPost._id ? updatedPost : post
       )
     );
+    fetchStats();
   };
 
   return (
@@ -93,7 +84,7 @@ export default function PostDashboard() {
           </div>
           <div>
             <p className="text-gray-500 text-sm">Total Posts</p>
-            <h2 className="text-xl font-bold">{posts.length}</h2>
+            <h2 className="text-xl font-bold">{stats?.totalPosts ?? 0}</h2>
           </div>
         </div>
 
@@ -103,7 +94,7 @@ export default function PostDashboard() {
           </div>
           <div>
             <p className="text-gray-500 text-sm">Active Posts</p>
-            <h2 className="text-xl font-bold">{posts.length}</h2>
+            <h2 className="text-xl font-bold">{stats?.activePosts ?? 0}</h2>
           </div>
         </div>
 
@@ -114,7 +105,7 @@ export default function PostDashboard() {
           <div>
             <p className="text-gray-500 text-sm">Total Votes</p>
             <h2 className="text-xl font-bold">
-              {posts.reduce((acc, p) => acc + (p.votes || 0), 0)}
+              {stats?.totalVotes ?? 0}
             </h2>
           </div>
         </div>
@@ -125,7 +116,7 @@ export default function PostDashboard() {
           </div>
           <div>
             <p className="text-gray-500 text-sm">Rank</p>
-            <h2 className="text-xl font-bold">#5</h2>
+            <h2 className="text-xl font-bold">#{stats?.rank ?? "-"}</h2>
           </div>
         </div>
       </div>
@@ -174,16 +165,9 @@ export default function PostDashboard() {
               <div className="p-4">
                 <h3 className="text-lg font-semibold">{post.title}</h3>
                 <p className="text-gray-500 text-sm mt-1">{post.content}</p>
-
-                <div className="text-sm mt-2 text-gray-600 flex items-center gap-2">
-                  👍 {post.votes} votes
-                  <button
-                    onClick={() => handleUpdateVotes(post._id, post.votes + 1)}
-                    className="text-blue-500 text-xs"
-                  >
-                    +1
-                  </button>
-                </div>
+                <p className="text-sm mt-2 text-gray-600">
+                   {post.voteCount ?? 0} votes
+                </p>
 
                 <div className="flex  gap-3 mt-4">
                   <button

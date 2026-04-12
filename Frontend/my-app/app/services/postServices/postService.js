@@ -16,6 +16,11 @@ export const getMyPosts = async () => {
   const res = await API.get("/posts/my-posts");
   return res.data;
 };
+//get my stats
+export const getMyStats = async () => {
+  const res = await API.get("/posts/me");
+  return res.data;
+};
 
 // ✅ Get All Posts
 export const getAllPosts = async () => {

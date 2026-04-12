@@ -1,6 +1,8 @@
+import mongoose from "mongoose";
 import User from "./user.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+
 
 /**
  * @desc    Register new user
@@ -43,7 +45,7 @@ export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email }).select("+password").populate("school");
+    const user = await User.findOne({ email }).select("+password").populate("school class");
     if (!user) {
       return res.status(400).json({ message: "Invalid email or password" });
     }
@@ -59,7 +61,11 @@ export const loginUser = async (req, res) => {
         role: user.role, 
         ...(user.role !== 'superAdmin' && user.school && { 
           school: user.school._id || user.school,
-          schoolName: user.school.name
+          schoolName: user.school.name,
+          ...(user.class && {
+            class: user.class._id || user.class,
+            className: user.class.name
+          })
         })
       },
       process.env.JWT_SECRET,
@@ -78,7 +84,13 @@ export const loginUser = async (req, res) => {
           school: {
             id: user.school._id,
             name: user.school.name
-          }
+          },
+          ...(user.class && {
+            class: {
+              id: user.class._id,
+              name: user.class.name
+            }
+          })
         })
       },
     });
@@ -94,7 +106,7 @@ export const loginUser = async (req, res) => {
  */
 export const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find().select("-password");
+    const users = await User.find().select("-password").populate("school class");
     res.status(200).json(users);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -107,7 +119,14 @@ export const getAllUsers = async (req, res) => {
  */
 export const getUserById = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id).select("-password");
+    const { id } = req.params;
+
+    // ✅ Prevent invalid ObjectId crash
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid user ID" });
+    }
+
+    const user = await User.findById(id).select("-password"); 
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -116,6 +135,7 @@ export const getUserById = async (req, res) => {
     res.status(200).json(user);
 
   } catch (error) {
+    console.error("GET USER ERROR:", error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -126,11 +146,31 @@ export const getUserById = async (req, res) => {
  */
 export const updateUser = async (req, res) => {
   try {
+    const { id } = req.params;
+
+    // ✅ Validate ObjectId
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid user ID" });
+    }
+
+    const { name, email, school, class: className } = req.body;
+    if (!school || school.trim() === "") {
+  return res.status(400).json({ message: "School is required" });
+}
+
     const updatedUser = await User.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { returnDocument: 'after' }
-    ).select("-password");
+      id,
+      {
+        name,
+        email,
+        school,          
+        class: className 
+      },
+      {
+        new: true,      
+        runValidators: true
+      }
+    ).select("-password"); // ❌ removed populate
 
     if (!updatedUser) {
       return res.status(404).json({ message: "User not found" });
@@ -138,10 +178,11 @@ export const updateUser = async (req, res) => {
 
     res.status(200).json({
       message: "User updated successfully",
-      updatedUser,
+      user: updatedUser,
     });
 
   } catch (error) {
+    console.error("UPDATE USER ERROR:", error);
     res.status(500).json({ message: error.message });
   }
 };
