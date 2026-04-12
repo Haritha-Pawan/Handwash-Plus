@@ -1,69 +1,62 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import axios from "axios";
 
-
-export default function TeacherQuizPage() {
- 
+function TeacherQuizContent() {
   const searchParams = useSearchParams();
   const classroomId = searchParams.get("classroomId");
   const [quizzes, setQuizzes] = useState([]);
 
-  useEffect(() => {
-  fetchQuizzes();
-}, []);
+  const fetchQuizzes = async () => {
+    try {
+      const cid =
+        searchParams.get("classroomId") ||
+        localStorage.getItem("classroomId");
 
- const fetchQuizzes = async () => {
-  try {
-   
-     const classroomId =
-      searchParams.get("classroomId") ||
-      localStorage.getItem("classroomId");
+      if (!cid) {
+        console.warn("Missing classroomId in URL");
+        return;
+      }
 
-    if (!classroomId) {
-      console.warn("Missing classroomId in URL");
-      return;
+      const token = localStorage.getItem("token");
+
+      const res = await axios.get(
+        `http://localhost:5000/api/quiz/classroom/${cid}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setQuizzes(res.data);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to fetch quizzes");
     }
+  };
 
-    const token = localStorage.getItem("token");
+  const handleDelete = async (id) => {
+    if (!confirm("Are you sure you want to delete this quiz?")) return;
 
-    const res = await axios.get(
-      `http://localhost:5000/api/quiz/classroom/${classroomId}`,
-      {
+    try {
+      const token = localStorage.getItem("token");
+
+      await axios.delete(`http://localhost:5000/api/quiz/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      }
-    );
+      });
 
-    setQuizzes(res.data);
-  } catch (err) {
-    console.error(err);
-    alert("Failed to fetch quizzes");
-  }
-};
-
-  const handleDelete = async (id) => {
-  if (!confirm("Are you sure you want to delete this quiz?")) return;
-
-  try {
-    const token = localStorage.getItem("token");
-
-    await axios.delete(`http://localhost:5000/api/quiz/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    setQuizzes((prev) => prev.filter((q) => q._id !== id));
-  } catch (err) {
-    console.error(err);
-    alert("Failed to delete quiz");
-  }
-};
+      setQuizzes((prev) => prev.filter((q) => q._id !== id));
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete quiz");
+    }
+  };
 
   useEffect(() => {
     fetchQuizzes();
@@ -95,8 +88,6 @@ export default function TeacherQuizPage() {
                 </p>
               </div>
               <div className="flex gap-2">
-
-                 {/*  View Button */}
                 <Link href={`/teacher/quiz/view/${quiz._id}`}>
                    <button className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded">
                     View
@@ -118,5 +109,13 @@ export default function TeacherQuizPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function TeacherQuizPage() {
+  return (
+    <Suspense fallback={<div className="p-4">Loading quizzes...</div>}>
+      <TeacherQuizContent />
+    </Suspense>
   );
 }

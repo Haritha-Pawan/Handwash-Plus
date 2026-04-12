@@ -4,7 +4,6 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { Building, MapPin } from "lucide-react";
-import type { School } from "../src/features/school/types/school.types";
 
 // Fix for default marker icons in Leaflet with webpack/nextjs
 const icon = L.icon({
@@ -19,7 +18,7 @@ const icon = L.icon({
 });
 
 // A component to recenter map when schools change
-function MapUpdater({ schools }: { schools: School[] }) {
+function MapUpdater({ schools }) {
   const map = useMap();
   useEffect(() => {
     if (schools.length > 0) {
@@ -36,15 +35,9 @@ function MapUpdater({ schools }: { schools: School[] }) {
   return null;
 }
 
-interface SchoolMapInnerProps {
-  schools: School[];
-  onEdit: (school: School) => void;
-  onDelete: (id: string) => void;
-}
-
-export default function SchoolMapInner({ schools, onEdit, onDelete }: SchoolMapInnerProps) {
+export default function SchoolMapInner({ schools, onEdit, onDelete, onSelect }) {
   // Center of Sri Lanka roughly
-  const center: [number, number] = [7.8731, 80.7718];
+  const center = [7.8731, 80.7718];
 
   return (
     <div className="w-full h-full rounded-3xl overflow-hidden border border-slate-200 shadow-inner relative z-0">

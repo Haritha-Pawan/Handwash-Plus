@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import axios from "axios";
 import { useSearchParams, useRouter } from "next/navigation"; 
 
-export default function UpdateClassroomBottles() {
+function UpdateClassroomBottlesContent() {
   const params = useSearchParams();
   const router = useRouter(); 
 
@@ -35,13 +35,13 @@ export default function UpdateClassroomBottles() {
           bottleUsed: Number(bottleUsed),
         },
         {
-      headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  }
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
 
-      setMessage(" Bottles updated successfully!");
+      setMessage("Bottles updated successfully!");
 
       // Redirect to the list after 1 second
       setTimeout(() => {
@@ -65,7 +65,7 @@ export default function UpdateClassroomBottles() {
             <label className="text-sm font-medium">Month</label>
             <input
               type="text"
-              value={month}
+              value={month || ""}
               disabled
               className="w-full border p-2 rounded mt-1 bg-gray-100"
             />
@@ -75,7 +75,7 @@ export default function UpdateClassroomBottles() {
             <label className="text-sm font-medium">Distributed Bottles</label>
             <input
               type="number"
-              value={distributed}
+              value={distributed || 0}
               disabled
               className="w-full border p-2 rounded mt-1 bg-blue-50 font-semibold"
             />
@@ -89,7 +89,7 @@ export default function UpdateClassroomBottles() {
               onChange={(e) => setBottleUsed(Number(e.target.value))}
               className="w-full border p-2 rounded mt-1"
               min={0}
-              max={distributed}
+              max={distributed || 0}
               required
             />
           </div>
@@ -112,5 +112,13 @@ export default function UpdateClassroomBottles() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function UpdateClassroomBottles() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+      <UpdateClassroomBottlesContent />
+    </Suspense>
   );
 }

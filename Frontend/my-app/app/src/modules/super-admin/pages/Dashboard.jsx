@@ -11,7 +11,7 @@ import {
   Edit2,
   Map,
   Users,
-  School,
+  School as SchoolIcon,
   TrendingUp,
   Filter,
   Search,
@@ -36,7 +36,6 @@ import {
 import { SchoolMap } from "../../../../components/SchoolMap";
 import { EditSchoolModal } from "../../../../components/EditSchoolModal";
 import { CreateSchoolModal } from "../../../../components/CreateSchoolModal";
-import type { School } from "../../../features/school/types/school.types";
 
 // API Base URL
 const API_BASE_URL = "http://localhost:5000/api";
@@ -46,18 +45,18 @@ const Dashboard = () => {
   const [isAuthorized, setIsAuthorized] = useState(false);
   
   // State for schools data
-  const [schools, setSchools] = useState<School[]>([]);
+  const [schools, setSchools] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
   
   // UI State
-  const [schoolToEdit, setSchoolToEdit] = useState<School | null>(null);
+  const [schoolToEdit, setSchoolToEdit] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("All");
-  const [selectedSchool, setSelectedSchool] = useState<School | null>(null);
-  const [activeTab, setActiveTab] = useState<"map" | "list">("list");
+  const [selectedSchool, setSelectedSchool] = useState(null);
+  const [activeTab, setActiveTab] = useState("list");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -95,7 +94,7 @@ const Dashboard = () => {
   };
   
   // Delete school
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this school? This action cannot be undone.")) {
       return;
     }
@@ -316,7 +315,7 @@ const Dashboard = () => {
                 <RefreshCcw className="w-4 h-4" />
                 Refresh
               </button>
-
+              
               <button
                 onClick={() => setShowCreateModal(true)}
                 className="px-4 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2 text-sm font-medium shadow-sm"
@@ -340,7 +339,7 @@ const Dashboard = () => {
               }`}
             >
               <div className="flex items-center gap-2">
-                <School className="w-4 h-4" />
+                <SchoolIcon className="w-4 h-4" />
                 School Directory
               </div>
             </button>
@@ -434,7 +433,7 @@ const Dashboard = () => {
                 <tbody className="divide-y divide-gray-100">
                   {paginatedSchools.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="py-12 text-center">
+                      <td colSpan="7" className="py-12 text-center">
                         <Building className="w-12 h-12 text-gray-300 mx-auto mb-3" />
                         <p className="text-gray-500">No schools found matching your filters</p>
                       </td>

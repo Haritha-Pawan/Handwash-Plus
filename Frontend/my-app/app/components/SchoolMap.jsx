@@ -12,6 +12,6 @@ const SchoolMapInner = dynamic(() => import("./SchoolMapInner"), {
   ),
 });
 
-export function SchoolMap(props: React.ComponentProps<typeof SchoolMapInner>) {
+export function SchoolMap(props) {
   return <SchoolMapInner {...props} />;
 }

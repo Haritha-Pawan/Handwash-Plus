@@ -1,21 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import QuizForm from "../../../components/quiz/quizForm";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
-export default function CreateQuizPage() {
+function CreateQuizContent() {
   const searchParams = useSearchParams();
   const [classroomId, setClassroomId] = useState(null);
 
-   useEffect(() => {
+  useEffect(() => {
     const urlId = searchParams.get("classroomId");
    
     if (urlId) {
-    setClassroomId(urlId);
-    localStorage.setItem("classroomId", urlId); 
-  }
+      setClassroomId(urlId);
+      localStorage.setItem("classroomId", urlId); 
+    }
   }, [searchParams]);
 
   if (!classroomId) {
@@ -32,5 +32,13 @@ export default function CreateQuizPage() {
 
       <QuizForm classroomId={classroomId} refresh={() => {}} />
     </div>
+  );
+}
+
+export default function CreateQuizPage() {
+  return (
+    <Suspense fallback={<p className="p-6">Loading...</p>}>
+      <CreateQuizContent />
+    </Suspense>
   );
 }
