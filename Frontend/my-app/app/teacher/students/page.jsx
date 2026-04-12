@@ -17,7 +17,7 @@ export default function StudentList() {
 
   // 2. Fetch only when classroomId exists
   useEffect(() => {
-    if (!classroomId) return;
+    if (!classroomId || classroomId === "null") return;
 
     const fetchStudents = async () => {
       try {

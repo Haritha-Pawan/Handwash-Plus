@@ -29,16 +29,14 @@ export default function LoginPage() {
               localStorage.setItem("user", JSON.stringify(response.data.user));
 
           if (role === "superAdmin") {
-            router.push("/dashboard");
+            router.push("/admin-dashboard");
           } else if (role === "teacher") {
             router.push("/teacher/classrooms");
           } else if (response.data.user.role === "admin") {
             router.push("/grades");
-          } else if(response.data.user.role === "user")
-           router.push("/");
-           else if (role === "student") {
-            router.push("/studentQuiz");
-           } else {
+          } else if (role === "student" || role === "user") {
+            router.push("/dashboard");
+          } else {
             router.push("/");
           }
         }

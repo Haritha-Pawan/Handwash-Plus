@@ -16,7 +16,7 @@ function TeacherQuizContent() {
         searchParams.get("classroomId") ||
         localStorage.getItem("classroomId");
 
-      if (!cid) {
+      if (!cid || cid === "null") {
         console.warn("Missing classroomId in URL");
         return;
       }
@@ -59,14 +59,21 @@ function TeacherQuizContent() {
   };
 
   useEffect(() => {
+    if (classroomId && classroomId !== "null") {
+      localStorage.setItem("classroomId", classroomId);
+    }
     fetchQuizzes();
-  }, []);
+  }, [classroomId]);
 
   return (
     <div className="p-4">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Quizzes</h1>
-        <Link href={`/teacher/quiz/create?classroomId=${classroomId}`}>
+        <Link 
+          href={classroomId && classroomId !== "null" 
+            ? `/teacher/quiz/create?classroomId=${classroomId}` 
+            : "/teacher/classrooms"}
+        >
           <button className="bg-cyan-500 hover:bg-cyan-600 text-white px-4 py-2 rounded font-semibold">
             ➕ Create Quiz
           </button>

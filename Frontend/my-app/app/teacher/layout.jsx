@@ -7,12 +7,17 @@ import { Suspense } from "react";
 function TeacherSidebar() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const classroomId = searchParams.get("classroomId");
+  
+  // Get ID from URL or fallback to localStorage
+  const urlId = searchParams.get("classroomId");
+  const storedId = typeof window !== "undefined" ? localStorage.getItem("classroomId") : null;
+  const classroomId = (urlId && urlId !== "null") ? urlId : (storedId && storedId !== "null") ? storedId : null;
 
   const navItems = [
-    { name: "Quiz", path: "/teacher/classrooms" },
+    { name: "My Classrooms", path: "/teacher/classrooms" },
+    { name: "Quiz", path: "/teacher/quiz" },
     { name: "Students", path: "/teacher/students" },
-    { name: "Classroom Bottles", path: `/teacher/classroom-bottles/view/${classroomId}` }
+    { name: "Bottles", path: "/teacher/classroom-bottles/view" }
   ];
 
   return (
@@ -30,13 +35,7 @@ function TeacherSidebar() {
         {navItems.map((item) => (
           <li key={item.path} style={{ marginBottom: "10px" }}>
             <Link
-              href={
-                item.name === "Quiz"
-                  ? `/teacher/quiz${classroomId ? `?classroomId=${classroomId}` : ""}`
-                  : item.name === "Classroom Bottles"
-                  ? `/teacher/classroom-bottles/view${classroomId ? `?classroomId=${classroomId}` : ""}`
-                  : item.path
-              }
+              href={`${item.path}${classroomId ? `?classroomId=${classroomId}` : ""}`}
               style={{
                 color: pathname === item.path ? "#38bdf8" : "#fff",
                 textDecoration: "none",

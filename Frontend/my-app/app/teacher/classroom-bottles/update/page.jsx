@@ -18,9 +18,13 @@ function UpdateClassroomBottlesContent() {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
+    if (!classroomId || classroomId === "null") {
+      router.push("/teacher/classrooms");
+      return;
+    }
     const rem = distributed - bottleUsed;
     setRemaining(rem >= 0 ? rem : 0);
-  }, [bottleUsed, distributed]);
+  }, [bottleUsed, distributed, classroomId, router]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
