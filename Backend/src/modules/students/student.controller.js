@@ -7,7 +7,7 @@ import mongoose from "mongoose";
 //get all students
 export const getAllStudents = async (req, res) => {
     try {
-         const teacherId = "699fe963fac309cee0d145a8"; 
+        const teacherId = req.user.userId; 
  
        const classroom = await Classroom.find({ teacherId });
         if (!classroom) return res.status(404).json({ message: "Classroom not found" });
@@ -30,7 +30,7 @@ export const getAllStudents = async (req, res) => {
 
 //student insert
 export const addStudent = async (req, res) => {
-  const teacherId = req.user?.id || "699fe963fac309cee0d145a8"; 
+  const teacherId = req.user?.id; 
   const { regNo, name } = req.body;
 
   try {
@@ -115,7 +115,7 @@ export const addStudent = async (req, res) => {
               const classroom = await Classroom.findById(student.classroomId);
               if (!classroom) return res.status(404).json({ message: "Classroom not found" });
               //hardcoded
-               const teacherId = req.user?.id || "699fe963fac309cee0d145a8";
+               const teacherId = req.user?.id;
 
            //  if (classroom.teacherId.toString() !== req.user.id) {
            if (classroom.teacherId.toString() !== teacherId) {

@@ -29,7 +29,21 @@ export default function GradesPage() {
     }
   }, []);
 
-  const { grades, loading, error, refetch } = useGrades();
+  const {
+    grades,
+    meta,
+    loading,
+    error,
+    refetch,
+    page,
+    setPage,
+    limit,
+    setLimit,
+    search,
+    setSearch,
+    statusFilter,
+    setStatusFilter,
+  } = useGrades();
 
   const {
     actionLoading,
@@ -48,16 +62,12 @@ export default function GradesPage() {
   const [deactivatingGrade, setDeactivatingGrade] = useState(null);
   const [distributingGrade, setDistributingGrade] = useState(null);
 
-  const stats = useMemo(() => {
-    return {
-      total: grades.length,
-      active: grades.filter((g) => g.isActive).length,
-      low: grades.filter((g) => g?.sanitizer?.status === "low").length,
-      critical: grades.filter((g) =>
-        ["critical", "empty"].includes(g?.sanitizer?.status)
-      ).length,
-    };
-  }, [grades]);
+  const stats = meta?.stats || {
+    total: 0,
+    active: 0,
+    low: 0,
+    critical: 0,
+  };
 
   const closeMessages = () => {
     setActionError("");
@@ -114,9 +124,9 @@ export default function GradesPage() {
         </div>
       )}
 
-      {loading ? (
+      {loading && grades.length === 0 ? (
         <Loader text="Loading grades..." />
-      ) : grades.length === 0 ? (
+      ) : grades.length === 0 && !search && statusFilter === "all" ? (
         <EmptyState
           title="No grades found"
           subtitle="Create grades to start managing grade records."
@@ -124,6 +134,13 @@ export default function GradesPage() {
       ) : (
         <GradeTable
           grades={grades}
+          meta={meta}
+          page={page}
+          setPage={setPage}
+          search={search}
+          setSearch={setSearch}
+          statusFilter={statusFilter}
+          setStatusFilter={setStatusFilter}
           onEdit={(grade) => {
             closeMessages();
             setEditingGrade(grade);
