@@ -1,22 +1,22 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import SanitizerStatusBadge from "./SanitizerStatusBadge";
 import SanitizerFillBar from "./SanitizerFillBar";
 
-export default function GradeTable({ grades, onEdit, onDeactivate, onDistribute }) {
-  const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
-
-  const filtered = grades.filter((grade) => {
-    const name = `grade ${grade.gradeNumber}`.toLowerCase();
-    const matchesSearch = name.includes(search.toLowerCase());
-    const gradeStatus = grade?.sanitizer?.status || "adequate";
-    const matchesStatus = statusFilter === "all" || gradeStatus === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
-
+export default function GradeTable({
+  grades,
+  meta,
+  page,
+  setPage,
+  search,
+  setSearch,
+  statusFilter,
+  setStatusFilter,
+  onEdit,
+  onDeactivate,
+  onDistribute,
+}) {
   const filterOptions = [
     { value: "all", label: "All" },
     { value: "adequate", label: "Adequate" },
@@ -31,7 +31,7 @@ export default function GradeTable({ grades, onEdit, onDeactivate, onDistribute 
       <div className="flex flex-wrap items-center gap-3">
         <input
           type="text"
-          placeholder="Search grade..."
+          placeholder="Search grade number..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition-all shadow-sm"
@@ -40,7 +40,10 @@ export default function GradeTable({ grades, onEdit, onDeactivate, onDistribute 
           {filterOptions.map((opt) => (
             <button
               key={opt.value}
-              onClick={() => setStatusFilter(opt.value)}
+              onClick={() => {
+                setStatusFilter(opt.value);
+                setPage(1); // Reset to first page when filter changes
+              }}
               className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-all ${
                 statusFilter === opt.value
                   ? "bg-sky-600 text-white shadow-md shadow-sky-500/20"
@@ -51,9 +54,9 @@ export default function GradeTable({ grades, onEdit, onDeactivate, onDistribute 
             </button>
           ))}
         </div>
-        {filtered.length !== grades.length && (
+        {grades.length > 0 && meta && meta.total !== grades.length && (
           <span className="text-xs text-slate-500">
-            {filtered.length} of {grades.length} grades
+            {grades.length} of {meta.total} grades
           </span>
         )}
       </div>
@@ -74,14 +77,14 @@ export default function GradeTable({ grades, onEdit, onDeactivate, onDistribute 
               </tr>
             </thead>
             <tbody>
-              {filtered.length === 0 ? (
+              {grades.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="px-4 py-8 text-center text-slate-500">
                     No grades match your filter.
                   </td>
                 </tr>
               ) : (
-                filtered.map((grade) => {
+                grades.map((grade) => {
                   const status = grade?.sanitizer?.status || "adequate";
                   const isUrgent = status === "empty" || status === "critical";
                   return (
@@ -163,6 +166,69 @@ export default function GradeTable({ grades, onEdit, onDeactivate, onDistribute 
           </table>
         </div>
       </div>
+
+      {/* Pagination Controls */}
+      {meta && meta.totalPages > 1 && (
+        <div className="flex items-center justify-between bg-white px-4 py-3 sm:px-6 rounded-2xl border border-slate-200 shadow-sm">
+          <div className="flex flex-1 justify-between sm:hidden">
+            <button
+              onClick={() => setPage(page - 1)}
+              disabled={page === 1}
+              className="relative inline-flex items-center rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+            >
+              Previous
+            </button>
+            <button
+              onClick={() => setPage(page + 1)}
+              disabled={page >= meta.totalPages}
+              className="relative ml-3 inline-flex items-center rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+          <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+            <div>
+              <p className="text-sm text-slate-700">
+                Showing <span className="font-medium">{(page - 1) * meta.limit + 1}</span> to <span className="font-medium">{Math.min(page * meta.limit, meta.total)}</span> of <span className="font-medium">{meta.total}</span> results
+              </p>
+            </div>
+            <div>
+              <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+                <button
+                  onClick={() => setPage(page - 1)}
+                  disabled={page === 1}
+                  className="relative inline-flex items-center rounded-l-md px-2 py-2 text-slate-400 ring-1 ring-inset ring-slate-300 hover:bg-slate-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50"
+                >
+                  <span className="sr-only">Previous</span>
+                  &larr;
+                </button>
+                {[...Array(meta.totalPages)].map((_, i) => (
+                  <button
+                    key={i + 1}
+                    onClick={() => setPage(i + 1)}
+                    aria-current={page === i + 1 ? "page" : undefined}
+                    className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold focus:z-20 focus:outline-offset-0 ${
+                      page === i + 1
+                        ? "z-10 bg-sky-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
+                        : "text-slate-900 ring-1 ring-inset ring-slate-300 hover:bg-slate-50"
+                    }`}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+                <button
+                  onClick={() => setPage(page + 1)}
+                  disabled={page >= meta.totalPages}
+                  className="relative inline-flex items-center rounded-r-md px-2 py-2 text-slate-400 ring-1 ring-inset ring-slate-300 hover:bg-slate-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50"
+                >
+                  <span className="sr-only">Next</span>
+                  &rarr;
+                </button>
+              </nav>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Inline keyframes injected as a style tag */}
       <style>{`
