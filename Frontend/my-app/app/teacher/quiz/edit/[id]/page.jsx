@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../../../../lib/axios";
 import { useParams, useRouter } from "next/navigation";
 
 export default function EditQuizPage() {
@@ -20,7 +20,7 @@ export default function EditQuizPage() {
   useEffect(() => {
     const fetchQuiz = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/quiz/${id}`);
+        const res = await api.get(`/quiz/${id}`);
         const quiz = res.data;
 
         setTitle(quiz.title || "");
@@ -79,17 +79,12 @@ export default function EditQuizPage() {
   // Update quiz
   const handleUpdate = async () => {
     try {
-       const token = localStorage.getItem("token");
-      await axios.put(`http://localhost:5000/api/quiz/${id}`, {
+      await api.put(`/quiz/${id}`, {
         title,
         questions,
         startTime,
         endTime,
         isPublished: isActive,
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`, 
-        },
       });
       alert(" Quiz updated successfully!");
       router.push("/teacher/quiz?classroomId=" + classroomId);

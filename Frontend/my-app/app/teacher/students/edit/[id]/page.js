@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../../../lib/axios";
 import { useRouter, useParams } from "next/navigation";
 
 export default function UpdateStudent() {
@@ -16,16 +16,7 @@ export default function UpdateStudent() {
   useEffect(() => {
     const fetchStudent = async () => {
       try {
-        const token = localStorage.getItem("token");
-
-        const res = await axios.get(
-          `http://localhost:5000/api/students/${id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const res = await api.get(`/students/${id}`);
 
         setFormData({
           regNo: res.data.student.regNo,
@@ -50,17 +41,7 @@ export default function UpdateStudent() {
     e.preventDefault();
 
     try {
-      const token = localStorage.getItem("token");
-
-      await axios.put(
-        `http://localhost:5000/api/students/${id}`,
-        { name: formData.name },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await api.put(`/students/${id}`, { name: formData.name });
 
       router.push("/teacher/students");
     } catch (err) {

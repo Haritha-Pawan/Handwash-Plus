@@ -26,7 +26,7 @@ export const config = {
     },
 
     cors:{
-        origin:process.env.CORS_ORIGIN?.split(',')||['http://localhost:3000'],
+        origin:process.env.CORS_ORIGIN?.split(',')||['https://handwash-plus-ea8v-eydgnny7f-haritha-cds-projects.vercel.app/'],
         Credential:true,
     }
 

@@ -33,14 +33,19 @@ const app = express();
 
 
 const allowedOrigins = process.env.ALLOWED_ORIGINS
-  ? process.env.ALLOWED_ORIGINS.split(',')
+  ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
   : ['http://localhost:3000'];
+
+// Production: https://handwash-plus-ea8v.vercel.app
+// Team/preview: https://handwash-plus-ea8v-…-haritha-cds-projects.vercel.app
+const vercelPattern =
+  /^https:\/\/handwash-plus-ea8v(\.vercel\.app|(-[a-z0-9]+)?-haritha-cds-projects\.vercel\.app)$/;
 
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow requests with no origin (mobile apps, curl, Render health checks)
     if (!origin) return callback(null, true);
     if (allowedOrigins.includes(origin)) return callback(null, true);
+    if (vercelPattern.test(origin)) return callback(null, true);
     callback(new Error(`CORS: origin ${origin} not allowed`));
   },
   credentials: true,

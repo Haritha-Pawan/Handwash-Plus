@@ -3,7 +3,7 @@
 import { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import axios from "axios";
+import api from "../../lib/axios";
 
 function TeacherQuizContent() {
   const searchParams = useSearchParams();
@@ -21,16 +21,7 @@ function TeacherQuizContent() {
         return;
       }
 
-      const token = localStorage.getItem("token");
-
-      const res = await axios.get(
-        `http://localhost:5000/api/quiz/classroom/${cid}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const res = await api.get(`/quiz/classroom/${cid}`);
 
       setQuizzes(res.data);
     } catch (err) {
@@ -43,13 +34,7 @@ function TeacherQuizContent() {
     if (!confirm("Are you sure you want to delete this quiz?")) return;
 
     try {
-      const token = localStorage.getItem("token");
-
-      await axios.delete(`http://localhost:5000/api/quiz/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await api.delete(`/quiz/${id}`);
 
       setQuizzes((prev) => prev.filter((q) => q._id !== id));
     } catch (err) {

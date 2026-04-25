@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import axios from "axios";
+import api from "../lib/axios";
 
 export default function TeacherClassrooms() {
   const [classrooms, setClassrooms] = useState([]);
@@ -10,16 +10,7 @@ export default function TeacherClassrooms() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const token = localStorage.getItem("token");
-
-      const res = await axios.get(
-        "http://localhost:5000/api/classrooms/my",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const res = await api.get("/classrooms/my");
 
       setClassrooms(res.data.classrooms);
     };

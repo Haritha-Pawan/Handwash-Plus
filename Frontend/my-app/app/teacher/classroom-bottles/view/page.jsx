@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../../../lib/axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -29,16 +29,7 @@ export default function ClassroomBottlesTable() {
       try {
         setLoading(true);
 
-        const token = localStorage.getItem("token");
-
-        const res = await axios.get(
-          `http://localhost:5000/api/classroomsBottles/${classroomId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const res = await api.get(`/classroomsBottles/${classroomId}`);
 
         setRecords(res.data.ClassroomBottles);
       } catch (err) {
